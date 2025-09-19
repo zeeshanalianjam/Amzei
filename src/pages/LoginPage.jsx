@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { Axios } from '../common/axios';
+import { summaryApi } from '../common/summaryApi';
+import { toast } from 'react-hot-toast';
+import { setUser } from '../store/userSlice';
+import { useDispatch } from 'react-redux';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -16,10 +23,24 @@ const LoginPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle login logic here
-    console.log('Login attempt:', formData);
+    try {
+      const res = await Axios({
+        ...summaryApi.login, data: formData
+      })
+
+      if(res?.data?.success){
+        toast.success(res?.data?.message || 'Login successful!');
+        dispatch(setUser(res?.data?.data?.user));
+        localStorage.setItem('accessToken', res?.data?.data?.accessToken);
+        navigate('/');
+        setFormData({ email: '', password: '' });
+      }
+    } catch (error) {
+        toast.error(error?.response?.data?.message || 'Login failed. Please try again.');
+    }
   };
 
   return (

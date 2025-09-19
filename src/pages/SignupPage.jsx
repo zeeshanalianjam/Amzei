@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaPhone } from 'react-icons/fa';
+import { toast } from 'react-hot-toast';
+import { Axios } from '../common/axios';
+import { summaryApi } from '../common/summaryApi';
 
 const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -14,6 +18,7 @@ const SignupPage = () => {
     confirmPassword: '',
     agreeToTerms: false
   });
+  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -23,14 +28,50 @@ const SignupPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      toast.error('Passwords do not match!');
       return;
     }
+    
     // Handle signup logic here
-    console.log('Signup attempt:', formData);
+    try {
+
+        // remove spaces from phone number
+  const cleanPhone = formData.phone.replace(/\s+/g, '').trim();
+
+      const payload = {
+    username: `${formData.firstName} ${formData.lastName}`.trim(),
+    email: formData.email,
+    phone: cleanPhone,
+    password: formData.password,
+    termsConditions: formData.agreeToTerms,
+  };
+  
+      const res = await Axios({
+        ...summaryApi.register,
+        data: payload
+      });
+
+      if(res?.data?.success){
+        toast.success(res?.data?.message);
+        navigate('/login');
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          password: '',
+          confirmPassword: '',
+          agreeToTerms: false
+        });
+      } else {
+        toast.error(res?.data?.message || 'Registration failed. Please try again.');
+      }
+    } catch (error) { 
+      toast.error(error?.response?.data?.message || 'Registration failed. Please try again.');
+    }
   };
 
   return (

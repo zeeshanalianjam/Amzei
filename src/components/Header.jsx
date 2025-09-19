@@ -3,13 +3,20 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import Logo from './Logo';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken') || '');
+  const user = useSelector((state) => state.user);
+  console.log("User from Redux:", user);
+  console.log("Access Token:", accessToken);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -55,10 +62,12 @@ const Header = () => {
               </ul>
             </nav>
             
-            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mt-4 md:mt-0">
+           {user?.email || accessToken ? <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mt-4 md:mt-0">
+              <button className="btn-secondary text-center">Logout</button>
+            </div> : <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mt-4 md:mt-0">
               <Link to="/login" className="btn-secondary text-center">Login</Link>
               <Link to="/signup" className="btn-primary text-center">Sign Up</Link>
-            </div>
+            </div> }
           </div>
         </div>
         
