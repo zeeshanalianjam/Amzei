@@ -1,14 +1,21 @@
 // src/components/Header.js
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import Logo from './Logo';
 import { useSelector } from 'react-redux';
+import useAuthCheck from '../utils/useAuthCheck';
+import { Axios } from '../common/axios';
+import { summaryApi } from '../common/summaryApi';
+import toast from 'react-hot-toast';
+import LoadingPopup from '../utils/LoadingPopup';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken') || '');
+  const [loading, setLoading] = useState(false);
   const user = useSelector((state) => state.user);
+  const navigate = useNavigate();
   console.log("User from Redux:", user);
   console.log("Access Token:", accessToken);
 
@@ -16,10 +23,40 @@ const Header = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  //   useAuthCheck(accessToken, () => {
+  //   console.log("Token expired, logging out...");
+  //   localStorage.removeItem("accessToken");
+  //   setAccessToken("");
+  //   navigate("/login");
+  // });
+
+  const handleLogout = async () => {
+    try {
+      setLoading(true);
+      const res = await Axios({
+        ...summaryApi.logout,
+      })
+
+      if(res?.data?.success){
+        toast.success(res?.data?.message || 'Logout successful!');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        setAccessToken('');
+        navigate('/login');
+      }
+      
+    } catch (error) {
+       toast.error(error?.response?.data?.message || 'logout failed. Please try again.');
+        console.log("Error in logout : ", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
+      <LoadingPopup isOpen={loading} />
       <div className="container py-3">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center justify-between w-full md:w-auto mb-4 md:mb-0">
@@ -63,7 +100,7 @@ const Header = () => {
             </nav>
             
            {user?.email || accessToken ? <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mt-4 md:mt-0">
-              <button className="btn-secondary text-center">Logout</button>
+              <button onClick={handleLogout} className="btn-secondary text-center">Logout</button>
             </div> : <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mt-4 md:mt-0">
               <Link to="/login" className="btn-secondary text-center">Login</Link>
               <Link to="/signup" className="btn-primary text-center">Sign Up</Link>

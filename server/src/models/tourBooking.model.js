@@ -23,14 +23,6 @@ const tourBookingSchema = new mongoose.Schema({
             "Fujairah",
             "Ras Al Khaimah",
             "Umm Al Quwain",
-            "Paris",
-            "New York",
-            "Tokyo",
-            "Sydney",
-            "Rome",
-            "Cairo",
-            "Bangkok",
-            "London"
         ],
         default: "Dubai",
         required: true,
@@ -39,6 +31,7 @@ const tourBookingSchema = new mongoose.Schema({
     preferredTravelDate: {
         type: Date,
         required: true,
+        
     },
     checkIn: {
         type: Date,

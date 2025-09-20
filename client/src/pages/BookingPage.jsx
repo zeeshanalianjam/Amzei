@@ -1,19 +1,36 @@
 // src/pages/BookingPage.js
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getTourById } from '../data/tours';
+import { toast } from 'react-hot-toast';
+import { Axios } from '../common/axios';
+import { summaryApi } from '../common/summaryApi';
+import LoadingPopup from '../utils/LoadingPopup';
 
 const BookingPage = () => {
   const { tourId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+  console.log("location state:", location.state);
   const [tour, setTour] = useState(null);
+  console.log("tourId:", tourId);
+  console.log("tour:", tour);
   const [bookingData, setBookingData] = useState({
-    name: '',
+    FullName: '',
     email: '',
     phone: '',
-    travelers: 1,
-    date: '',
-    specialRequests: ''
+    destination: location?.state?.destination || '',
+    preferredTravelDate: '',
+    checkIn: location?.state?.checkIn || '',
+    checkOut: location?.state?.checkOut || '',
+    numberOfGuests: 1,
+    specialRequests: '',
+    tripType: 'solo',
+    kindOfTour: 'adventure',
+    numberOfDays: '',
+    numberOfRooms: '',
+    nationality: '',
   });
 
   useEffect(() => {
@@ -31,15 +48,51 @@ const BookingPage = () => {
     }));
   };
 
-  const handleSubmitBooking = (e) => {
+  const handleSubmitBooking = async (e) => {
     e.preventDefault();
-    // Here you would normally send the booking data to your backend
-    alert(`Booking confirmed for ${tour.title}!\n\nDetails:\nName: ${bookingData.name}\nEmail: ${bookingData.email}\nTravelers: ${bookingData.travelers}\nDate: ${bookingData.date}`);
-    navigate('/');
+   
+    try {
+      setLoading(true);
+      const res = await Axios({
+        ...summaryApi.bookATour,
+        data: bookingData
+      })
+
+      if(res?.data?.success) {
+        toast.success(res?.data?.message || 'Booking successful!');
+        navigate('/');
+        setBookingData({
+          FullName: '',
+          email: '',
+          phone: '',
+          destination: '',
+          preferredTravelDate: '',
+          checkIn: '',
+          checkOut: '',
+          numberOfGuests: 1,
+          specialRequests: '',
+          tripType: '',
+          kindOfTour: '',
+          numberOfDays: '',
+          numberOfRooms: '',
+          nationality: '',
+        })
+      }
+
+    } catch (error) {
+      toast.error(error?.response?.data?.message ||'Failed to submit booking. Please try again.');
+      console.error('Booking submission error:', error);
+      return;
+    } finally {
+      setLoading(false);
+    }
+
+    console.log('Booking Data:', bookingData);
   };
 
   return (
     <div className="section-padding">
+      <LoadingPopup isOpen={loading} />
       <div className="container">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Book Your Trip</h1>
         
@@ -54,8 +107,9 @@ const BookingPage = () => {
                     <label className="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
                     <input
                       type="text"
-                      name="name"
-                      value={bookingData.name}
+                      name="FullName"
+                      placeholder="Your full name"
+                      value={bookingData.FullName}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
@@ -67,6 +121,7 @@ const BookingPage = () => {
                     <input
                       type="email"
                       name="email"
+                      placeholder="Your email address"
                       value={bookingData.email}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -79,8 +134,12 @@ const BookingPage = () => {
                     <input
                       type="tel"
                       name="phone"
+                      placeholder="+971 50 123 4567"
                       value={bookingData.phone}
-                      onChange={handleInputChange}
+                      onChange={(e) => setBookingData({
+                        ...bookingData,
+                        phone: e.target.value.replace(/\s+/g, '')
+                      })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
                     />
@@ -89,8 +148,8 @@ const BookingPage = () => {
                   <div>
                     <label className="block text-gray-700 text-sm font-bold mb-2">Number of Travelers</label>
                     <select
-                      name="travelers"
-                      value={bookingData.travelers}
+                      name="numberOfGuests"
+                      value={bookingData.numberOfGuests}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                     >
@@ -99,13 +158,79 @@ const BookingPage = () => {
                       ))}
                     </select>
                   </div>
+
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Your Trip Type</label>
+                    <select
+                      name="tripType"
+                      value={bookingData.tripType}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    >
+                      {["solo", "couple", "family", "group"].map(num => (
+                        <option key={num} value={num}>{num.charAt(0).toUpperCase() + num.slice(1) } </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">What kind of tour?</label>
+                    <select
+                      name="kindOfTour"
+                      value={bookingData.kindOfTour}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    >
+                      {["adventure", "cultural", "relaxation", "wildlife", "historical"].map(num => (
+                        <option key={num} value={num}>{num.charAt(0).toUpperCase() + num.slice(1) } </option>
+                      ))}
+                    </select>
+                  </div>
+
+                   <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Number of Days</label>
+                    <input
+                      type="tel"
+                      name="numberOfDays"
+                      placeholder="e.g., 5 days"
+                      value={bookingData.numberOfDays}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      required
+                    />
+                  </div>
+
+                   <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Number of Rooms</label>
+                    <input
+                      type="tel"
+                      name="numberOfRooms"
+                      placeholder="e.g., 5 rooms"
+                      value={bookingData.numberOfRooms}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      required
+                    />
+                  </div>
                   
-                  <div className="md:col-span-2">
+                  <div >
                     <label className="block text-gray-700 text-sm font-bold mb-2">Preferred Travel Date</label>
                     <input
                       type="date"
-                      name="date"
-                      value={bookingData.date}
+                      name="preferredTravelDate"
+                      value={bookingData.preferredTravelDate}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      required
+                    />
+                  </div>
+
+                   <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Your Nationality</label>
+                    <input
+                      type="text"
+                      name="nationality"
+                      placeholder="e.g., Arabian"
+                      value={bookingData.nationality}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
@@ -116,6 +241,7 @@ const BookingPage = () => {
                     <label className="block text-gray-700 text-sm font-bold mb-2">Special Requests</label>
                     <textarea
                       name="specialRequests"
+                      placeholder="Any special requests?"
                       value={bookingData.specialRequests}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"

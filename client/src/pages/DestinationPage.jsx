@@ -1,15 +1,20 @@
 // src/pages/DestinationPage.js
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getDestinationById } from '../data/destinations';
 
 const DestinationPage = () => {
   const { id } = useParams();
   const destination = getDestinationById(id);
+  const navigate = useNavigate();
 
   if (!destination) {
     return <div className="section-padding">Destination not found</div>;
   }
+
+  const handleBooking = () => {
+    navigate()
+  };
 
   return (
     <div className="section-padding">
@@ -32,7 +37,7 @@ const DestinationPage = () => {
               
               <div className="mt-8">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Book a Tour</h3>
-                <button className="btn-primary">Book Now</button>
+                <button onClick={handleBooking} className="btn-primary">Book Now</button>
               </div>
             </div>
           </div>

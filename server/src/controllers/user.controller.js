@@ -2,6 +2,7 @@ import { User } from "../models/user.model.js";
 import { apiError } from "../utils/apiError.js";
 import { apiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import jwt from "jsonwebtoken";
 
 const generateAccessAndRefreshTokens = async userId => {
     try {
@@ -100,6 +101,7 @@ const login = asyncHandler(async (req, res) => {
         const cookieOptions = {
             httpOnly: true,
             secure: true,
+            sameSite: "strict", // recommended for CSRF protection
         };
 
         const data = await User.findById(user._id).select("-password -refreshToken");
@@ -107,7 +109,7 @@ const login = asyncHandler(async (req, res) => {
         res.status(200)
         .cookie('refreshToken', refreshToken, cookieOptions)
         .cookie('accessToken', accessToken, cookieOptions)
-        .json(new apiResponse(200, "Login successful", true, { user: data, accessToken, refreshToken }));
+        .json(new apiResponse(200, "Login successful", { user: data, accessToken, refreshToken }));
         
     } catch (error) {
         console.error("Error during login:", error);
@@ -115,18 +117,113 @@ const login = asyncHandler(async (req, res) => {
     }
 });
 
+const refreshToken = asyncHandler(async (req, res) => {
+  try {
+    // get token from cookie OR header
+    const refreshTokenValue =
+      req.cookies?.refreshToken ||
+      req.headers?.authorization?.replace("Bearer ", "");
 
-const logout = asyncHandler(async (req, res) => {
-    try {
-        const userId = req.user._id;
-
-        await User.findByIdAndUpdate(userId, { $set: { refreshToken: null, accessToken: null } }, { new: true });
-
-        res.status(200).json(new apiResponse(200, "Logout successful", true));
-    } catch (error) {
-        console.error("Error during logout:", error);
-        res.status(500).json(new apiError(500, "Internal Server Error: Logout failed"));
+    if (!refreshTokenValue) {
+      return res
+        .status(401)
+        .json(new apiError(401, "Unauthorized: No refresh token provided"));
     }
+
+    // find user with this refresh token
+    const user = await User.findOne({ refreshToken: refreshTokenValue });
+
+    if (!user) {
+      return res
+        .status(403)
+        .json(new apiError(403, "Forbidden: Invalid refresh token"));
+    }
+
+    // verify refresh token
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(
+        refreshTokenValue,
+        process.env.REFRESH_TOKEN_SECRET
+      );
+    } catch (err) {
+      return res
+        .status(403)
+        .json(new apiError(403, "Unauthorized in Catch Block: Invalid refresh token"));
+    }
+
+    if (!decodedToken || decodedToken._id !== user._id.toString()) {
+      return res
+        .status(403)
+        .json(new apiError(403, "Unauthorized Access: Invalid refresh token"));
+    }
+
+    // generate new tokens
+    const {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    } = await generateAccessAndRefreshTokens(user._id);
+
+    // update refreshToken in DB (important)
+    user.refreshToken = newRefreshToken;
+    await user.save();
+
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict", // recommended for CSRF protection
+    };
+
+    return res
+      .status(200)
+      .cookie("refreshToken", newRefreshToken, cookieOptions)
+      .cookie("accessToken", newAccessToken, cookieOptions)
+      .json(
+        new apiResponse(200, "Token refreshed successfully", true, {
+          accessToken: newAccessToken,
+          refreshToken: newRefreshToken,
+        })
+      );
+  } catch (error) {
+    console.error("Error during token refresh:", error);
+    return res
+      .status(500)
+      .json(new apiError(500, "Internal Server Error: Token refresh failed"));
+  }
 });
 
-export { register, login, logout };
+
+
+const logout = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // remove refreshToken from DB
+    await User.findByIdAndUpdate(
+      userId,
+      { $set: { refreshToken: null } },
+      { new: true }
+    );
+
+    // clear cookies from browser
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    };
+
+    res
+      .clearCookie("accessToken", cookieOptions)
+      .clearCookie("refreshToken", cookieOptions)
+      .status(200)
+      .json(new apiResponse(200, "Logout successful", {}));
+  } catch (error) {
+    console.error("Error during logout:", error);
+    res
+      .status(500)
+      .json(new apiError(500, "Internal Server Error: Logout failed"));
+  }
+});
+
+
+export { register, login, logout, refreshToken };

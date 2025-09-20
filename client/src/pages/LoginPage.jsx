@@ -6,11 +6,13 @@ import { summaryApi } from '../common/summaryApi';
 import { toast } from 'react-hot-toast';
 import { setUser } from '../store/userSlice';
 import { useDispatch } from 'react-redux';
+import LoadingPopup from '../utils/LoadingPopup';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -27,6 +29,7 @@ const LoginPage = () => {
     e.preventDefault();
     // Handle login logic here
     try {
+      setLoading(true);
       const res = await Axios({
         ...summaryApi.login, data: formData
       })
@@ -35,16 +38,23 @@ const LoginPage = () => {
         toast.success(res?.data?.message || 'Login successful!');
         dispatch(setUser(res?.data?.data?.user));
         localStorage.setItem('accessToken', res?.data?.data?.accessToken);
+        localStorage.setItem('refreshToken', res?.data?.data?.refreshToken);
         navigate('/');
         setFormData({ email: '', password: '' });
       }
     } catch (error) {
         toast.error(error?.response?.data?.message || 'Login failed. Please try again.');
+        console.log("Error in login : ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-100 py-12 px-4 sm:px-6 lg:px-8">
+       <LoadingPopup isOpen={loading} />
       <div className="max-w-md w-full space-y-8 animate-bounce-in">
         <div className="text-center">
           <Link to="/" className="inline-flex items-center space-x-2">
@@ -143,6 +153,7 @@ const LoginPage = () => {
                 type="submit"
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
+                {/* {loading ? <> <LoadingPopup isOpen={loading} /> </> : 'Sign In'} */}
                 Sign In
               </button>
             </div>
