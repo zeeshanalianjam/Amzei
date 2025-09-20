@@ -23,12 +23,12 @@ const Header = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  //   useAuthCheck(accessToken, () => {
-  //   console.log("Token expired, logging out...");
-  //   localStorage.removeItem("accessToken");
-  //   setAccessToken("");
-  //   navigate("/login");
-  // });
+    useAuthCheck(accessToken, () => {
+    console.log("Token expired, logging out...");
+    localStorage.removeItem("accessToken");
+    setAccessToken("");
+    navigate("/");
+  });
 
   const handleLogout = async () => {
     try {

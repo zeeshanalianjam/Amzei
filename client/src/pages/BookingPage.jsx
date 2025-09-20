@@ -270,20 +270,20 @@ const BookingPage = () => {
           </div>
           
           <div>
-            {tour && (
+            {!tour && (
               <div className="bg-white p-6 rounded-lg shadow-md sticky top-24">
                 <h2 className="text-xl font-bold text-gray-800 mb-4">Tour Summary</h2>
                 
                 <div className="mb-4">
-                  <div className="h-40 bg-gray-200 rounded-md mb-4" style={{ backgroundImage: `url('${tour.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                  <h3 className="font-semibold text-gray-800">{tour.title}</h3>
-                  <p className="text-gray-600 text-sm">{tour.duration} • {tour.location}</p>
+                  <div className="h-40 bg-gray-200 rounded-md mb-4" style={{ backgroundImage: `url('${tour?.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                  <h3 className="font-semibold text-gray-800">{tour?.title}</h3>
+                  <p className="text-gray-600 text-sm">{tour?.duration} • {tour?.location}</p>
                 </div>
                 
                 <div className="mb-4">
                   <h4 className="font-semibold text-gray-800 mb-2">Highlights</h4>
                   <ul className="text-sm text-gray-600">
-                    {tour.highlights.map((highlight, index) => (
+                    {tour?.highlights.map((highlight, index) => (
                       <li key={index} className="mb-1">• {highlight}</li>
                     ))}
                   </ul>
@@ -292,10 +292,10 @@ const BookingPage = () => {
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <span className="text-gray-500">Total Price </span>
-                    <span className="text-xl font-bold text-orange-500">AED {tour.price * bookingData.travelers}</span>
+                    <span className="text-xl font-bold text-orange-500">AED {tour?.price * bookingData?.travelers}</span>
                   </div>
                   <div className="flex items-center bg-orange-100 text-orange-500 px-2 py-1 rounded-md">
-                    <span>{tour.rating}</span>
+                    <span>{tour?.rating}</span>
                     <span className="ml-1">★</span>
                   </div>
                 </div>
