@@ -1,0 +1,207 @@
+// src/admin/AdminEvents.js
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { FaEdit, FaTrash, FaPlus, FaSearch, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
+
+const AdminEvents = () => {
+  const [events, setEvents] = useState([
+    { 
+      id: 1, 
+      title: "Dubai Shopping Festival", 
+      date: "2023-12-15", 
+      location: "Dubai", 
+      description: "Annual shopping festival with discounts and entertainment",
+      image: "https://images.unsplash.com/photo-1512416964559-19bc0ded6091?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
+    },
+    { 
+      id: 2, 
+      title: "Abu Dhabi Grand Prix", 
+      date: "2023-11-26", 
+      location: "Abu Dhabi", 
+      description: "Formula 1 racing event at Yas Marina Circuit",
+      image: "https://images.unsplash.com/photo-1544637711-6cb9cdc5e6f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
+    },
+    { 
+      id: 3, 
+      title: "Sharjah Light Festival", 
+      date: "2024-02-10", 
+      location: "Sharjah", 
+      description: "Light installations and projections across the city",
+      image: "https://images.unsplash.com/photo-1511306262525-1c5a1a34b1e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
+    },
+    { 
+      id: 4, 
+      title: "Dubai Food Festival", 
+      date: "2024-03-05", 
+      location: "Dubai", 
+      description: "Culinary event featuring local and international cuisine",
+      image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
+    },
+  ]);
+
+  const [filteredEvents, setFilteredEvents] = useState(events);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [locationFilter, setLocationFilter] = useState('All');
+
+  useEffect(() => {
+    let result = events;
+    
+    if (searchTerm) {
+      result = result.filter(event => 
+        event.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        event.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    if (locationFilter !== 'All') {
+      result = result.filter(event => event.location === locationFilter);
+    }
+    
+    setFilteredEvents(result);
+  }, [events, searchTerm, locationFilter]);
+
+  const handleDeleteEvent = (id) => {
+    if (window.confirm('Are you sure you want to delete this event?')) {
+      setEvents(events.filter(event => event.id !== id));
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1, 
+      transition: { 
+        staggerChildren: 0.05 
+      } 
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1 
+    }
+  };
+
+  const locations = ['All', ...new Set(events.map(event => event.location))];
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <motion.h1 
+          className="text-2xl font-bold text-gray-800"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Events Management
+        </motion.h1>
+        <Link to="/admin/events/add">
+          <motion.button
+            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md flex items-center"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaPlus className="mr-2" /> Add Event
+          </motion.button>
+        </Link>
+      </div>
+      
+      {/* Filters */}
+      <motion.div 
+        className="bg-white rounded-lg shadow-md p-6 mb-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <motion.div className="relative" variants={itemVariants}>
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <FaSearch className="text-gray-400" />
+            </div>
+            <input 
+              type="text" 
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 p-2.5" 
+              placeholder="Search events..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </motion.div>
+          
+          <motion.div variants={itemVariants}>
+            <select 
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
+              value={locationFilter}
+              onChange={(e) => setLocationFilter(e.target.value)}
+            >
+              {locations.map(location => (
+                <option key={location} value={location}>{location}</option>
+              ))}
+            </select>
+          </motion.div>
+        </div>
+      </motion.div>
+      
+      {/* Events Grid */}
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {filteredEvents.map((event) => (
+          <motion.div 
+            key={event.id} 
+            className="bg-white rounded-lg shadow-md overflow-hidden"
+            variants={itemVariants}
+            whileHover={{ y: -5 }}
+          >
+            <div className="h-48 bg-gray-200" style={{ backgroundImage: `url('${event.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+            <div className="p-4">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="text-lg font-semibold text-gray-800">{event.title}</h3>
+                <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                  {event.location}
+                </span>
+              </div>
+              
+              <div className="flex items-center text-gray-600 text-sm mb-2">
+                <FaCalendarAlt className="mr-2" />
+                {new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </div>
+              
+              <div className="flex items-center text-gray-600 text-sm mb-4">
+                <FaMapMarkerAlt className="mr-2" />
+                {event.location}
+              </div>
+              
+              <p className="text-gray-600 text-sm mb-4">{event.description}</p>
+              
+              <div className="flex justify-end space-x-2">
+                <Link to={`/admin/events/edit/${event.id}`} className="text-indigo-600 hover:text-indigo-900">
+                  <FaEdit />
+                </Link>
+                <button 
+                  className="text-red-600 hover:text-red-900"
+                  onClick={() => handleDeleteEvent(event.id)}
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+      
+      {filteredEvents.length === 0 && (
+        <div className="text-center py-8 text-gray-500 bg-white rounded-lg shadow-md">
+          No events found matching your criteria
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AdminEvents;
