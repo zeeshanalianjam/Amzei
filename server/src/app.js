@@ -6,7 +6,7 @@ const app = express();
 
 // Middleware setup
 app.use(cors({
-    origin: 'http://localhost:5173', // Adjust as needed for your frontend
+    origin: ['http://localhost:5173', 'http://localhost:5174'], // Adjust as needed for your frontend
     credentials: true, // Allow cookies to be sent
 }));
 app.use(express.json({ limit: '16kb' })); // Limit JSON payload size
@@ -22,10 +22,17 @@ app.get('/', (req, res) => {
 // importing routes
 import { userRouter } from './routes/user.routes.js';
 import { tourBookingRouter } from './routes/tourBooking.routes.js';
+import { destinationRouter } from './routes/destination.routes.js';
+import { eventRouter } from './routes/event.routes.js';
+import { tourRouter } from './routes/tour.routes.js';
 
 // using routes
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tour-bookings', tourBookingRouter);
+app.use('/api/v1/destinations', destinationRouter);
+app.use('/api/v1/events', eventRouter);
+app.use('/api/v1/tours', tourRouter);
+
 
 
 export { app };

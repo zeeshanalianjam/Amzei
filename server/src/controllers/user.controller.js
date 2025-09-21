@@ -225,5 +225,18 @@ const logout = asyncHandler(async (req, res) => {
   }
 });
 
+const fetchAllUsers = asyncHandler(async (req, res) => {
+    try {
+        const users = await User.find().select("-password -refreshToken");
+
+        res.status(200).json(new apiResponse(200, "Users fetched successfully", true, users));
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json(new apiError(500, "Internal Server Error: Fetching users failed"));
+    }
+});
+
+
+
 
 export { register, login, logout, refreshToken };
