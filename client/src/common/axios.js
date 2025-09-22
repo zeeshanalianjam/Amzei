@@ -75,7 +75,7 @@ async function doRefreshToken() {
       // refresh failed -> clear tokens and force logout
       clearTokens();
       // Optional: navigate to login page
-      // window.location.href = '/login';
+      window.location.href = '/login';
       throw err;
     })
     .finally(() => {
@@ -158,7 +158,7 @@ Axios.interceptors.response.use(
       } catch (refreshError) {
         // refresh failed -> tokens cleared in doRefreshToken()
         // Optional: redirect to login
-        window.location.href = "/login";
+        // window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }

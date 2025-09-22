@@ -5,116 +5,120 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 
 const generateAccessAndRefreshTokens = async userId => {
-    try {
-        const user = await User.findById(userId);
-        
-        const accessToken = user.generateAccessToken();
-        const refreshToken = user.generateRefreshToken();
+  try {
+    const user = await User.findById(userId);
 
-        user.refreshToken = refreshToken;
-        await user.save();
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
 
-        return { accessToken, refreshToken };
-        
-    } catch (error) {
-        console.error("Error generating tokens:", error);
-        throw new Error("Token generation failed", error.message);
-    }
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    return { accessToken, refreshToken };
+
+  } catch (error) {
+    console.error("Error generating tokens:", error);
+    throw new Error("Token generation failed", error.message);
+  }
 }
 
 const register = asyncHandler(async (req, res) => {
-    try {
-        const { username, email, phone, password, termsConditions } = req.body;
+  try {
+    const { username, email, phone, password, termsConditions } = req.body;
 
-        if (!username || !email || !phone || !password || !termsConditions) {
-            return res.status(400).json(new apiError(400, "Please fill all required fields"));
-        }
-
-        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-            return res.status(400).json(new apiError(400, 'Please enter a valid email address'));
-        }
-
-        if (!/^(?:\+971|0)(?:2|3|4|6|7|9|5[024568])\d{7}$/.test(phone)) {
-            return res.status(400).json(new apiError(400, "Please enter a valid UAE phone number"));
-        }
-
-        if (username.length < 3) {
-            return res.status(400).json(new apiError(400, "Username must be at least 3 characters long"));
-        }
-
-        const emailExists = await User.findOne({ email });
-        if (emailExists) {
-            return res.status(400).json(new apiError(400, "Email already exists"));
-        }
-
-        if (password.length < 6) {
-            return res.status(400).json(new apiError(400, "Password must be at least 6 characters long"));
-        }
-
-        if (!termsConditions) {
-            return res.status(400).json(new apiError(400, "You must accept the terms and conditions"));
-        }
-
-        const newUser = await User.create({
-            username,
-            email,
-            phone,
-            password,
-            termsConditions,
-        });
-
-        const data = await User.findById(newUser._id).select("-password -refreshToken");
-
-        return res.status(201).json(new apiResponse(201, "You are registered successfully", true, data));
-
-    } catch (error) {
-        console.error("Error during registration:", error);
-        return res.status(500).json(new apiError(500, "Internal Server Error: Registration failed"));
+    if (!username || !email || !phone || !password || !termsConditions) {
+      return res.status(400).json(new apiError(400, "Please fill all required fields"));
     }
+
+    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+      return res.status(400).json(new apiError(400, 'Please enter a valid email address'));
+    }
+
+    if (!/^(?:\+971|0)(?:2|3|4|6|7|9|5[024568])\d{7}$/.test(phone)) {
+      return res.status(400).json(new apiError(400, "Please enter a valid UAE phone number"));
+    }
+
+    if (username.length < 3) {
+      return res.status(400).json(new apiError(400, "Username must be at least 3 characters long"));
+    }
+
+    const emailExists = await User.findOne({ email });
+    if (emailExists) {
+      return res.status(400).json(new apiError(400, "Email already exists"));
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json(new apiError(400, "Password must be at least 6 characters long"));
+    }
+
+    if (!termsConditions) {
+      return res.status(400).json(new apiError(400, "You must accept the terms and conditions"));
+    }
+
+    const newUser = await User.create({
+      username,
+      email,
+      phone,
+      password,
+      termsConditions,
+    });
+
+    const data = await User.findById(newUser._id).select("-password -refreshToken");
+
+    return res.status(201).json(new apiResponse(201, "You are registered successfully", true, data));
+
+  } catch (error) {
+    console.error("Error during registration:", error);
+    return res.status(500).json(new apiError(500, "Internal Server Error: Registration failed"));
+  }
 });
 
-
 const login = asyncHandler(async (req, res) => {
-    try {
-        const { email, password } = req.body;
+  try {
+    const { email, password, rememberMe } = req.body;
 
-        if(!email || !password) {
-            return res.status(400).json(new apiError(400, "Please provide email and password"));
-        }
-
-        const user = await User.findOne({ email });
-
-        if (!user) {
-            return res.status(404).json( new apiError(404, "You are not registered. Please sign up first."));
-        }
-
-        const isMatch = await user.comparePassword(password);
-
-        if (!isMatch) {
-            return res.status(401).json( new apiError(401, "Invalid credentials - Password does not match"));
-        }
-
-        await User.findByIdAndUpdate(user._id, { $set: { forgotPasswordOTP: null, forgotPasswordOTPExpiry: null } }, { new: true });
-
-        const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
-
-        const cookieOptions = {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict", // recommended for CSRF protection
-        };
-
-        const data = await User.findById(user._id).select("-password -refreshToken");
-
-        res.status(200)
-        .cookie('refreshToken', refreshToken, cookieOptions)
-        .cookie('accessToken', accessToken, cookieOptions)
-        .json(new apiResponse(200, "Login successful", { user: data, accessToken, refreshToken }));
-        
-    } catch (error) {
-        console.error("Error during login:", error);
-        res.status(500).json(new apiError(500, "Internal Server Error: Login failed"));
+    if (!email || !password) {
+      return res.status(400).json(new apiError(400, "Please provide email and password"));
     }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json(new apiError(404, "You are not registered. Please sign up first."));
+    }
+
+    const isMatch = await user.comparePassword(password);
+
+    if (!isMatch) {
+      return res.status(403).json(new apiError(403, "Invalid credentials - Password does not match"));
+    }
+    
+    if(user?.role === 'admin' && user?.email !== 'admin@gmail.com')
+      { return res.status(404).json(new apiError(404, "You are not an admin!")); }
+
+    await User.findByIdAndUpdate(user._id, { $set: { forgotPasswordOTP: null, forgotPasswordOTPExpiry: null, rememberMe } }, { new: true });
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
+
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict", // recommended for CSRF protection
+      maxAge: rememberMe
+        ? 7 * 24 * 60 * 60 * 1000 // 7 days
+        : 60 * 60 * 1000          // 1 hour
+    };
+
+    const data = await User.findById(user._id).select("-password -refreshToken");
+
+    res.status(200)
+      .cookie('refreshToken', refreshToken, cookieOptions)
+      .cookie('accessToken', accessToken, cookieOptions)
+      .json(new apiResponse(200, "Login successful", { user: data, accessToken, refreshToken }));
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json(new apiError(500, "Internal Server Error: Login failed"));
+  }
 });
 
 const refreshToken = asyncHandler(async (req, res) => {
@@ -192,8 +196,6 @@ const refreshToken = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 const logout = asyncHandler(async (req, res) => {
   try {
     const userId = req.user._id;
@@ -226,17 +228,17 @@ const logout = asyncHandler(async (req, res) => {
 });
 
 const fetchAllUsers = asyncHandler(async (req, res) => {
-    try {
-        const users = await User.find().select("-password -refreshToken");
+  try {
+    const users = await User.find().select("-password -refreshToken");
 
-        res.status(200).json(new apiResponse(200, "Users fetched successfully", true, users));
-    } catch (error) {
-        console.error("Error fetching users:", error);
-        res.status(500).json(new apiError(500, "Internal Server Error: Fetching users failed"));
-    }
+    res.status(200).json(new apiResponse(200, "Users fetched successfully", users));
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json(new apiError(500, "Internal Server Error: Fetching users failed"));
+  }
 });
 
 
 
 
-export { register, login, logout, refreshToken };
+export { register, login, logout, refreshToken, fetchAllUsers };

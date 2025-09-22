@@ -10,13 +10,19 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     forgotPasswordOTP: { type: String, default: null },
     forgotPasswordOTPExpiry: { type: String, default: null },
+    rememberMe: {type: Boolean, default: false},
     refreshToken: {
         type: String,
         default: null
     },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    }
 }, { timestamps: true });
 
-// middleware to hash password before saving
+
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
 
@@ -25,17 +31,16 @@ userSchema.pre('save', async function (next) {
     next();
 })
 
-// method to compare password
 userSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 }
 
-// Method to generate a access token
+
 userSchema.methods.generateAccessToken = function(){
     return jwt.sign(
         {
             _id: this._id,
-            name: this.name,
+            name: this.username,
             email: this.email,
         },
         process.env.ACCESS_TOKEN_SECRET,
@@ -45,7 +50,7 @@ userSchema.methods.generateAccessToken = function(){
     )
 }
 
-// Method to generate a refresh token
+
 userSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {

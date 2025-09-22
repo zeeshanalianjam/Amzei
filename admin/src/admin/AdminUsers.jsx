@@ -2,16 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaUserEdit, FaTrash, FaSearch, FaFilter } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 const AdminUsers = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'John Smith', email: 'john@example.com', role: 'Customer', joinDate: '2023-01-15', status: 'Active' },
-    { id: 2, name: 'Emma Johnson', email: 'emma@example.com', role: 'Customer', joinDate: '2023-02-20', status: 'Active' },
-    { id: 3, name: 'Michael Brown', email: 'michael@example.com', role: 'Agent', joinDate: '2023-03-10', status: 'Active' },
-    { id: 4, name: 'Sarah Davis', email: 'sarah@example.com', role: 'Customer', joinDate: '2023-04-05', status: 'Inactive' },
-    { id: 5, name: 'David Wilson', email: 'david@example.com', role: 'Customer', joinDate: '2023-05-12', status: 'Active' },
-    { id: 6, name: 'Lisa Anderson', email: 'lisa@example.com', role: 'Admin', joinDate: '2023-06-18', status: 'Active' },
-  ]);
+  const dashboard = useSelector((state) => state?.dashboard);
+  const [users, setUsers] = useState(dashboard?.allUsers || []);
 
   const [filteredUsers, setFilteredUsers] = useState(users);
   const [searchTerm, setSearchTerm] = useState('');
@@ -23,7 +18,7 @@ const AdminUsers = () => {
     
     if (searchTerm) {
       result = result.filter(user => 
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        user.username.toLowerCase().includes(searchTerm.toLowerCase()) || 
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -47,7 +42,7 @@ const AdminUsers = () => {
 
   const handleStatusChange = (id, newStatus) => {
     setUsers(users.map(user => 
-      user.id === id ? { ...user, status: newStatus } : user
+      user._id === id ? { ...user, status: newStatus } : user
     ));
   };
 
@@ -108,9 +103,9 @@ const AdminUsers = () => {
               onChange={(e) => setRoleFilter(e.target.value)}
             >
               <option value="All">All Roles</option>
-              <option value="Customer">Customer</option>
-              <option value="Agent">Agent</option>
-              <option value="Admin">Admin</option>
+              <option value="user">Customer</option>
+              <option value="agent">Agent</option>
+              <option value="admin">Admin</option>
             </select>
           </motion.div>
           
@@ -149,18 +144,18 @@ const AdminUsers = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredUsers.map((user) => (
+              {filteredUsers.map((user, index) => (
                 <motion.tr 
-                  key={user.id} 
+                  key={index} 
                   className="hover:bg-gray-50"
                   variants={itemVariants}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1 || "N/A"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.username || "N/A"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email || "N/A"}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      user.role === 'Admin' ? 'bg-purple-100 text-purple-800' : 
+                      user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 
                       user.role === 'Agent' ? 'bg-blue-100 text-blue-800' : 
                       'bg-green-100 text-green-800'
                     }`}>
@@ -174,7 +169,7 @@ const AdminUsers = () => {
                         user.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       }`}
                       value={user.status}
-                      onChange={(e) => handleStatusChange(user.id, e.target.value)}
+                      onChange={(e) => handleStatusChange(user._id, e.target.value)}
                     >
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
@@ -184,7 +179,7 @@ const AdminUsers = () => {
                     <button className="text-indigo-600 hover:text-indigo-900 mr-3">
                       <FaUserEdit />
                     </button>
-                    <button 
+                    <button
                       className="text-red-600 hover:text-red-900"
                       onClick={() => handleDeleteUser(user.id)}
                     >

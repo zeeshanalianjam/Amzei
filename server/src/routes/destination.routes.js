@@ -6,7 +6,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 const destinationRouter = Router()
 
 destinationRouter.route('/add').post(jwtVerify,upload.single('image'), addDestination);
-destinationRouter.route('/get-all-destinations').get(jwtVerify, getDestinations);
+destinationRouter.route('/get-all-destinations').get( getDestinations);
 destinationRouter.route('/update/:id').put(jwtVerify,upload.single('image'), updateDestination);
 destinationRouter.route('/delete/:id').delete(jwtVerify, deleteDestination);
 

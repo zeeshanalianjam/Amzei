@@ -1,6 +1,6 @@
 // src/App.js
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import AdminLayout from './admin/AdminLayout';
 import AdminDashboard from './admin/AdminDashboard';
 import AdminUsers from './admin/AdminUsers';
@@ -11,14 +11,124 @@ import AdminDestinationForm from './admin/AdminDestinationForm';
 import AdminEvents from './admin/AdminEvents';
 import AdminEventForm from './admin/AdminEventForm';
 import './index.css';
+import AdminLogin from './admin/AdminLogin';
+import ProtectedRoute from './admin/ProtectedRoute';
+import AdminSettings from './admin/AdminSettings';
+import PageNotFound from './components/PageNotFound';
+import { Toaster, toast } from 'react-hot-toast';
+import { Axios } from './common/axios';
+import { summaryApi } from './common/summaryApi';
+import { useDispatch } from 'react-redux';
+import { setAllUsers, setAllTours, setAllDestinations, setAllEvents, setAllTourBookings } from './adminStore/dashboardSlice';
+
+
 
 function App() {
+  const location = useLocation();
+  const dispatch = useDispatch();
+  console.log("location state:", location.pathname);
+  useEffect(() => {
+    document.title = 'Admin Dashboard';
+    if(location.pathname === '/' || location.pathname === '/login') {
+      window.location.href = '/admin';
+    }
+  })
+
+
+  // Api's calls
+  const fetchAllUsers = async () => {
+    try {
+      const res = await Axios({
+        ...summaryApi.fetchAllUsers,
+      })
+
+      if(res?.data?.success) {
+      return dispatch(setAllUsers(res?.data?.data));
+      }
+    } catch (error) {
+      console.log("Error in fetching all users", error);
+      toast.error("Error in fetching all users");
+    }
+  }
+
+  const fetchAllTours = async () => {
+    try {
+      const res = await Axios({
+        ...summaryApi.fetchAllTours,
+      })
+
+      if(res?.data?.success) {
+        return dispatch(setAllTours(res?.data?.data));
+      }
+    } catch (error) {
+      console.log("Error in fetching all tours", error);
+      toast.error("Error in fetching all tours");
+    }
+  }
+
+  const fetchAllDestinations = async () => {
+    try {
+      const res = await Axios({
+        ...summaryApi.fetchAllDestinations,
+      })
+
+      if(res?.data?.success) {
+        return dispatch(setAllDestinations(res?.data?.data));
+      }
+    } catch (error) {
+      console.log("Error in fetching all destinations", error);
+      toast.error("Error in fetching all destinations");
+    }
+  }
+
+  const fetchAllEvents = async () => {
+    try {
+      const res = await Axios({
+        ...summaryApi.fetchAllEvents,
+      })
+
+      if(res?.data?.success) {
+        return dispatch(setAllEvents(res?.data?.data));
+      }
+    } catch (error) {
+      console.log("Error in fetching all events", error);
+      toast.error("Error in fetching all events");
+    }
+  }
+
+  const fetchAllTourBookings = async () => {
+    try {
+      const res = await Axios({
+        ...summaryApi.fetchAllTourBookings,
+      })
+      console.log("res from tour booking",  res)
+      if(res?.data?.success) {
+        return dispatch(setAllTourBookings(res?.data?.data?.bookings));
+      }
+    } catch (error) {
+      console.log("Error in fetching all tour bookings", error);
+      toast.error("Error in fetching all tour bookings");
+    }
+  }
+
+  useEffect(() => {
+    fetchAllUsers();
+    fetchAllTours();
+    fetchAllDestinations();
+    fetchAllEvents();
+    fetchAllTourBookings();
+  }, [])
+
+
   return (
     <>
       <div className="min-h-screen flex flex-col">
         <Routes>
           {/* Admin Routes */}
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="tours" element={<AdminTours />} />
@@ -30,8 +140,11 @@ function App() {
             <Route path="events" element={<AdminEvents />} />
             <Route path="events/add" element={<AdminEventForm />} />
             <Route path="events/edit/:id" element={<AdminEventForm />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
+          <Toaster />
       </div>
     </>
   );

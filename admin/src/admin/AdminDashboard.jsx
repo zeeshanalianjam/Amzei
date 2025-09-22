@@ -3,23 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaUsers, FaRoute, FaMapMarkedAlt, FaCalendarAlt, FaChartLine } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { useSelector } from 'react-redux';
 
 const AdminDashboard = () => {
+  const dashboard = useSelector((state) => state?.dashboard);
+  console.log("Dashboard:", dashboard);
   const [stats, setStats] = useState({
-    users: 1242,
-    tours: 24,
-    destinations: 18,
-    events: 8,
+    users: dashboard.allUsers.length,
+    tours: dashboard.allTours.length,
+    destinations: dashboard.allDestinations.length,
+    events: dashboard.allEvents.length,
     pendingTours: 3
   });
 
-  const [recentBookings, setRecentBookings] = useState([
-    { id: 1, customer: 'John Smith', tour: 'Dubai City Tour', date: '2023-10-15', amount: 'AED 2,500', status: 'Confirmed' },
-    { id: 2, customer: 'Emma Johnson', tour: 'Desert Safari', date: '2023-10-16', amount: 'AED 1,200', status: 'Pending' },
-    { id: 3, customer: 'Michael Brown', tour: 'Abu Dhabi Explorer', date: '2023-10-17', amount: 'AED 3,800', status: 'Confirmed' },
-    { id: 4, customer: 'Sarah Davis', tour: 'UAE Grand Tour', date: '2023-10-18', amount: 'AED 6,800', status: 'Cancelled' },
-    { id: 5, customer: 'David Wilson', tour: 'Northern Emirates', date: '2023-10-19', amount: 'AED 5,200', status: 'Confirmed' },
-  ]);
+  const recentBookings = dashboard.allTourBookings.slice(0, 5);
 
   const tourData = [
     { name: 'Jan', tours: 12 },
@@ -46,7 +43,7 @@ const AdminDashboard = () => {
 
   return (
     <div>
-      <motion.h1 
+      <motion.h1
         className="text-2xl font-bold text-gray-800 mb-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -54,7 +51,7 @@ const AdminDashboard = () => {
       >
         Admin Dashboard
       </motion.h1>
-      
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         {[
@@ -64,7 +61,7 @@ const AdminDashboard = () => {
           { title: 'Events', value: stats.events, icon: <FaCalendarAlt className="text-yellow-500" />, color: 'bg-yellow-100' },
           { title: 'Pending Tours', value: stats.pendingTours, icon: <FaChartLine className="text-red-500" />, color: 'bg-red-100' },
         ].map((stat, index) => (
-          <motion.div 
+          <motion.div
             key={index}
             className="bg-white rounded-lg shadow-md p-6 flex items-center"
             variants={cardVariants}
@@ -82,10 +79,10 @@ const AdminDashboard = () => {
           </motion.div>
         ))}
       </div>
-      
+
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <motion.div 
+        <motion.div
           className="bg-white rounded-lg shadow-md p-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -103,8 +100,8 @@ const AdminDashboard = () => {
             </BarChart>
           </ResponsiveContainer>
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           className="bg-white rounded-lg shadow-md p-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -132,9 +129,9 @@ const AdminDashboard = () => {
           </ResponsiveContainer>
         </motion.div>
       </div>
-      
+
       {/* Recent Bookings */}
-      <motion.div 
+      <motion.div
         className="bg-white rounded-lg shadow-md p-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -146,7 +143,7 @@ const AdminDashboard = () => {
             View All
           </button>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -160,19 +157,26 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {recentBookings.map((booking) => (
-                <tr key={booking.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{booking.customer}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.tour}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.amount}</td>
+              {recentBookings.map((booking, index) => (
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1 || 'N/A'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{booking.FullName || 'N/A'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.destination || 'N/A'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">  {new Date(booking.preferredTravelDate).toLocaleString("en-AE", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                    timeZone: "Asia/Dubai"
+                  })}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.amount || 'N/A'}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      booking.status === 'Confirmed' ? 'bg-green-100 text-green-800' : 
-                      booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
-                      'bg-red-100 text-red-800'
-                    }`}>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${booking.status === 'Confirmed' ? 'bg-green-100 text-green-800' :
+                        booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-red-100 text-red-800'
+                      }`}>
                       {booking.status}
                     </span>
                   </td>

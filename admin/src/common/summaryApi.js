@@ -14,10 +14,6 @@ const summaryApi = {
         url: "/api/v1/users/logout",
         method: "POST"
     },
-    fetchAllTourBookings: {
-        url: "/api/v1/tour-bookings/fetch-all-tour-bookings",
-        method: "GET"
-    },
     fetchTourBookingByUser: {
         url: "/api/v1/tour-bookings/fetch-tour-booking-by-user",
         method: "GET"
@@ -29,7 +25,28 @@ const summaryApi = {
     updateTourBookingStatus: {
         url: "/api/v1/tour-bookings/update/:bookingId",
         method: "PUT"
-    }
+    },
+    // admin route for fetching all data 
+    fetchAllUsers: {
+        url: "/api/v1/users/fetch-all-users",
+        method: "GET"
+    },
+    fetchAllTours: {
+        url: "/api/v1/tours/get-all-tours",
+        method: "GET"
+    },
+    fetchAllDestinations: {
+        url: "/api/v1/destinations/get-all-destinations",
+        method: "GET"
+    },
+    fetchAllEvents: {
+        url: "/api/v1/events/get-all-events",
+        method: "GET"
+    },
+    fetchAllTourBookings: {
+        url: "/api/v1/tour-bookings/fetch-all-tour-bookings",
+        method: "GET"
+    },
 }
 
 export { baseURL, summaryApi };

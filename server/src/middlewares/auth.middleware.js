@@ -6,9 +6,11 @@ import jwt from "jsonwebtoken";
 const jwtVerify = asyncHandler(async (req, res, next) => {
     try {
         const token = req.cookies?.accessToken || req.headers.authorization?.replace("Bearer ", "");
+
         if (!token) {
             return res.status(401).json(new apiError(401, "Unauthorized: No token provided"));
         }
+        
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
         const user = await User.findById(decoded._id).select("-password -refreshToken");
