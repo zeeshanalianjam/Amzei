@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('accessToken') ;
   const admin = useSelector((state) => state?.admin);
-  console.log("Admin from ProtectedRoute:", admin.email);
 
   if (!isAuthenticated || admin?.email !== 'admin@gmail.com') {
     return (

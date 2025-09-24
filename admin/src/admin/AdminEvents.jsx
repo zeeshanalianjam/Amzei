@@ -3,42 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FaEdit, FaTrash, FaPlus, FaSearch, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 const AdminEvents = () => {
-  const [events, setEvents] = useState([
-    { 
-      id: 1, 
-      title: "Dubai Shopping Festival", 
-      date: "2023-12-15", 
-      location: "Dubai", 
-      description: "Annual shopping festival with discounts and entertainment",
-      image: "https://images.unsplash.com/photo-1512416964559-19bc0ded6091?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
-    },
-    { 
-      id: 2, 
-      title: "Abu Dhabi Grand Prix", 
-      date: "2023-11-26", 
-      location: "Abu Dhabi", 
-      description: "Formula 1 racing event at Yas Marina Circuit",
-      image: "https://images.unsplash.com/photo-1544637711-6cb9cdc5e6f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
-    },
-    { 
-      id: 3, 
-      title: "Sharjah Light Festival", 
-      date: "2024-02-10", 
-      location: "Sharjah", 
-      description: "Light installations and projections across the city",
-      image: "https://images.unsplash.com/photo-1511306262525-1c5a1a34b1e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
-    },
-    { 
-      id: 4, 
-      title: "Dubai Food Festival", 
-      date: "2024-03-05", 
-      location: "Dubai", 
-      description: "Culinary event featuring local and international cuisine",
-      image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
-    },
-  ]);
+  const dashboard = useSelector((state) => state?.dashboard);
+  const [events, setEvents] = useState(dashboard?.allEvents);
 
   const [filteredEvents, setFilteredEvents] = useState(events);
   const [searchTerm, setSearchTerm] = useState('');
@@ -158,7 +127,7 @@ const AdminEvents = () => {
             variants={itemVariants}
             whileHover={{ y: -5 }}
           >
-            <div className="h-48 bg-gray-200" style={{ backgroundImage: `url('${event.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+            <div className="h-48 bg-gray-200" style={{ backgroundImage: `url('${event.imageUrl}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
             <div className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-lg font-semibold text-gray-800">{event.title}</h3>

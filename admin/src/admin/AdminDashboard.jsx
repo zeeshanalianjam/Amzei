@@ -7,31 +7,61 @@ import { useSelector } from 'react-redux';
 
 const AdminDashboard = () => {
   const dashboard = useSelector((state) => state?.dashboard);
-  console.log("Dashboard:", dashboard);
+  // console.log("tours : ", dashboard.allTourBookings);
+  // console.log("Dashboard:", dashboard);
   const [stats, setStats] = useState({
     users: dashboard.allUsers.length,
     tours: dashboard.allTours.length,
     destinations: dashboard.allDestinations.length,
     events: dashboard.allEvents.length,
-    pendingTours: 3
+    pendingTours: 3,
   });
 
   const recentBookings = dashboard.allTourBookings.slice(0, 5);
 
+  const preferredDate = dashboard?.allTourBookings;
+const jan = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-01"));
+const feb = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-02"));
+const mar = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-03"));
+const apr = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-04"));
+const may = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-05"));
+const jun = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-06"));
+const jul = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-07"));
+const aug = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-08"));
+const sep = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-09"));
+const oct = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-10"));
+const nov = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-11"));
+const dec = preferredDate.filter(booking => booking.preferredTravelDate.includes("2025-12"));
+
+
   const tourData = [
-    { name: 'Jan', tours: 12 },
-    { name: 'Feb', tours: 19 },
-    { name: 'Mar', tours: 15 },
-    { name: 'Apr', tours: 22 },
-    { name: 'May', tours: 18 },
-    { name: 'Jun', tours: 24 },
+    { name: 'Jan', tours: jan.length },
+    { name: 'Feb', tours: feb.length },
+    { name: 'Mar', tours: mar.length },
+    { name: 'Apr', tours: apr.length },
+    { name: 'May', tours: may.length },
+    { name: 'Jun', tours: jun.length },
+    { name: 'Jul', tours: jul.length },
+    { name: 'Aug', tours: aug.length },
+    { name: 'Sep', tours: sep.length },
+    { name: 'Oct', tours: oct.length },
+    { name: 'Nov', tours: nov.length },
+    { name: 'Dec', tours: dec.length },
+    
   ];
 
+  const destination = dashboard?.allTourBookings;
+  const dubai = destination.filter(booking => booking.destination.includes("Dubai"));
+  const abuDhabi = destination.filter(booking => booking.destination.includes("Abu Dhabi"));
+  const sharjah = destination.filter(booking => booking.destination.includes("Sharjah"));
+  const others = destination.filter(booking => !booking.destination.includes("Dubai") && !booking.destination.includes("Abu Dhabi") && !booking.destination.includes("Sharjah"));
+
+  
   const destinationData = [
-    { name: 'Dubai', value: 45 },
-    { name: 'Abu Dhabi', value: 25 },
-    { name: 'Sharjah', value: 15 },
-    { name: 'Others', value: 15 },
+    { name: 'Dubai', value: dubai.length },
+    { name: 'Abu Dhabi', value: abuDhabi.length },
+    { name: 'Sharjah', value: sharjah.length },
+    { name: 'Others', value: others.length },
   ];
 
   const COLORS = ['#FF8042', '#00C49F', '#FFBB28', '#0088FE'];
@@ -88,7 +118,7 @@ const AdminDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Monthly Tours</h2>
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Monthly Booking Tours</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={tourData}>
               <CartesianGrid strokeDasharray="3 3" />

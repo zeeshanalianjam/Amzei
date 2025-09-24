@@ -3,16 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FaEdit, FaTrash, FaPlus, FaSearch, FaFilter } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 const AdminDestinations = () => {
-  const [destinations, setDestinations] = useState([
-    { id: 1, name: "Burj Khalifa", description: "World's tallest building", location: "Dubai", image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-    { id: 2, name: "Dubai Mall", description: "World's largest shopping destination", location: "Dubai", image: "https://images.unsplash.com/photo-1534423839369-8cf277e0bbbd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-    { id: 3, name: "Burj Al Arab", description: "Iconic luxury hotel", location: "Dubai", image: "https://images.unsplash.com/photo-1583416550495-3525c9a3aee0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-    { id: 4, name: "Palm Jumeirah", description: "Artificial archipelago", location: "Dubai", image: "https://images.unsplash.com/photo-1583422409516-2895a77efded?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-    { id: 5, name: "Aquaventure Waterpark", description: "Thrilling waterpark", location: "Dubai", image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-    { id: 6, name: "Sheikh Zayed Grand Mosque", description: "Magnificent mosque in Abu Dhabi", location: "Abu Dhabi", image: "https://images.unsplash.com/photo-1526292067844-8b5a4f5acb1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-  ]);
+  const dashboard = useSelector((state) => state?.dashboard);
+  const [destinations, setDestinations] = useState(dashboard?.allDestinations);
 
   const [filteredDestinations, setFilteredDestinations] = useState(destinations);
   const [searchTerm, setSearchTerm] = useState('');

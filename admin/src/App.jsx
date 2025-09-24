@@ -26,7 +26,6 @@ import { setAllUsers, setAllTours, setAllDestinations, setAllEvents, setAllTourB
 function App() {
   const location = useLocation();
   const dispatch = useDispatch();
-  console.log("location state:", location.pathname);
   useEffect(() => {
     document.title = 'Admin Dashboard';
     if(location.pathname === '/' || location.pathname === '/login') {
@@ -101,7 +100,6 @@ function App() {
       const res = await Axios({
         ...summaryApi.fetchAllTourBookings,
       })
-      console.log("res from tour booking",  res)
       if(res?.data?.success) {
         return dispatch(setAllTourBookings(res?.data?.data?.bookings));
       }
@@ -117,7 +115,7 @@ function App() {
     fetchAllDestinations();
     fetchAllEvents();
     fetchAllTourBookings();
-  }, [])
+  }, [fetchAllDestinations, fetchAllEvents, fetchAllTourBookings, fetchAllTours, fetchAllUsers])
 
 
   return (

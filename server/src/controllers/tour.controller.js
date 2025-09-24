@@ -6,9 +6,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const addTour = asyncHandler(async (req, res) => {
     try {
-        const { title, description, price, duration, location, highlights } = req.body;
+        const { title, description, price, duration, location, highlights, rating } = req.body;
 
-        if (!title || !description || !price || !duration || !location ) {
+        if (!title || !description || !price || !duration || !location) {
             return res.status(400).json(new apiError(400, "Please fill all required fields"));
         }
 
@@ -22,6 +22,10 @@ const addTour = asyncHandler(async (req, res) => {
         }
 
         const imageUrl = req.file?.path;
+
+        console.log("REQ FILE:", req.file);
+        console.log("REQ BODY:", req.body);
+        console.log("Image URL:", imageUrl);
 
         if (!imageUrl) {
             return res.status(400).json(new apiError(400, "Image is required"));
@@ -37,6 +41,7 @@ const addTour = asyncHandler(async (req, res) => {
             location,
             highlights,
             imageUrl: image.secure_url,
+            rating
         });
 
         res.status(201).json(new apiResponse(201, "Tour added successfully", newTour));
@@ -60,7 +65,7 @@ const getTours = asyncHandler(async (req, res) => {
 const updateTour = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description, price, duration, location, highlights } = req.body;
+        const { title, description, price, duration, location, highlights, rating } = req.body;
 
         const tour = await Tour.findById(id);
         if (!tour) {
@@ -82,6 +87,7 @@ const updateTour = asyncHandler(async (req, res) => {
         tour.location = location || tour.location;
         tour.highlights = highlights || tour.highlights;
         tour.imageUrl = updatedImageUrl;
+        tour.rating = rating || tour.rating;
 
         const updatedTour = await tour.save();
         res.status(200).json(new apiResponse(200, "Tour updated successfully", updatedTour));
@@ -104,8 +110,8 @@ const deleteTour = asyncHandler(async (req, res) => {
         res.status(500).json(new apiError(500, "Internal Server Error: Deleting tour failed"));
     }
 });
-        
 
-        
+
+
 
 export { addTour, getTours, updateTour, deleteTour };

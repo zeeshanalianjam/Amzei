@@ -47,6 +47,18 @@ const summaryApi = {
         url: "/api/v1/tour-bookings/fetch-all-tour-bookings",
         method: "GET"
     },
+    addTour: {
+        url: "/api/v1/tours/add",
+        method: "POST"
+    },
+     updateTour: (id) => ({
+    url: `/api/v1/tours/update/${id}`,
+    method: "PUT"
+  }),
+    deleteTour: (id) => ( {
+        url: `/api/v1/tours/delete/${id}`,
+        method: "DELETE"
+    })
 }
 
 export { baseURL, summaryApi };

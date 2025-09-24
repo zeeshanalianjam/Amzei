@@ -6,9 +6,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const addEvent = asyncHandler (async (req, res) => {
     try {
-        const { title, date, location, shortDescription, detailedDescription } = req.body;
+        const { title, date, location, description } = req.body;
 
-        if (!title || !date || !location || !shortDescription || !detailedDescription) {
+        if (!title || !date || !location || !description ) {
             return res.status(400).json(new apiError(400, "Please fill all required fields"));
         }
 
@@ -30,8 +30,7 @@ const addEvent = asyncHandler (async (req, res) => {
             date,
             location,
             imageUrl: image.secure_url,
-            shortDescription,
-            detailedDescription,
+            description
         });
 
         res.status(201).json(new apiResponse(201, "Event added successfully", newEvent));
@@ -54,7 +53,7 @@ const getEvents = asyncHandler(async (req, res) => {
 const updateEvent = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, date, location, shortDescription, detailedDescription } = req.body;
+        const { title, date, location, description } = req.body;
         const event = await Event.findById(id);
 
         if (!event) {
@@ -70,8 +69,7 @@ const updateEvent = asyncHandler(async (req, res) => {
         event.title = title || event.title;
         event.date = date || event.date;
         event.location = location || event.location;
-        event.shortDescription = shortDescription || event.shortDescription;
-        event.detailedDescription = detailedDescription || event.detailedDescription;
+        event.description = description || event.description;
 
         const updatedEvent = await event.save();
         res.status(200).json(new apiResponse(200, "Event updated successfully", updatedEvent));
