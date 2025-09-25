@@ -2,10 +2,11 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { setTourBooking } from '../store/tourBookingSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Hero = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const navigate = useNavigate();
         const [formData, setFormData] = React.useState({
             destination: "Dubai",
@@ -31,10 +32,14 @@ const Hero = () => {
         };
 
   const handleSubmit = (e) => {
+    if(!user._id) {
+      navigate("/login");
+      return;
+    }
     e.preventDefault();
     // Handle search logic here
     dispatch(setTourBooking(formData));
-    navigate('/booking/1', { state: formData});
+    navigate(`/booking/${user._id}`, { state: formData});
   }
 
   return (

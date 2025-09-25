@@ -20,7 +20,7 @@ const HomePage = () => {
       <section id="destinations">
         <Destinations />
       </section>
-      <CallToAction />
+      {/* <CallToAction /> */}
       <Tours />
       <Testimonials />
       <AboutUs />

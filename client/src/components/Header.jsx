@@ -108,11 +108,7 @@ const Header = () => {
           </div>
         </div>
         
-        <div className="mt-4 text-center">
-          <Link to="/booking" className="btn-primary shadow-lg">
-            Plan My Trip
-          </Link>
-        </div>
+        
       </div>
     </header>
   );
