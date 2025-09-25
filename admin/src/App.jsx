@@ -20,6 +20,9 @@ import { Axios } from './common/axios';
 import { summaryApi } from './common/summaryApi';
 import { useDispatch } from 'react-redux';
 import { setAllUsers, setAllTours, setAllDestinations, setAllEvents, setAllTourBookings } from './adminStore/dashboardSlice';
+import ComingSoon from './components/ComingSoon';
+import ComingSoonCSS3D from './components/ComingSoonCSS3D';
+import AdminBookings from './admin/AdminBookings';
 
 
 
@@ -129,6 +132,7 @@ function App() {
             </ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
+            <Route path="bookings" element={<AdminBookings />} />
             <Route path="tours" element={<AdminTours />} />
             <Route path="tours/add" element={<AdminTourForm />} />
             <Route path="tours/edit/:id" element={<AdminTourForm />} />
@@ -138,7 +142,7 @@ function App() {
             <Route path="events" element={<AdminEvents />} />
             <Route path="events/add" element={<AdminEventForm />} />
             <Route path="events/edit/:id" element={<AdminEventForm />} />
-            <Route path="settings" element={<AdminSettings />} />
+            <Route path="settings" element={<ComingSoonCSS3D />} />
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>

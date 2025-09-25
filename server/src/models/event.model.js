@@ -6,7 +6,8 @@ const eventSchema = new mongoose.Schema({
     date: { type: Date, required: true },
     location: { type: String, required: true },
     imageUrl: { type: String, required: true },
-    description: { type: String, required: true },
+    shortDescription: { type: String, required: true },
+    detailedDescription: { type: String, required: true },
 }, { timestamps: true });
 
 export const Event = mongoose.model("Event", eventSchema);

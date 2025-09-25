@@ -1,6 +1,6 @@
 // src/components/PageNotFound.js
 import React, { useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
@@ -134,6 +134,7 @@ function Scene() {
 }
 
 const PageNotFound = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white overflow-hidden relative">
       {/* 3D Canvas */}
@@ -182,12 +183,12 @@ const PageNotFound = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.1 }}
           >
-            <Link
-              to="/"
+            <button
+             onClick={() => navigate(-1)}
               className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               Go to Homepage
-            </Link>
+            </button>
           </motion.div>
         </motion.div>
       </div>

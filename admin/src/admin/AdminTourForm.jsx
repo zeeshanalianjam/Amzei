@@ -18,7 +18,7 @@ const AdminTourForm = () => {
   const isEditing = Boolean(id);
   const [loading, setLoading] = useState(false);
   const location = useLocation();
-  
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -30,31 +30,31 @@ const AdminTourForm = () => {
     image: ''
   });
 
- useEffect(() => {
-  if (isEditing) {
-    const tour = location?.state?.tour || {};
+  useEffect(() => {
+    if (isEditing) {
+      const tour = location?.state?.tour || {};
 
-    const mockTour = {
-      id: tour.id || 1,
-      title: tour.title || "N/A",
-      description: tour.description || "N/A",
-      rating: tour.rating || 'N/A',
-      price: tour.price || 'N/A',
-      duration: tour.duration || 'N/A',
-      location: tour.location || 'N/A',
-      highlights: Array.isArray(tour.highlights) ? tour.highlights.flat() : [],
-      image: tour.imageUrl || 'N/A'
-    };
+      const mockTour = {
+        id: tour?.id,
+        title: tour?.title,
+        description: tour?.description,
+        rating: tour?.rating,
+        price: tour?.price,
+        duration: tour?.duration,
+        location: tour?.location,
+        highlights: Array.isArray(tour?.highlights) ? tour?.highlights.flat() : [],
+        image: tour?.imageUrl
+      };
 
-    setFormData({
-      ...mockTour,
-      highlights:
-        mockTour.highlights.length >= 4
-          ? mockTour.highlights
-          : [...mockTour.highlights, ...Array(4 - mockTour.highlights.length).fill('')]
-    });
-  }
-}, [isEditing, id]);
+      setFormData({
+        ...mockTour,
+        highlights:
+          mockTour.highlights.length >= 4
+            ? mockTour.highlights
+            : [...mockTour.highlights, ...Array(4 - mockTour.highlights.length).fill('')]
+      });
+    }
+  }, [isEditing, id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -65,15 +65,15 @@ const AdminTourForm = () => {
   };
 
   const handleImageChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    setFormData((prev) => ({
-      ...prev,
-      image: file,
-      preview: URL.createObjectURL(file), // preview ke liye temporary URL
-    }));
-  }
-};
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        image: file,
+        preview: URL.createObjectURL(file), // preview ke liye temporary URL
+      }));
+    }
+  };
 
   const handleHighlightChange = (index, value) => {
     const newHighlights = [...formData.highlights];
@@ -83,62 +83,68 @@ const AdminTourForm = () => {
       highlights: newHighlights
     });
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Filter out empty highlights
     const filteredHighlights = formData.highlights.filter(highlight => highlight.trim() !== '');
-    
+
     const tourData = {
       ...formData,
       highlights: filteredHighlights
     };
 
-    if(isEditing){
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("description", formData.description);
+    data.append("rating", formData.rating);
+    data.append("price", formData.price);
+    data.append("duration", formData.duration);
+    data.append("location", formData.location);
+    data.append("highlights", JSON.stringify(filteredHighlights));
+    data.append("image", formData.image);
+
+    if (isEditing) {
       try {
         setLoading(true);
         const res = await Axios({
           ...summaryApi.updateTour(id),
-          data: tourData
+          data,
+          headers: { "Content-Type": "multipart/form-data" }
         })
 
-        if(res?.data?.success) {
+        if (res?.data?.success) {
           toast.success(res?.data?.message || 'Tour updated successfully!');
-          dispatch(setAllTours([...tours, res?.data?.data]));
+          const updatedTour = res?.data?.data;
+          const updatedTours = tours.map(tour =>
+            tour._id === updatedTour._id ? updatedTour : tour
+          );
+          dispatch(setAllTours(updatedTours));
+
           navigate('/admin/tours');
         }
       } catch (error) {
         console.log("Error in updating tour", error);
         toast.error(error?.response?.data?.message || "Error in updating tour");
-        
+
       } finally {
         setLoading(false);
       }
       return;
     }
 
-    // Ab FormData object banao
-  const data = new FormData();
-  data.append("title", formData.title);
-  data.append("description", formData.description);
-  data.append("rating", formData.rating);
-  data.append("price", formData.price);
-  data.append("duration", formData.duration);
-  data.append("location", formData.location);
-  data.append("highlights", JSON.stringify(filteredHighlights)); // array ko stringify karna hoga
-  data.append("image", formData.image); // 👈 File object append hoga
-
     try {
       setLoading(true);
       const res = await Axios({
         ...summaryApi.addTour,
         data: data,
-         headers: { "Content-Type": "multipart/form-data" } 
-        
+        headers: { "Content-Type": "multipart/form-data" }
+
       })
 
-      if(res?.data?.success) {
+      if (res?.data?.success) {
         toast.success(isEditing ? 'Tour updated successfully!' : 'Tour added successfully!');
         dispatch(setAllTours([...tours, res?.data?.data]));
         setFormData({
@@ -151,7 +157,7 @@ const AdminTourForm = () => {
           highlights: ['', '', '', ''],
           image: ''
         });
-         navigate('/admin/tours');
+        navigate('/admin/tours');
       }
 
     } catch (error) {
@@ -160,36 +166,36 @@ const AdminTourForm = () => {
     } finally {
       setLoading(false);
     }
-    
-    
+
+
     // In a real app, you would send the data to an API
     console.log('Tour data:', tourData);
-    
-    
+
+
   };
 
   const formVariants = {
     hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1, 
-      transition: { 
-        staggerChildren: 0.1 
-      } 
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
     }
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1 
+    visible: {
+      y: 0,
+      opacity: 1
     }
   };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <motion.h1 
+        <motion.h1
           className="text-2xl font-bold text-gray-800"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -197,15 +203,15 @@ const AdminTourForm = () => {
         >
           {isEditing ? 'Edit Tour' : 'Add New Tour'}
         </motion.h1>
-        <button 
+        <button
           onClick={() => navigate('/admin/tours')}
           className="text-gray-500 hover:text-gray-700"
         >
           <FaTimes className="text-xl" />
         </button>
       </div>
-      
-      <motion.div 
+
+      <motion.div
         className="bg-white rounded-lg shadow-md p-6"
         variants={formVariants}
         initial="hidden"
@@ -227,7 +233,7 @@ const AdminTourForm = () => {
                 required
               />
             </motion.div>
-            
+
             <motion.div variants={itemVariants}>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="location">
                 Location *
@@ -247,7 +253,7 @@ const AdminTourForm = () => {
                 <option value="Northern Emirates">Northern Emirates</option>
               </select>
             </motion.div>
-            
+
             <motion.div variants={itemVariants}>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="duration">
                 Duration *
@@ -263,7 +269,7 @@ const AdminTourForm = () => {
                 required
               />
             </motion.div>
-            
+
             <motion.div variants={itemVariants}>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">
                 Price (AED) *
@@ -279,7 +285,7 @@ const AdminTourForm = () => {
                 required
               />
             </motion.div>
-            
+
             <motion.div variants={itemVariants}>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="rating">
                 Rating
@@ -296,44 +302,44 @@ const AdminTourForm = () => {
                 step="0.1"
               />
             </motion.div>
-            
-           
-            
-            
 
-             <motion.div variants={itemVariants}>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Image</label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                      {formData?.preview ? (
-                        <div className="relative">
-                          <img src={formData.preview} alt="Logo" className="mx-auto h-32" />
-                          <button
-                            onClick={() => setFormData((prev) => ({ ...prev, image: null, preview: null }))}
-                            className="mt-2 text-red-600 hover:text-red-800"
-                          >
-                            <FaTrash /> Remove
-                          </button>
-                        </div>
-                      ) : (
-                        <div>
-                          <FaUpload className="mx-auto h-12 w-12 text-gray-400" />
-                          <div className="mt-4">
-                            <label className="cursor-pointer bg-white rounded-md font-medium text-orange-600 hover:text-orange-500">
-                              Upload a file
-                              <input
-                                type="file"
-                                className="sr-only"
-                                onChange={handleImageChange}
-                                accept="image/*"
-                              />
-                            </label>
-                            <p className="mt-1 text-xs text-gray-500">PNG, JPG up to 2MB</p>
-                          </div>
-                        </div>
-                      )}
+
+
+
+
+            <motion.div variants={itemVariants}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Image</label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                {formData?.preview ? (
+                  <div className="relative">
+                    <img src={formData.preview} alt="Logo" className="mx-auto h-32" />
+                    <button
+                      onClick={() => setFormData((prev) => ({ ...prev, image: null, preview: null }))}
+                      className="mt-2 text-red-600 hover:text-red-800"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <FaUpload className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="mt-4">
+                      <label className="cursor-pointer bg-white rounded-md font-medium text-orange-600 hover:text-orange-500">
+                        Upload a file
+                        <input
+                          type="file"
+                          className="sr-only"
+                          onChange={handleImageChange}
+                          accept="image/*"
+                        />
+                      </label>
+                      <p className="mt-1 text-xs text-gray-500">PNG, JPG up to 2MB</p>
                     </div>
-                  </motion.div>
-            
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
             <motion.div variants={itemVariants} className="md:col-span-2">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
                 Description *
@@ -348,7 +354,7 @@ const AdminTourForm = () => {
                 required
               ></textarea>
             </motion.div>
-            
+
             <motion.div variants={itemVariants} className="md:col-span-2">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Highlights
@@ -366,8 +372,8 @@ const AdminTourForm = () => {
               ))}
             </motion.div>
           </div>
-          
-          <motion.div 
+
+          <motion.div
             className="flex justify-end mt-8 space-x-3"
             variants={itemVariants}
           >
@@ -390,7 +396,7 @@ const AdminTourForm = () => {
                 />
               ) : (
                 <>
-              <FaSave className="mr-2" /> {isEditing ? 'Update Tour' : 'Add Tour'}
+                  <FaSave className="mr-2" /> {isEditing ? 'Update Tour' : 'Add Tour'}
                 </>
               )}
             </button>

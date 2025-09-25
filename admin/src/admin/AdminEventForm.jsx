@@ -1,20 +1,32 @@
 // src/admin/AdminEventForm.js
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaSave, FaTimes } from 'react-icons/fa';
+import { FaSave, FaTimes, FaTrash, FaUpload } from 'react-icons/fa';
+import { Axios } from '../common/axios';
+import { summaryApi } from '../common/summaryApi';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAllEvents } from '../adminStore/dashboardSlice';
 
 const AdminEventForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = Boolean(id);
+  const [loading, setLoading] = useState(false);
+  const dashboard = useSelector((state) => state?.dashboard);
+  const events = dashboard?.allEvents;
+    const dispatch = useDispatch();
+  const location = useLocation();
+  const event = location?.state?.event || {};
+  console.log("event", event);
   
   const [formData, setFormData] = useState({
     title: '',
-    date: '',
+    date: '2023-12-15',
     location: 'Dubai',
-    description: '',
-    details: '',
+    shortDescription: '',
+    detailedDescription: '',
     image: ''
   });
 
@@ -24,12 +36,12 @@ const AdminEventForm = () => {
       // For demo purposes, we'll use mock data
       const mockEvent = {
         id: 1,
-        title: "Dubai Shopping Festival",
-        date: "2023-12-15",
-        location: "Dubai",
-        description: "Annual shopping festival with discounts and entertainment",
-        details: "The Dubai Shopping Festival is an annual month-long event that draws visitors from around the world. Enjoy massive discounts, entertainment shows, and lucky draws. The festival features concerts, fireworks, and family-friendly activities across various venues in Dubai.",
-        image: "https://images.unsplash.com/photo-1512416964559-19bc0ded6091?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
+        title: event?.title,
+        date: event?.date ? new Date(event.date).toISOString().split("T")[0] : "",
+        location: event?.location,
+        shortDescription: event?.shortDescription,
+        detailedDescription: event?.detailedDescription,
+        image: event?.imageUrl
       };
       
       setFormData(mockEvent);
@@ -44,14 +56,78 @@ const AdminEventForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleImageChange = (e) => {
+   const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        image: file,
+        preview: URL.createObjectURL(file), // preview ke liye temporary URL
+      }));
+    }
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // In a real app, you would send the data to an API
-    console.log('Event data:', formData);
-    
-    alert(isEditing ? 'Event updated successfully!' : 'Event added successfully!');
-    navigate('/admin/events');
+    const data = new FormData();
+    data.append('title', formData.title);
+    data.append('date', formData.date);
+    data.append('location', formData.location);
+    data.append('shortDescription', formData.shortDescription);
+    data.append('detailedDescription', formData.detailedDescription);
+    data.append('image', formData.image);
+
+     if(isEditing){
+      try {
+        setLoading(true)
+        const res = await Axios({
+          ...summaryApi.updateEvent(id),
+          data,
+          headers: { "Content-Type": "multipart/form-data" }
+        })
+
+        if (res?.data?.success) {
+          toast.success(res?.data?.message || 'Event updated successfully!');
+          const updatedEvent = res?.data?.data;
+          const updatedEvents = events.map((event) =>
+            event._id === updatedEvent._id ? updatedEvent : event
+          );
+          dispatch(setAllEvents(updatedEvents));
+          navigate('/admin/events');
+        }
+        
+      } catch (error) {
+        console.log("Error in updating event", error);
+        toast.error(error?.response?.data?.message || "Error in updating event");
+      } finally {
+        setLoading(false)
+      }
+      return;
+    }
+
+   
+    try {
+      setLoading(true);
+      const res = await Axios({
+        ...summaryApi.addEvent,
+        data,
+        headers: { "Content-Type": "multipart/form-data" }
+      })
+
+      if (res?.data?.success) {
+        toast.success(res?.data?.message || 'Event added successfully!');
+        dispatch(setAllEvents([...events, res?.data?.data]));
+        navigate('/admin/events');
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error(error?.response?.data?.message || 'Error in adding event');
+    } finally {
+      setLoading(false);
+    }
+
   };
 
   const formVariants = {
@@ -138,8 +214,9 @@ const AdminEventForm = () => {
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 required
+                size={6}
               >
                 <option value="Dubai">Dubai</option>
                 <option value="Abu Dhabi">Abu Dhabi</option>
@@ -151,30 +228,48 @@ const AdminEventForm = () => {
               </select>
             </motion.div>
             
-            <motion.div variants={itemVariants} className="md:col-span-2">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">
-                Image URL
-              </label>
-              <input
-                type="text"
-                id="image"
-                name="image"
-                value={formData.image}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                placeholder="https://example.com/image.jpg"
-              />
+           <motion.div variants={itemVariants} >
+              <label className="block text-sm font-medium text-gray-700 mb-2">Image *</label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                {formData?.preview ? (
+                  <div className="relative">
+                    <img src={formData.preview} alt="Logo" className="mx-auto h-80 rounded-lg" />
+                    <button
+                      onClick={() => setFormData((prev) => ({ ...prev, image: null, preview: null }))}
+                      className="mt-2 text-red-600 hover:text-red-800"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <FaUpload className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="mt-4">
+                      <label className="cursor-pointer bg-white rounded-md font-medium text-orange-600 hover:text-orange-500">
+                        Upload a file
+                        <input
+                          type="file"
+                          className="sr-only"
+                          onChange={handleImageChange}
+                          accept="image/*"
+                        />
+                      </label>
+                      <p className="mt-1 text-xs text-gray-500">PNG, JPG up to 2MB</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </motion.div>
             
             <motion.div variants={itemVariants} className="md:col-span-2">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="shortDescription">
                 Short Description *
               </label>
               <input
                 type="text"
-                id="description"
-                name="description"
-                value={formData.description}
+                id="shortDescription"
+                name="shortDescription"
+                value={formData.shortDescription}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 required
@@ -182,13 +277,13 @@ const AdminEventForm = () => {
             </motion.div>
             
             <motion.div variants={itemVariants} className="md:col-span-2">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="details">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="detailedDescription">
                 Detailed Description *
               </label>
               <textarea
-                id="details"
-                name="details"
-                value={formData.details}
+                id="detailedDescription"
+                name="detailedDescription"
+                value={formData.detailedDescription}
                 onChange={handleInputChange}
                 rows="6"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -212,7 +307,18 @@ const AdminEventForm = () => {
               type="submit"
               className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors flex items-center"
             >
-              <FaSave className="mr-2" /> {isEditing ? 'Update Event' : 'Add Event'}
+              {loading ? (
+                 <motion.div
+                                  animate={{ rotate: 360 }}
+                                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                  className="w-5 h-5 border-t-2 border-white border-solid rounded-full"
+                                />
+              ): (
+                <>
+ <FaSave className="mr-2" /> {isEditing ? 'Update Event' : 'Add Event'}
+                </>
+              )}
+             
             </button>
           </motion.div>
         </form>

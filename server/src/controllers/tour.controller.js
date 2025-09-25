@@ -23,10 +23,6 @@ const addTour = asyncHandler(async (req, res) => {
 
         const imageUrl = req.file?.path;
 
-        console.log("REQ FILE:", req.file);
-        console.log("REQ BODY:", req.body);
-        console.log("Image URL:", imageUrl);
-
         if (!imageUrl) {
             return res.status(400).json(new apiError(400, "Image is required"));
         }

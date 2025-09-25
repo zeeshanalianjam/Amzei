@@ -53,7 +53,7 @@ const tourBookingSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["pending", "confirmed", "cancelled"],
+        enum: ["pending", "approved", "cancelled"],
         default: "pending",
     },
     tripType: {

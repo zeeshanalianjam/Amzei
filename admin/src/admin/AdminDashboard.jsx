@@ -4,18 +4,20 @@ import { motion } from 'framer-motion';
 import { FaUsers, FaRoute, FaMapMarkedAlt, FaCalendarAlt, FaChartLine } from 'react-icons/fa';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useSelector } from 'react-redux';
+import {useNavigate} from 'react-router-dom'
 
 const AdminDashboard = () => {
   const dashboard = useSelector((state) => state?.dashboard);
-  // console.log("tours : ", dashboard.allTourBookings);
+  console.log("tours : ", dashboard.allTourBookings);
   // console.log("Dashboard:", dashboard);
   const [stats, setStats] = useState({
     users: dashboard.allUsers.length,
     tours: dashboard.allTours.length,
     destinations: dashboard.allDestinations.length,
     events: dashboard.allEvents.length,
-    pendingTours: 3,
+    bookings: dashboard?.allTourBookings.length,
   });
+  const navigate = useNavigate();
 
   const recentBookings = dashboard.allTourBookings.slice(0, 5);
 
@@ -89,7 +91,7 @@ const dec = preferredDate.filter(booking => booking.preferredTravelDate.includes
           { title: 'Total Tours', value: stats.tours, icon: <FaRoute className="text-green-500" />, color: 'bg-green-100' },
           { title: 'Destinations', value: stats.destinations, icon: <FaMapMarkedAlt className="text-purple-500" />, color: 'bg-purple-100' },
           { title: 'Events', value: stats.events, icon: <FaCalendarAlt className="text-yellow-500" />, color: 'bg-yellow-100' },
-          { title: 'Pending Tours', value: stats.pendingTours, icon: <FaChartLine className="text-red-500" />, color: 'bg-red-100' },
+          { title: 'Total Bookings', value: stats.bookings, icon: <FaChartLine className="text-red-500" />, color: 'bg-red-100' },
         ].map((stat, index) => (
           <motion.div
             key={index}
@@ -169,7 +171,7 @@ const dec = preferredDate.filter(booking => booking.preferredTravelDate.includes
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-800">Recent Bookings</h2>
-          <button className="text-orange-500 hover:text-orange-600 font-medium">
+          <button onClick={() => navigate("/admin/bookings")} className="text-orange-500 hover:text-orange-600 font-medium">
             View All
           </button>
         </div>
@@ -203,11 +205,11 @@ const dec = preferredDate.filter(booking => booking.preferredTravelDate.includes
                   })}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.amount || 'N/A'}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${booking.status === 'Confirmed' ? 'bg-green-100 text-green-800' :
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${booking.status === 'approved' ? 'bg-green-100 text-green-800' :
                         booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
                           'bg-red-100 text-red-800'
                       }`}>
-                      {booking.status}
+                      {booking.status.toUpperCase() || 'N/A'}
                     </span>
                   </td>
                 </tr>
