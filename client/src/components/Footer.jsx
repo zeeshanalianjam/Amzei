@@ -93,15 +93,15 @@ const Footer = () => {
               <div className="flex items-center space-x-3">
                 <FaPhone className="text-orange-500 flex-shrink-0" />
                 <div className="text-gray-300 text-sm">
-                  <p>+971 4 123 4567</p>
-                  <p>+971 50 987 6543</p>
+                  <p>0581867078</p>
+                  <p>0544003554</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
                 <FaEnvelope className="text-orange-500 flex-shrink-0" />
                 <div className="text-gray-300 text-sm">
-                  <p>info@amzei.com</p>
-                  <p>bookings@amzei.com</p>
+                  <p>nangyaluoa249@gmail.com</p>
+                 
                 </div>
               </div>
             </div>

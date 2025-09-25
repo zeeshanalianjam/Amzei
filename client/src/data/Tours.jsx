@@ -60,7 +60,7 @@ export const tours = [
     title: "10 Days Ultimate UAE Experience",
     rating: 4.9,
     price: 9500,
-    image: "https://images.unsplash.com/photo-1523293182086-7651a899637e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      image: "https://media.easemytrip.com/media/Blog/International/637903044803370839/637903044803370839PvwZOT.jpg",
     description: "The most comprehensive tour covering all major attractions and hidden gems.",
     duration: "10 days",
     location: "All Emirates",
