@@ -22,10 +22,10 @@ const summaryApi = {
         url: "/api/v1/tour-bookings/fetch-tour-booking/:bookingId",
         method: "GET"
     },
-    updateTourBookingStatus: {
-        url: "/api/v1/tour-bookings/update/:bookingId",
+    updateTourBookingStatus: (bookingId) => ( {
+        url: `/api/v1/tour-bookings/update/${bookingId}`,
         method: "PUT"
-    },
+    }),
     // admin route for fetching all data 
     fetchAllUsers: {
         url: "/api/v1/users/fetch-all-users",
@@ -47,6 +47,48 @@ const summaryApi = {
         url: "/api/v1/tour-bookings/fetch-all-tour-bookings",
         method: "GET"
     },
+
+    // Tours API's
+    addTour: {
+        url: "/api/v1/tours/add",
+        method: "POST"
+    },
+     updateTour: (id) => ({
+    url: `/api/v1/tours/update/${id}`,
+    method: "PUT"
+  }),
+    deleteTour: (id) => ( {
+        url: `/api/v1/tours/delete/${id}`,
+        method: "DELETE"
+    }),
+
+    // Destinations API's
+    addDestination: {
+        url: "/api/v1/destinations/add",
+        method: "POST"
+    },
+    updateDestination: (id) => ({
+        url: `/api/v1/destinations/update/${id}`,
+        method: "PUT"
+      }),
+    deleteDestination: (id) => ({
+        url: `/api/v1/destinations/delete/${id}`,
+        method: "DELETE"
+    }),
+
+    // Events API's
+    addEvent: {
+        url: "/api/v1/events/add",
+        method: "POST"
+    },
+    updateEvent: (id) => ({
+        url: `/api/v1/events/update/${id}`,
+        method: "PUT"
+      }),
+    deleteEvent: (id) => ({
+        url: `/api/v1/events/delete/${id}`,
+        method: "DELETE"
+    }),
 }
 
 export { baseURL, summaryApi };

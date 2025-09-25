@@ -191,7 +191,7 @@ const BookingPage = () => {
                     <input
                       type="tel"
                       name="numberOfDays"
-                      placeholder="e.g., 5 days"
+                      placeholder="e.g., 5"
                       value={bookingData.numberOfDays}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -204,7 +204,7 @@ const BookingPage = () => {
                     <input
                       type="tel"
                       name="numberOfRooms"
-                      placeholder="e.g., 5 rooms"
+                      placeholder="e.g., 5"
                       value={bookingData.numberOfRooms}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"

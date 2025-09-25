@@ -115,7 +115,7 @@ const updateTourBookingStatus = asyncHandler(async (req, res) => {
             return res.status(400).json(new apiError(400, "Status field is required"));
         }
 
-        if (!["pending", "confirmed", "cancelled"].includes(status)) {
+        if (!["pending", "approved", "cancelled"].includes(status)) {
             return res.status(400).json(new apiError(400, "Invalid status value"));
         }
         const updatedBooking = await TourBooking.findByIdAndUpdate(

@@ -1,48 +1,29 @@
 // src/admin/AdminEvents.js
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEdit, FaTrash, FaPlus, FaSearch, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { Axios } from '../common/axios';
+import { summaryApi } from '../common/summaryApi';
+import toast from 'react-hot-toast';
+import ConfirmPopup from '../components/ConfirmPopup';
 
 const AdminEvents = () => {
-  const [events, setEvents] = useState([
-    { 
-      id: 1, 
-      title: "Dubai Shopping Festival", 
-      date: "2023-12-15", 
-      location: "Dubai", 
-      description: "Annual shopping festival with discounts and entertainment",
-      image: "https://images.unsplash.com/photo-1512416964559-19bc0ded6091?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
-    },
-    { 
-      id: 2, 
-      title: "Abu Dhabi Grand Prix", 
-      date: "2023-11-26", 
-      location: "Abu Dhabi", 
-      description: "Formula 1 racing event at Yas Marina Circuit",
-      image: "https://images.unsplash.com/photo-1544637711-6cb9cdc5e6f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
-    },
-    { 
-      id: 3, 
-      title: "Sharjah Light Festival", 
-      date: "2024-02-10", 
-      location: "Sharjah", 
-      description: "Light installations and projections across the city",
-      image: "https://images.unsplash.com/photo-1511306262525-1c5a1a34b1e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
-    },
-    { 
-      id: 4, 
-      title: "Dubai Food Festival", 
-      date: "2024-03-05", 
-      location: "Dubai", 
-      description: "Culinary event featuring local and international cuisine",
-      image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80"
-    },
-  ]);
+  const dashboard = useSelector((state) => state?.dashboard);
+  const [events, setEvents] = useState(dashboard?.allEvents);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  
 
   const [filteredEvents, setFilteredEvents] = useState(events);
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState('All');
+    const [deleteConfirm, setDeleteConfirm] = useState({
+        isOpen: false,
+        tourId: null,
+        tourTitle: ''
+      });
 
   useEffect(() => {
     let result = events;
@@ -50,7 +31,7 @@ const AdminEvents = () => {
     if (searchTerm) {
       result = result.filter(event => 
         event.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        event.description.toLowerCase().includes(searchTerm.toLowerCase())
+        event.shortDescription.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -61,10 +42,37 @@ const AdminEvents = () => {
     setFilteredEvents(result);
   }, [events, searchTerm, locationFilter]);
 
-  const handleDeleteEvent = (id) => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
-      setEvents(events.filter(event => event.id !== id));
+  const handleDeleteEvent = (id, title) => {
+   setDeleteConfirm({
+      isOpen: true,
+      tourId: id,
+      tourTitle: title
+    });
+  };
+
+  const confirmDelete = async () => {
+    try {
+      setLoading(true);
+      const res = await Axios({
+        ...summaryApi.deleteEvent(deleteConfirm.tourId),
+      })
+
+      if (res?.data?.success) {
+        toast.success(res?.data?.message || 'Event deleted successfully!');
+        setEvents(events.filter(event => event._id !== deleteConfirm.tourId));
+        setDeleteConfirm({ isOpen: false, tourId: null, tourTitle: '' });
+      }
+      
+    } catch (error) {
+      console.log("Error in deleting event", error);
+      toast.error(error?.response?.data?.message || "Error in deleting event");
+    } finally {
+      setLoading(false)
     }
+  }
+
+   const cancelDelete = () => {
+    setDeleteConfirm({ isOpen: false, tourId: null, tourTitle: '' });
   };
 
   const containerVariants = {
@@ -158,7 +166,7 @@ const AdminEvents = () => {
             variants={itemVariants}
             whileHover={{ y: -5 }}
           >
-            <div className="h-48 bg-gray-200" style={{ backgroundImage: `url('${event.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+            <div className="h-48 bg-gray-200" style={{ backgroundImage: `url('${event.imageUrl}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
             <div className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-lg font-semibold text-gray-800">{event.title}</h3>
@@ -180,12 +188,12 @@ const AdminEvents = () => {
               <p className="text-gray-600 text-sm mb-4">{event.description}</p>
               
               <div className="flex justify-end space-x-2">
-                <Link to={`/admin/events/edit/${event.id}`} className="text-indigo-600 hover:text-indigo-900">
+                <button onClick={() => navigate(`/admin/events/edit/${event._id}`, { state: { event } })} className="text-indigo-600 hover:text-indigo-900">
                   <FaEdit />
-                </Link>
+                </button>
                 <button 
                   className="text-red-600 hover:text-red-900"
-                  onClick={() => handleDeleteEvent(event.id)}
+                  onClick={() => handleDeleteEvent(event._id, event.title)}
                 >
                   <FaTrash />
                 </button>
@@ -200,6 +208,18 @@ const AdminEvents = () => {
           No events found matching your criteria
         </div>
       )}
+
+      {/* Delete Confirmation Popup */}
+                  <ConfirmPopup
+                    isOpen={deleteConfirm.isOpen}
+                    onClose={cancelDelete}
+                    onConfirm={confirmDelete}
+                    title="Delete Event"
+                    message={`Are you sure you want to delete "${deleteConfirm.tourTitle}"? This action cannot be undone.`}
+                    confirmText="Delete"
+                    cancelText="Cancel"
+                    loading={loading}
+                  />
     </div>
   );
 };

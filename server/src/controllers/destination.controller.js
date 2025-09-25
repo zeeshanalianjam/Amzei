@@ -58,7 +58,7 @@ const updateDestination = asyncHandler(async (req, res) => {
             return res.status(404).json(new apiError(404, "Destination not found"));
         }
 
-        if (req.files?.image) {
+        if (req.file) {
             const imageUrl = req.file?.path;
             const image = await uploadImageOnCloudinary(imageUrl);
             destination.imageUrl = image.secure_url;

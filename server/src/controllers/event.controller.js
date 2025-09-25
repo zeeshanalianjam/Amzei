@@ -31,7 +31,7 @@ const addEvent = asyncHandler (async (req, res) => {
             location,
             imageUrl: image.secure_url,
             shortDescription,
-            detailedDescription,
+            detailedDescription
         });
 
         res.status(201).json(new apiResponse(201, "Event added successfully", newEvent));
@@ -61,7 +61,7 @@ const updateEvent = asyncHandler(async (req, res) => {
             return res.status(404).json(new apiError(404, "Event not found"));
         }
 
-        if (req.files?.image) {
+        if (req.files) {
             const imageUrl = req.file?.path;
             const image = await uploadImageOnCloudinary(imageUrl);
             event.imageUrl = image.secure_url;
@@ -72,6 +72,7 @@ const updateEvent = asyncHandler(async (req, res) => {
         event.location = location || event.location;
         event.shortDescription = shortDescription || event.shortDescription;
         event.detailedDescription = detailedDescription || event.detailedDescription;
+        
 
         const updatedEvent = await event.save();
         res.status(200).json(new apiResponse(200, "Event updated successfully", updatedEvent));

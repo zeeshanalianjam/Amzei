@@ -7,7 +7,8 @@ const tourSchema = new mongoose.Schema({
     duration: { type: Number, required: true }, 
     location: { type: String, required: true },
     imageUrl: { type: String, required: true },
-    highlights: { type: [String], default: [] },
+    rating: { type: Number, default: 0 },
+    highlights: { type: [String] },
 }, { timestamps: true });
 
 export const Tour = mongoose.model("Tour", tourSchema);

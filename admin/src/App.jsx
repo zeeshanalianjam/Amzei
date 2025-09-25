@@ -20,13 +20,15 @@ import { Axios } from './common/axios';
 import { summaryApi } from './common/summaryApi';
 import { useDispatch } from 'react-redux';
 import { setAllUsers, setAllTours, setAllDestinations, setAllEvents, setAllTourBookings } from './adminStore/dashboardSlice';
+import ComingSoon from './components/ComingSoon';
+import ComingSoonCSS3D from './components/ComingSoonCSS3D';
+import AdminBookings from './admin/AdminBookings';
 
 
 
 function App() {
   const location = useLocation();
   const dispatch = useDispatch();
-  console.log("location state:", location.pathname);
   useEffect(() => {
     document.title = 'Admin Dashboard';
     if(location.pathname === '/' || location.pathname === '/login') {
@@ -101,7 +103,6 @@ function App() {
       const res = await Axios({
         ...summaryApi.fetchAllTourBookings,
       })
-      console.log("res from tour booking",  res)
       if(res?.data?.success) {
         return dispatch(setAllTourBookings(res?.data?.data?.bookings));
       }
@@ -117,7 +118,7 @@ function App() {
     fetchAllDestinations();
     fetchAllEvents();
     fetchAllTourBookings();
-  }, [])
+  }, [fetchAllDestinations, fetchAllEvents, fetchAllTourBookings, fetchAllTours, fetchAllUsers])
 
 
   return (
@@ -131,6 +132,7 @@ function App() {
             </ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
+            <Route path="bookings" element={<AdminBookings />} />
             <Route path="tours" element={<AdminTours />} />
             <Route path="tours/add" element={<AdminTourForm />} />
             <Route path="tours/edit/:id" element={<AdminTourForm />} />
@@ -140,7 +142,7 @@ function App() {
             <Route path="events" element={<AdminEvents />} />
             <Route path="events/add" element={<AdminEventForm />} />
             <Route path="events/edit/:id" element={<AdminEventForm />} />
-            <Route path="settings" element={<AdminSettings />} />
+            <Route path="settings" element={<ComingSoonCSS3D />} />
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>

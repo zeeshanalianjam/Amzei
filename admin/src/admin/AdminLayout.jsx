@@ -25,6 +25,7 @@ const AdminLayout = () => {
   const adminMenu = [
     { name: 'Dashboard', icon: <FaTachometerAlt />, path: '/admin' },
     { name: 'Users', icon: <FaUsers />, path: '/admin/users' },
+    { name: 'Bookings', icon: <FaUsers />, path: '/admin/bookings' },
     { name: 'Tours', icon: <FaRoute />, path: '/admin/tours' },
     { name: 'Destinations', icon: <FaMapMarkedAlt />, path: '/admin/destinations' },
     { name: 'Events', icon: <FaCalendarAlt />, path: '/admin/events' },

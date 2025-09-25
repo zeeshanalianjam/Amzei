@@ -1,22 +1,29 @@
 // src/admin/AdminDestinations.js
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEdit, FaTrash, FaPlus, FaSearch, FaFilter } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { Axios } from '../common/axios';
+import { summaryApi } from '../common/summaryApi';
+import toast from 'react-hot-toast';
+import ConfirmPopup from '../components/ConfirmPopup';
 
 const AdminDestinations = () => {
-  const [destinations, setDestinations] = useState([
-    { id: 1, name: "Burj Khalifa", description: "World's tallest building", location: "Dubai", image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-    { id: 2, name: "Dubai Mall", description: "World's largest shopping destination", location: "Dubai", image: "https://images.unsplash.com/photo-1534423839369-8cf277e0bbbd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-    { id: 3, name: "Burj Al Arab", description: "Iconic luxury hotel", location: "Dubai", image: "https://images.unsplash.com/photo-1583416550495-3525c9a3aee0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-    { id: 4, name: "Palm Jumeirah", description: "Artificial archipelago", location: "Dubai", image: "https://images.unsplash.com/photo-1583422409516-2895a77efded?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-    { id: 5, name: "Aquaventure Waterpark", description: "Thrilling waterpark", location: "Dubai", image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-    { id: 6, name: "Sheikh Zayed Grand Mosque", description: "Magnificent mosque in Abu Dhabi", location: "Abu Dhabi", image: "https://images.unsplash.com/photo-1526292067844-8b5a4f5acb1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" },
-  ]);
+  const dashboard = useSelector((state) => state?.dashboard);
+  const [destinations, setDestinations] = useState(dashboard?.allDestinations);
+  const [loading, setLoading] = useState(false);
 
   const [filteredDestinations, setFilteredDestinations] = useState(destinations);
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState('All');
+  const [deleteConfirm, setDeleteConfirm] = useState({
+      isOpen: false,
+      tourId: null,
+      tourTitle: ''
+    });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     let result = destinations;
@@ -24,7 +31,7 @@ const AdminDestinations = () => {
     if (searchTerm) {
       result = result.filter(destination => 
         destination.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        destination.description.toLowerCase().includes(searchTerm.toLowerCase())
+        destination.shortDescription.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -35,10 +42,37 @@ const AdminDestinations = () => {
     setFilteredDestinations(result);
   }, [destinations, searchTerm, locationFilter]);
 
-  const handleDeleteDestination = (id) => {
-    if (window.confirm('Are you sure you want to delete this destination?')) {
-      setDestinations(destinations.filter(destination => destination.id !== id));
+  const handleDeleteDestination = (id, title) => {
+    setDeleteConfirm({
+      isOpen: true,
+      tourId: id,
+      tourTitle: title
+    });
+  };
+
+  const confirmDelete = async () => {
+    try {
+      setLoading(true);
+      const res = await Axios({
+        ...summaryApi.deleteDestination(deleteConfirm.tourId),
+      })
+
+      if (res?.data?.success) {
+        toast.success(res?.data?.message || 'Destination deleted successfully!');
+        setDestinations(destinations.filter(destination => destination._id !== deleteConfirm.tourId));
+        setDeleteConfirm({ isOpen: false, tourId: null, tourTitle: '' });
+      }
+      
+    } catch (error) {
+      console.log("Error in deleting destination", error);
+      toast.error(error?.response?.data?.message || "Error in deleting destination");
+    } finally {
+      setLoading(false)
     }
+  }
+
+   const cancelDelete = () => {
+    setDeleteConfirm({ isOpen: false, tourId: null, tourTitle: '' });
   };
 
   const containerVariants = {
@@ -132,7 +166,7 @@ const AdminDestinations = () => {
             variants={itemVariants}
             whileHover={{ y: -5 }}
           >
-            <div className="h-48 bg-gray-200" style={{ backgroundImage: `url('${destination.image}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+            <div className="h-48 bg-gray-200" style={{ backgroundImage: `url('${destination.imageUrl}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
             <div className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-lg font-semibold text-gray-800">{destination.name}</h3>
@@ -142,12 +176,12 @@ const AdminDestinations = () => {
               </div>
               <p className="text-gray-600 text-sm mb-4">{destination.description}</p>
               <div className="flex justify-end space-x-2">
-                <Link to={`/admin/destinations/edit/${destination.id}`} className="text-indigo-600 hover:text-indigo-900">
+                <button onClick={() => navigate(`/admin/destinations/edit/${destination._id}`, { state: { destination } })} className="text-indigo-600 hover:text-indigo-900">
                   <FaEdit />
-                </Link>
+                </button>
                 <button 
                   className="text-red-600 hover:text-red-900"
-                  onClick={() => handleDeleteDestination(destination.id)}
+                  onClick={() => handleDeleteDestination(destination._id, destination.name)}
                 >
                   <FaTrash />
                 </button>
@@ -162,6 +196,18 @@ const AdminDestinations = () => {
           No destinations found matching your criteria
         </div>
       )}
+
+       {/* Delete Confirmation Popup */}
+            <ConfirmPopup
+              isOpen={deleteConfirm.isOpen}
+              onClose={cancelDelete}
+              onConfirm={confirmDelete}
+              title="Delete Destination"
+              message={`Are you sure you want to delete "${deleteConfirm.tourTitle}"? This action cannot be undone.`}
+              confirmText="Delete"
+              cancelText="Cancel"
+              loading={loading}
+            />
     </div>
   );
 };
