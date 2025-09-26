@@ -56,7 +56,7 @@ const Hero = () => {
       />
 
       {/* Overlay */}
-      <div className="absolute top-0 left-0 w-full h-full bg-black/40"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-black/20"></div>
       <div className="absolute inset-0 hero-gradient"></div>
 
       {/* Content */}
@@ -65,8 +65,8 @@ const Hero = () => {
           Discover the Magic of UAE
         </h1>
 
-        <div className="bg-white bg-opacity-95 rounded-xl p-8 max-w-3xl mx-auto shadow-2xl backdrop-blur-sm">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+        <div className="bg-white/0 bg-opacity-95 rounded-xl p-8 max-w-3xl mx-auto shadow-2xl backdrop-blur-sm">
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">
             Plan Your Perfect Trip
           </h2>
           <form
@@ -75,7 +75,7 @@ const Hero = () => {
           >
             {/* Destination */}
             <div className="md:col-span-1">
-              <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center">
+              <label className="block text-white text-sm font-semibold mb-2 flex items-center">
                 <span className="mr-2">📍</span> Destination
               </label>
               <select
@@ -95,7 +95,7 @@ const Hero = () => {
 
             {/* Check-in */}
             <div className="md:col-span-1">
-              <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center">
+              <label className="block text-white text-sm font-semibold mb-2 flex items-center">
                 <span className="mr-2">📅</span> Check-in
               </label>
               <input
@@ -110,7 +110,7 @@ const Hero = () => {
 
             {/* Check-out */}
             <div className="md:col-span-1">
-              <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center">
+              <label className="block text-white text-sm font-semibold mb-2 flex items-center">
                 <span className="mr-2">📅</span> Check-out
               </label>
               <input
