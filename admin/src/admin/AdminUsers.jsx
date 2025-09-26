@@ -157,7 +157,7 @@ const AdminUsers = () => {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th> */}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -178,7 +178,7 @@ const AdminUsers = () => {
                       {user.role}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.joinDate}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.createdAt.split('T')[0]}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <select
                       className={`text-xs leading-5 font-semibold rounded-full px-2 py-1 border-0 ${user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -190,7 +190,7 @@ const AdminUsers = () => {
                       <option value="inactive">InActive</option>
                     </select>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button className="text-indigo-600 hover:text-indigo-900 mr-3">
                       <FaUserEdit />
                     </button>
@@ -200,7 +200,7 @@ const AdminUsers = () => {
                     >
                       <FaTrash />
                     </button>
-                  </td>
+                  </td> */}
                 </motion.tr>
               ))}
             </tbody>
