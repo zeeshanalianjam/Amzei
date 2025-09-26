@@ -1,4 +1,8 @@
-const baseURL = "http://localhost:8080";
+const viteUrl = import.meta.env.VITE_BACKEND_URL.split(",");
+const [localUrl, prodUrl] = viteUrl;
+
+const baseURL =
+  import.meta.env.MODE === "development" ? localUrl : prodUrl;
 
 
 const summaryApi = {
