@@ -1,7 +1,7 @@
 // src/pages/BookingPage.js
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { getTourById } from '../data/tours';
+import { getTourById } from '../data/Tours';
 import { toast } from 'react-hot-toast';
 import { Axios } from '../common/axios';
 import { summaryApi } from '../common/summaryApi';
