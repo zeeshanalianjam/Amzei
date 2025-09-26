@@ -8,8 +8,6 @@ import {useNavigate} from 'react-router-dom'
 
 const AdminDashboard = () => {
   const dashboard = useSelector((state) => state?.dashboard);
-  console.log("tours : ", dashboard.allTourBookings);
-  // console.log("Dashboard:", dashboard);
   const [stats, setStats] = useState({
     users: dashboard.allUsers.length,
     tours: dashboard.allTours.length,
