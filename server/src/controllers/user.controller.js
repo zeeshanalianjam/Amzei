@@ -238,7 +238,28 @@ const fetchAllUsers = asyncHandler(async (req, res) => {
   }
 });
 
+const updateStatus = asyncHandler(async (req, res) => {
+  const userId = req.params.userId;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json(new apiError(400, "Status is required"));
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res.status(404).json(new apiError(404, "User not found"));
+  }
+
+  user.status = status;
+  await user.save();
+
+  res.status(200).json(new apiResponse(200, "User status changed successfully", { id: user._id, status: user.status }));
+});
 
 
 
-export { register, login, logout, refreshToken, fetchAllUsers };
+
+
+export { register, login, logout, refreshToken, fetchAllUsers, updateStatus };
