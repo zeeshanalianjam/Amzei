@@ -1,7 +1,7 @@
 // src/pages/DestinationPage.js
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getDestinationById } from '../data/destinations';
+import { getDestinationById } from '../data/Destinations';
 
 const DestinationPage = () => {
   const { id } = useParams();
