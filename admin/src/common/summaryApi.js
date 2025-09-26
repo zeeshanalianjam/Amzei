@@ -14,6 +14,10 @@ const summaryApi = {
         url: "/api/v1/users/logout",
         method: "POST"
     },
+    updateUserStatus: (userId) => ({
+        url: `/api/v1/users/status/${userId}`,
+        method: "PUT"
+    }),
     fetchTourBookingByUser: {
         url: "/api/v1/tour-bookings/fetch-tour-booking-by-user",
         method: "GET"

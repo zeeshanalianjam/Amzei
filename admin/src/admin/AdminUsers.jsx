@@ -3,11 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaUserEdit, FaTrash, FaSearch, FaFilter } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
+import { Axios } from '../common/axios';
+import { summaryApi } from '../common/summaryApi';
 
 const AdminUsers = () => {
   const dashboard = useSelector((state) => state?.dashboard);
   const [users, setUsers] = useState(dashboard?.allUsers || []);
-  console.log("users: ", users)
 
   const [filteredUsers, setFilteredUsers] = useState(users);
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,22 +18,22 @@ const AdminUsers = () => {
 
   useEffect(() => {
     let result = users;
-    
+
     if (searchTerm) {
-      result = result.filter(user => 
-        user.username.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      result = result.filter(user =>
+        user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     if (roleFilter !== 'All') {
       result = result.filter(user => user.role === roleFilter);
     }
-    
+
     if (statusFilter !== 'All') {
       result = result.filter(user => user.status === statusFilter);
     }
-    
+
     setFilteredUsers(result);
   }, [users, searchTerm, roleFilter, statusFilter]);
 
@@ -41,33 +43,47 @@ const AdminUsers = () => {
     }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    setUsers(users.map(user => 
-      user._id === id ? { ...user, status: newStatus } : user
-    ));
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const res = await Axios({
+        ...summaryApi.updateUserStatus(id),
+        data: { status: newStatus.trim() }
+      })
+
+      if (res?.data?.success) {
+        toast.success(res?.data?.message || 'Status updated successfully!');
+        setUsers(users.map(user =>
+          user._id === id ? { ...user, status: newStatus } : user
+        ));
+      }
+    } catch (error) {
+      console.log("Error in updating status", error);
+      toast.error(error?.response?.data?.message || "Error in updating status");
+    }
+
   };
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1, 
-      transition: { 
-        staggerChildren: 0.05 
-      } 
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05
+      }
     }
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1 
+    visible: {
+      y: 0,
+      opacity: 1
     }
   };
 
   return (
     <div>
-      <motion.h1 
+      <motion.h1
         className="text-2xl font-bold text-gray-800 mb-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -75,9 +91,9 @@ const AdminUsers = () => {
       >
         Users Management
       </motion.h1>
-      
+
       {/* Filters */}
-      <motion.div 
+      <motion.div
         className="bg-white rounded-lg shadow-md p-6 mb-6"
         variants={containerVariants}
         initial="hidden"
@@ -88,17 +104,17 @@ const AdminUsers = () => {
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <FaSearch className="text-gray-400" />
             </div>
-            <input 
-              type="text" 
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 p-2.5" 
+            <input
+              type="text"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full pl-10 p-2.5"
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </motion.div>
-          
+
           <motion.div variants={itemVariants}>
-            <select 
+            <select
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
@@ -109,23 +125,23 @@ const AdminUsers = () => {
               <option value="admin">Admin</option>
             </select>
           </motion.div>
-          
+
           <motion.div variants={itemVariants}>
-            <select 
+            <select
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="All">All Status</option>
-              <option value="Active">Active</option>
+              <option value="active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
           </motion.div>
         </div>
       </motion.div>
-      
+
       {/* Users Table */}
-      <motion.div 
+      <motion.div
         className="bg-white rounded-lg shadow-md overflow-hidden"
         variants={containerVariants}
         initial="hidden"
@@ -146,8 +162,8 @@ const AdminUsers = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredUsers.map((user, index) => (
-                <motion.tr 
-                  key={index} 
+                <motion.tr
+                  key={index}
                   className="hover:bg-gray-50"
                   variants={itemVariants}
                 >
@@ -155,25 +171,23 @@ const AdminUsers = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.username || "N/A"}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email || "N/A"}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 
-                      user.role === 'Agent' ? 'bg-blue-100 text-blue-800' : 
-                      'bg-green-100 text-green-800'
-                    }`}>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
+                        user.role === 'Agent' ? 'bg-blue-100 text-blue-800' :
+                          'bg-green-100 text-green-800'
+                      }`}>
                       {user.role}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.joinDate}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <select 
-                      className={`text-xs leading-5 font-semibold rounded-full px-2 py-1 border-0 ${
-                        user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}
+                    <select
+                      className={`text-xs leading-5 font-semibold rounded-full px-2 py-1 border-0 ${user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}
                       value={user.status}
                       onChange={(e) => handleStatusChange(user._id, e.target.value)}
                     >
                       <option value="active">Active</option>
-                      <option value="Inactive">InActive</option>
+                      <option value="inactive">InActive</option>
                     </select>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -192,7 +206,7 @@ const AdminUsers = () => {
             </tbody>
           </table>
         </div>
-        
+
         {filteredUsers.length === 0 && (
           <div className="text-center py-8 text-gray-500">
             No users found matching your criteria
