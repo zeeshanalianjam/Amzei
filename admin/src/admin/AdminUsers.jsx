@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 const AdminUsers = () => {
   const dashboard = useSelector((state) => state?.dashboard);
   const [users, setUsers] = useState(dashboard?.allUsers || []);
+  console.log("users: ", users)
 
   const [filteredUsers, setFilteredUsers] = useState(users);
   const [searchTerm, setSearchTerm] = useState('');
@@ -166,13 +167,13 @@ const AdminUsers = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <select 
                       className={`text-xs leading-5 font-semibold rounded-full px-2 py-1 border-0 ${
-                        user.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       }`}
                       value={user.status}
                       onChange={(e) => handleStatusChange(user._id, e.target.value)}
                     >
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
+                      <option value="active">Active</option>
+                      <option value="Inactive">InActive</option>
                     </select>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
