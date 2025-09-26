@@ -247,21 +247,21 @@ const AdminBookings = () => {
                                             </span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <td className="px-6 py-4 w-fit text-center whitespace-nowrap text-sm font-medium mx-auto">
                                         <motion.button
                                             onClick={() => openDetailsPopup(tour)}
-                                            className="text-blue-600 hover:text-blue-900 mr-3"
+                                            className="text-blue-600 hover:text-blue-900 mr-0"
                                             whileHover={{ scale: 1.1 }}
                                             whileTap={{ scale: 0.9 }}
                                             title="View Details"
                                         >
                                             <FaEye />
                                         </motion.button>
-                                        <button
+                                        {/* <button
                                             className="text-red-600 hover:text-red-900"
                                         >
                                             <FaTrash />
-                                        </button>
+                                        </button> */}
                                     </td>
                                 </motion.tr>
                             ))}
