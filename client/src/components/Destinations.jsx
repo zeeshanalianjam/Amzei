@@ -1,12 +1,12 @@
 // src/components/Destinations.js
 import React from 'react';
-import { Link } from 'react-router-dom';
-// import { destinations } from '../data/Destinations';
+import {  useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const Destinations = () => {
   const places = useSelector((state) => state.places);
   const destinations = places?.allDestinations.slice(0, 6)
+  const navigate = useNavigate()
   console.log("Places from Redux:", places);
   return (
     <section className="section-padding">
@@ -23,9 +23,9 @@ const Destinations = () => {
               <div className="p-6">
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">{destination.name}</h3>
                 <p className="text-gray-600 mb-4">{destination.shortDescription}</p>
-                <Link to={`/destination/${destination._id}`} className="text-orange-500 font-semibold hover:text-orange-600 transition-colors">
+                <button onClick={() => navigate(`/destination/${destination._id}`, { state : {destination}})} className="text-orange-500 font-semibold hover:text-orange-600 transition-colors">
                   Learn More →
-                </Link>
+                </button>
               </div>
             </div>
           ))}
