@@ -26,21 +26,9 @@ const summaryApi = {
         url: "/api/v1/tour-bookings/book",
         method: "POST"
     },
-    fetchAllTourBookings: {
-        url: "/api/v1/tour-bookings/fetch-all-tour-bookings",
+    fetchAllDestinations : {
+        url: "/api/v1/destinations/get-all-destinations",
         method: "GET"
-    },
-    fetchTourBookingByUser: {
-        url: "/api/v1/tour-bookings/fetch-tour-booking-by-user",
-        method: "GET"
-    },
-    fetchTourBookingById: {
-        url: "/api/v1/tour-bookings/fetch-tour-booking/:bookingId",
-        method: "GET"
-    },
-    updateTourBookingStatus: {
-        url: "/api/v1/tour-bookings/update/:bookingId",
-        method: "PUT"
     }
 }
 
