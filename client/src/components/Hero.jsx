@@ -46,13 +46,9 @@ const Hero = () => {
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* 🎥 Background Video */}
-      <video
-        className="absolute top-0 left-0 w-full h-full object-cover"
-        src="/13153069_2160_3840_30fps.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
+      <img
+        className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none"
+        src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExandnaTZlOGo5Mnl0b3VidDAzaTgzOWY5eXhyY3ZoMXFocjFyY214NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2yxdwElVqwapon7aZA/giphy.gif"
       />
 
       {/* Overlay */}
