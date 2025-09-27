@@ -40,7 +40,7 @@ const addDestination = asyncHandler(async (req, res) => {
 
 const getDestinations = asyncHandler(async (req, res) => {
     try {
-        const destinations = await Destination.find();
+        const destinations = await Destination.find().sort({ createdAt: -1 });
         res.status(200).json(new apiResponse(200, "Destinations retrieved successfully", destinations));
     } catch (error) {
         console.error("Error retrieving destinations:", error);
