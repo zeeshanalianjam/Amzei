@@ -6,11 +6,14 @@ import { toast } from 'react-hot-toast';
 import { Axios } from '../common/axios';
 import { summaryApi } from '../common/summaryApi';
 import LoadingPopup from '../utils/LoadingPopup';
+import { useSelector } from 'react-redux';
 
 const BookingPage = () => {
   const { tourId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const user = useSelector(state => state.user);
+  console.log("user:", user);
   const [loading, setLoading] = useState(false);
   console.log("location state:", location.state);
   const [tour, setTour] = useState(null);
@@ -20,7 +23,7 @@ const BookingPage = () => {
     FullName: '',
     email: '',
     phone: '',
-    destination: location?.state?.destination || '',
+    destination: location?.state?.destination  || '',
     preferredTravelDate: '',
     checkIn: location?.state?.checkIn || '',
     checkOut: location?.state?.checkOut || '',
@@ -89,6 +92,12 @@ const BookingPage = () => {
 
     console.log('Booking Data:', bookingData);
   };
+
+  useEffect(() => {
+    if(!user?._id){
+      navigate('/login');
+    }
+  }, [])
 
   return (
     <div className="section-padding">

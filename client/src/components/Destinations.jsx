@@ -7,7 +7,6 @@ const Destinations = () => {
   const places = useSelector((state) => state.places);
   const destinations = places?.allDestinations.slice(0, 6)
   const navigate = useNavigate()
-  console.log("Places from Redux:", places);
   return (
     <section className="section-padding">
       <div className="container">

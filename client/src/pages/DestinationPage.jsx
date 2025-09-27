@@ -5,16 +5,14 @@ import { useLocation, useNavigate} from 'react-router-dom';
 const DestinationPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  console.log("location state:", location.state?.destination);
   const destination = location?.state?.destination
 
   if (!destination) {
     return <div className="section-padding">Destination not found</div>;
   }
 
-  const handleBooking = () => {
-    navigate()
-  };
+
+ 
 
   return (
     <div className="section-padding">
@@ -37,7 +35,7 @@ const DestinationPage = () => {
               
               <div className="mt-8">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Book a Tour</h3>
-                <button onClick={handleBooking} className="btn-primary">Book Now</button>
+                <button onClick={() => navigate(`/booking/${destination._id}`, { state : {destination : destination.location} })} className="btn-primary">Book Now</button>
               </div>
             </div>
           </div>

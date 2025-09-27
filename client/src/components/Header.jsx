@@ -16,8 +16,6 @@ const Header = () => {
   const [loading, setLoading] = useState(false);
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
-  console.log("User from Redux:", user);
-  console.log("Access Token:", accessToken);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
