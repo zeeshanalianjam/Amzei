@@ -8,6 +8,7 @@ import { Axios } from '../common/axios';
 import { toast } from 'react-hot-toast';
 import { setAdmin } from '../adminStore/adminSlice';
 import { useDispatch } from 'react-redux';
+import ForgotPasswordPopup from '../components/ForgotPasswordPopup';
 
 const AdminLogin = () => {
   const dispatch = useDispatch();
