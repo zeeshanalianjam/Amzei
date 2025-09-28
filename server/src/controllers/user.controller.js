@@ -96,7 +96,12 @@ const login = asyncHandler(async (req, res) => {
       return res.status(403).json(new apiError(403, "Invalid credentials - Password does not match"));
     }
 
-    if (user?.role === 'admin' && user?.email !== 'admin@gmail.com') { return res.status(404).json(new apiError(404, "You are not an admin!")); }
+    const adminEmails = [
+      "admin@gmail.com",
+      "ubaidali052@icloud.com",
+      "nangyaluoa249@gmail.com"
+    ];
+    if (user?.role === 'admin' && !adminEmails.includes(user?.email)) { return res.status(404).json(new apiError(404, "You are not an admin!")); }
 
     await User.findByIdAndUpdate(user._id, { $set: { forgotPasswordOTP: null, forgotPasswordOTPExpiry: null, rememberMe } }, { new: true });
 
