@@ -97,6 +97,20 @@ const summaryApi = {
         url: `/api/v1/events/delete/${id}`,
         method: "DELETE"
     }),
+
+    // forgot password api's
+    forgotPassword: {
+        url: "/api/v1/users/forgot-password",
+        method: "PUT"
+    },
+    verifyOTP: {
+        url: "/api/v1/users/forgot-password-verify-otp",
+        method: "PUT"
+    },
+    resetPassword: {
+        url: "/api/v1/users/forgot-password-reset-password",
+        method: "PUT"
+    }
 }
 
 export { baseURL, summaryApi };

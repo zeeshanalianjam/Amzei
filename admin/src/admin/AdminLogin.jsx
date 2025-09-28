@@ -229,7 +229,7 @@ const AdminLogin = () => {
               />
               <span className="ml-2 text-sm text-gray-600">Remember me</span>
             </label>
-            <button type="submit"  onClick={() => setIsForgotPasswordOpen(true)} className="text-sm text-orange-500 hover:text-orange-600 transition-colors">
+            <button type="button" onClick={() => setIsForgotPasswordOpen(true)} className="text-sm text-orange-500 hover:text-orange-600 transition-colors">
               Forgot password?
             </button>
           </motion.div>

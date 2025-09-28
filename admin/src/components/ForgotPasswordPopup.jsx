@@ -6,6 +6,9 @@ import { FaTimes, FaEnvelope, FaPaperPlane } from 'react-icons/fa';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Text, Stars, Float } from '@react-three/drei';
 import * as THREE from 'three';
+import toast from 'react-hot-toast';
+import { Axios } from '../common/axios';
+import { summaryApi } from '../common/summaryApi';
 
 // 3D Floating Envelope Component
 function FloatingEnvelope() {
@@ -98,21 +101,26 @@ const ForgotPasswordPopup = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsSubmitted(true);
-      
-      // In a real app, you would send an email with OTP
-      console.log(`Sending OTP to: ${email}`);
-      
-      // After 2 seconds, navigate to OTP page
-      setTimeout(() => {
+    try {
+      setIsLoading(true);
+      const res = await Axios({
+        ...summaryApi.forgotPassword,
+        data: { email },
+      })
+
+      if (res?.data?.success) {
+        toast.success(res?.data?.message);
+        setIsSubmitted(true);
         navigate('/admin/otp', { state: { email } });
-      }, 2000);
-    }, 1500);
+        setEmail('');
+      }
+      
+    } catch (error) {
+      console.log("Error in forgot password : ", error);
+      toast.error(error?.response?.data?.message || 'Error in forgot password. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
