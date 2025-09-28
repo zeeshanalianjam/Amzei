@@ -18,6 +18,7 @@ const AdminLogin = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -227,9 +228,9 @@ const AdminLogin = () => {
               />
               <span className="ml-2 text-sm text-gray-600">Remember me</span>
             </label>
-            <a href="#" className="text-sm text-orange-500 hover:text-orange-600 transition-colors">
+            <button type="submit"  onClick={() => setIsForgotPasswordOpen(true)} className="text-sm text-orange-500 hover:text-orange-600 transition-colors">
               Forgot password?
-            </a>
+            </button>
           </motion.div>
 
           {/* Submit Button */}
@@ -278,6 +279,12 @@ const AdminLogin = () => {
       >
         © {new Date().getFullYear()} Amzei Travelers Admin Panel. All rights reserved.
       </motion.div>
+
+      {/* Forgot Password Popup */}
+      <ForgotPasswordPopup 
+        isOpen={isForgotPasswordOpen}
+        onClose={() => setIsForgotPasswordOpen(false)}
+      />
     </div>
   );
 };
