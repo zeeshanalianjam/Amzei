@@ -6,6 +6,9 @@ import { FaArrowLeft, FaShieldAlt, FaCheck } from 'react-icons/fa';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Text, Stars, Float } from '@react-three/drei';
 import * as THREE from 'three';
+import { Axios } from '../common/axios';
+import { summaryApi } from '../common/summaryApi';
+import toast from 'react-hot-toast';
 
 // 3D Floating Shield Component
 function FloatingShield() {
@@ -142,21 +145,28 @@ const OTPPage = () => {
       return;
     }
     
-    setIsLoading(true);
-    setError('');
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      
-      // For demo purposes, accept any 6-digit OTP
-      if (otpValue.length === 6) {
-        // Navigate to reset password page
+    try {
+      setIsLoading(true);
+      const res  = await Axios({
+        ...summaryApi.verifyOTP,
+        data: { email, otp: otpValue },
+      })
+
+      if (res?.data?.success) {
+        toast.success(res?.data?.message);
+        setError('');
+
         navigate('/admin/reset-password', { state: { email, otp: otpValue } });
-      } else {
-        setError('Invalid OTP. Please try again.');
       }
-    }, 1500);
+      
+    } catch (error) {
+      console.log("Error in forgot password : ", error);
+      toast.error(error?.response?.data?.message || 'Error in forgot password. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+    
   };
 
   // Handle resend OTP

@@ -6,6 +6,9 @@ import { FaArrowLeft, FaLock, FaCheck } from 'react-icons/fa';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Text, Stars, Float } from '@react-three/drei';
 import * as THREE from 'three';
+import toast from 'react-hot-toast';
+import { Axios } from '../common/axios';
+import { summaryApi } from '../common/summaryApi';
 
 // 3D Floating Lock Component
 function FloatingLock() {
@@ -134,21 +137,31 @@ const ResetPasswordPage = () => {
       return;
     }
     
-    setIsLoading(true);
-    setError('');
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      
-      // For demo purposes, accept any valid password
-      setSuccess(true);
-      
-      // After 2 seconds, navigate to login page
-      setTimeout(() => {
+    
+    try {
+      setIsLoading(true);
+      const res = await Axios({
+        ...summaryApi.resetPassword,
+        data: {
+          email,
+          newPassword: formData.newPassword,
+          confirmPassword: formData.confirmPassword
+        }
+      })
+
+      if (res?.data?.success) {
+        toast.success(res?.data?.message);
+        setError('');
         navigate('/admin/login');
-      }, 2000);
-    }, 1500);
+      }
+
+      
+    } catch (error) {
+      console.error('Error in resetting password:', error);
+      toast.error(error?.response?.data?.message || 'Error in resetting password. Please try again.');
+    }
+
   };
 
   // If no email or OTP is provided, redirect to login
