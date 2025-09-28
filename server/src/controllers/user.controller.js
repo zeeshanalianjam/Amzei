@@ -6,6 +6,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import { verifyEmailTemplate } from "../utils/verifyEmailTemplate.js";
 import bcrypt from "bcrypt";
+import { welcomeEmailTemplate } from "../utils/welcomeEmailTemplate.js";
 
 const generateAccessAndRefreshTokens = async userId => {
   try {
@@ -58,15 +59,41 @@ const register = asyncHandler(async (req, res) => {
       return res.status(400).json(new apiError(400, "You must accept the terms and conditions"));
     }
 
+      const opt = Math.floor(100000 + Math.random() * 900000);
+
+    const otpExpiryTime = Date.now() + 60 * 60 * 1000;
+
+    const otpStandardTime = new Date(otpExpiryTime).toLocaleString('en-US', {
+      timeZone: 'Asia/Karachi',
+      timezone: 'IST',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+
+
     const newUser = await User.create({
       username,
       email,
       phone,
       password,
       termsConditions,
+      forgotPasswordOTP: opt,
+      forgotPasswordOTPExpiryTime: otpExpiryTime,
     });
 
     const data = await User.findById(newUser._id).select("-password -refreshToken");
+
+     await sendEmail({
+      sendTo: newUser.email,
+      subject: 'Welcome to our platform',
+      html: welcomeEmailTemplate({
+        name: newUser.username,
+        otp: opt,
+        otpExpiryTime: otpStandardTime,
+      }),
+    });
 
     return res.status(201).json(new apiResponse(201, "You are registered successfully", true, data));
 
