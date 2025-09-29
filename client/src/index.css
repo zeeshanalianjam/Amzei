@@ -94,3 +94,41 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #ea580c;
 }
+
+/* src/index.css or your main CSS file */
+
+/* Line clamp utility for text truncation */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 3D perspective for cards */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+
+.card-3d:hover {
+  transform: rotateY(5deg) rotateX(5deg);
+}
+
+/* Smooth transitions for all interactive elements */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Enhanced animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}

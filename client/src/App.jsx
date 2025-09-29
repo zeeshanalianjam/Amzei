@@ -13,6 +13,7 @@ import { summaryApi } from "./common/summaryApi";
 import { useDispatch } from "react-redux";
 import { setAllDestinations } from "./store/placesSlice";
 import { useCallback, useEffect } from "react";
+import AllDestinations from "./pages/AllDestinations";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -47,6 +48,7 @@ export default function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+         <Route path="/destinations" element={<AllDestinations />} /> 
       </Routes>
       <Toaster />
     </>
