@@ -14,6 +14,8 @@ import { useDispatch } from "react-redux";
 import { setAllDestinations } from "./store/placesSlice";
 import { useCallback, useEffect } from "react";
 import AllDestinations from "./pages/AllDestinations";
+import AllToursPage from "./pages/AllToursPage";
+import TourDetailPage from "./pages/TourDetailPage";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -42,13 +44,15 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/tours" element={<ToursPage />} />
+        {/* <Route path="/tours" element={<ToursPage />} /> */}
         <Route path="/destination/:id" element={<DestinationPage />} />
         <Route path="/booking/:id" element={<BookingPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
          <Route path="/destinations" element={<AllDestinations />} /> 
+          <Route path="/tours" element={<AllToursPage />} />
+      <Route path="/tour/:id" element={<TourDetailPage />} />
       </Routes>
       <Toaster />
     </>
