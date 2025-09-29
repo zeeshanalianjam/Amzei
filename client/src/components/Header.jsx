@@ -80,7 +80,7 @@ const Header = () => {
               <ul className="flex flex-col md:flex-row md:space-x-4 space-y-2 md:space-y-0">
                 {[
                   { name: 'Home', path: '/' },
-                  { name: 'Destinations', path: '/#destinations' },
+                  { name: 'Destinations', path: '/destinations' },
                   { name: 'Tours', path: '/tours' },
                   { name: 'About', path: '/about' },
                   { name: 'Contact', path: '/contact' }
