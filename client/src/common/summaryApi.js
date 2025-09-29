@@ -29,7 +29,18 @@ const summaryApi = {
     fetchAllDestinations : {
         url: "/api/v1/destinations/get-all-destinations",
         method: "GET"
-    }
+    },
+
+     // Payment endpoints
+  createPaymentOrder: {
+    url: '/payment/create-order',
+    method: 'post'
+  },
+  
+  verifyPayment: {
+    url: '/payment/verify',
+    method: 'post'
+  },
 }
 
 export { baseURL, summaryApi };

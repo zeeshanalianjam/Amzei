@@ -16,6 +16,7 @@ import { useCallback, useEffect } from "react";
 import AllDestinations from "./pages/AllDestinations";
 import AllToursPage from "./pages/AllToursPage";
 import TourDetailPage from "./pages/TourDetailPage";
+import BookingSuccess from "./pages/BookingSuccess";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -53,6 +54,7 @@ export default function App() {
          <Route path="/destinations" element={<AllDestinations />} /> 
           <Route path="/tours" element={<AllToursPage />} />
       <Route path="/tour/:id" element={<TourDetailPage />} />
+       <Route path="/booking-success" element={<BookingSuccess />} />
       </Routes>
       <Toaster />
     </>
