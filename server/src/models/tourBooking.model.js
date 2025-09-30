@@ -15,23 +15,12 @@ const tourBookingSchema = new mongoose.Schema({
     },
     destination: {
         type: String,
-        enum: [
-            "Dubai",
-            "Abu Dhabi",
-            "Sharjah",
-            "Ajman",
-            "Fujairah",
-            "Ras Al Khaimah",
-            "Umm Al Quwain",
-        ],
         default: "Dubai",
         required: true,
     },
-
     preferredTravelDate: {
         type: Date,
         required: true,
-        
     },
     checkIn: {
         type: Date,
@@ -72,7 +61,7 @@ const tourBookingSchema = new mongoose.Schema({
     },
     numberOfRooms: {
         type: Number,
-        default: 1,
+        default: 0,
     },
     nationality: {
         type: String,
