@@ -7,7 +7,7 @@ import { FaArrowRight, FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
 
 const Destinations = () => {
   const places = useSelector((state) => state.places);
-  const destinations = places?.allDestinations?.slice(0, 6) || [];
+  const destinations = places?.allDestinations.slice(0, 3) || [];
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,6 +68,20 @@ const Destinations = () => {
     }
   };
 
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  
+
   return (
     <section className="section-padding relative overflow-hidden">
       {/* Background decoration */}
@@ -81,12 +95,15 @@ const Destinations = () => {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Top Destinations</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">Explore the most iconic attractions across the UAE</p>
+          <p className="text-gray-600 max-w-2xl mx-auto">Explore the most iconic attractions across the UAE</p> 
           <div className="mt-4">
-                      <Link to="/destinations" className="text-orange-500 font-semibold hover:text-orange-600 transition-colors">
-                        View All Destinations →
-                      </Link>
-                    </div>
+            <Link
+              to="/destinations"
+              className="inline-block px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors font-semibold shadow"
+            >
+              View All Destinations →
+            </Link>
+          </div>
         </motion.div>
         
         {loading ? (
@@ -153,6 +170,24 @@ const Destinations = () => {
                   </div>
                 </motion.div>
               ))}
+
+              {destinations.length === 0 && (
+                <div className="flex justify-center items-center min-h-[200px] col-span-full">
+                  <motion.div 
+                    className="text-center bg-red-50 p-6 rounded-lg max-w-md w-full"
+                    variants={itemVariants}
+                  >
+                    <FaExclamationTriangle className="text-red-500 text-4xl mx-auto mb-4" />
+                    <p className="text-gray-700 mb-4">No destinations found.</p>
+                    <button 
+                      onClick={() => window.location.reload()} 
+                      className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+                    >
+                      Try Again
+                    </button>
+                  </motion.div>
+                </div>
+              )}
             </motion.div>
             
           </>
