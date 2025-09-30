@@ -5,38 +5,109 @@ import { apiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 
+
 const addDestination = asyncHandler(async (req, res) => {
     try {
-        const { name, shortDescription, detailedDescription, location } = req.body;
 
-        if (!name || !shortDescription || !detailedDescription || !location) {
-            return res.status(400).json(new apiError(400, "Please fill all required fields"));
+        const requiredFields = [
+            'name',
+            'location',
+            'shortDescription',
+            'detailedDescription',
+            'currency',
+            'bestTimeToVisit',
+            'pricingDetails',
+            'overview'
+        ];
+
+
+        for (const field of requiredFields) {
+            if (!req.body[field]) {
+                return res.status(400).json(new apiError(400, `Field '${field}' is required`));
+            }
         }
 
-        const existingDestination = await Destination.findOne({ name, location });
+
+        if (
+            !Array.isArray(req.body.pricingDetails) ||
+            req.body.pricingDetails.length === 0 ||
+            !req.body.pricingDetails[0].perPerson ||
+            !req.body.pricingDetails[0].perRoom ||
+            !req.body.pricingDetails[0].perDay ||
+            !req.body.pricingDetails[0].taxFee
+        ) {
+            return res.status(400).json(
+                new apiError(400, "Please provide perPerson, perRoom, perDay, and taxFee in pricing details.")
+            );
+
+        }
+
+        if (
+            !Array.isArray(req.body.overview) ||
+            req.body.overview.length === 0 ||
+            !req.body.overview[0].title
+        ) {
+            return res.status(400).json(
+                new apiError(400, "Please provide a title in the overview.")
+            );
+
+        }
+
+        // Duplicate check
+        const existingDestination = await Destination.findOne({ name: req.body.name, location: req.body.location });
         if (existingDestination) {
             return res.status(400).json(new apiError(400, "Destination already exists"));
         }
 
-        const imageUrl = req.file?.path;
+       // ---------------------------
+        // Image uploads (only 1 each)
+        // ---------------------------
 
-        const image = await uploadImageOnCloudinary(imageUrl);
+        // Destination main image
+        let imageUrl = "";
+        if (req.files?.imageUrl?.[0]) {
+            const uploaded = await uploadImageOnCloudinary(req.files.imageUrl[0].path);
+            imageUrl = uploaded.secure_url;
+        }
 
-        const newDestination = await Destination.create({
-            name,
-            location,
-            imageUrl: image.secure_url,
-            shortDescription,
-            detailedDescription,
-        });
+        // thingsToDo[0] image
+        if (req.files?.thingsToDoImageUrl?.[0]) {
+            const uploaded = await uploadImageOnCloudinary(req.files.thingsToDoImageUrl[0].path);
+            if (req.body.thingsToDo && req.body.thingsToDo[0]) {
+                req.body.thingsToDo[0].imageUrl = uploaded.secure_url;
+            }
+        }
+
+        // accommodations[0] image
+        if (req.files?.accommodationImageUrl?.[0]) {
+            const uploaded = await uploadImageOnCloudinary(req.files.accommodationImageUrl[0].path);
+            if (req.body.accommodations && req.body.accommodations[0]) {
+                req.body.accommodations[0].imageUrl = uploaded.secure_url;
+            }
+        }
+
+        // restaurants[0] image
+        if (req.files?.restaurantImageUrl?.[0]) {
+            const uploaded = await uploadImageOnCloudinary(req.files.restaurantImageUrl[0].path);
+            if (req.body.restaurants && req.body.restaurants[0]) {
+                req.body.restaurants[0].imageUrl = uploaded.secure_url;
+            }
+        }
+
+        const destinationData = {
+            ...req.body,
+            imageUrl: imageUrl || req.body.imageUrl
+        };
+
+        const newDestination = await Destination.create(destinationData);
 
         res.status(201).json(new apiResponse(201, "Destination added successfully", newDestination));
-        
     } catch (error) {
         console.error("Error during adding a destination:", error);
         res.status(500).json(new apiError(500, "Internal Server Error: Adding a destination failed"));
     }
 });
+
 
 const getDestinations = asyncHandler(async (req, res) => {
     try {
@@ -69,7 +140,7 @@ const updateDestination = asyncHandler(async (req, res) => {
         destination.shortDescription = shortDescription || destination.shortDescription;
         destination.detailedDescription = detailedDescription || destination.detailedDescription;
 
-      const updateDestination = await destination.save();
+        const updateDestination = await destination.save();
         res.status(200).json(new apiResponse(200, "Destination updated successfully", updateDestination));
     } catch (error) {
         console.error("Error updating destination:", error);

@@ -31,7 +31,7 @@ const destinationSchema = new mongoose.Schema({
             imageUrl: { type: String, default: "" },
             duration: { type: String, default: "" },
             price: { type: Number, default: 0 },
-        }
+        },
     ],
     accommodations: [
         {
