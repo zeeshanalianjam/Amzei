@@ -8,7 +8,58 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const addDestination = asyncHandler(async (req, res) => {
     try {
+        // ✅ Parse JSON fields if they are strings
+        let body = { ...req.body };
 
+        if (typeof body.pricingDetails === "string") {
+            try {
+                body.pricingDetails = JSON.parse(body.pricingDetails);
+            } catch (err) {
+                return res.status(400).json(new apiError(400, "Invalid JSON format for pricingDetails"));
+            }
+        }
+
+        if (typeof body.overview === "string") {
+            try {
+                body.overview = JSON.parse(body.overview);
+            } catch (err) {
+                return res.status(400).json(new apiError(400, "Invalid JSON format for overview"));
+            }
+        }
+
+        if (typeof body.thingsToDo === "string") {
+            try {
+                body.thingsToDo = JSON.parse(body.thingsToDo);
+            } catch (err) {
+                return res.status(400).json(new apiError(400, "Invalid JSON format for thingsToDo"));
+            }
+        }
+
+        if (typeof body.accommodations === "string") {
+            try {
+                body.accommodations = JSON.parse(body.accommodations);
+            } catch (err) {
+                return res.status(400).json(new apiError(400, "Invalid JSON format for accommodations"));
+            }
+        }
+
+        if (typeof body.restaurants === "string") {
+            try {
+                body.restaurants = JSON.parse(body.restaurants);
+            } catch (err) {
+                return res.status(400).json(new apiError(400, "Invalid JSON format for restaurants"));
+            }
+        }
+
+        if (typeof body.travelTips === "string"){
+            try {
+                body.travelTips = JSON.parse(body.travelTips);
+            } catch (err) {
+                return res.status(400).json(new apiError(400, "Invalid JSON format for travelTips"));
+            }
+        }
+
+        // ✅ Required fields validation
         const requiredFields = [
             'name',
             'location',
@@ -20,83 +71,74 @@ const addDestination = asyncHandler(async (req, res) => {
             'overview'
         ];
 
-
         for (const field of requiredFields) {
-            if (!req.body[field]) {
+            if (!body[field]) {
                 return res.status(400).json(new apiError(400, `Field '${field}' is required`));
             }
         }
 
-
+        // ✅ Pricing Details check
         if (
-            !Array.isArray(req.body.pricingDetails) ||
-            req.body.pricingDetails.length === 0 ||
-            !req.body.pricingDetails[0].perPerson ||
-            !req.body.pricingDetails[0].perRoom ||
-            !req.body.pricingDetails[0].perDay ||
-            !req.body.pricingDetails[0].taxFee
+            !Array.isArray(body.pricingDetails) ||
+            body.pricingDetails.length === 0 ||
+            !body.pricingDetails[0].perPerson ||
+            !body.pricingDetails[0].perRoom ||
+            !body.pricingDetails[0].perDay ||
+            !body.pricingDetails[0].taxFee
         ) {
             return res.status(400).json(
                 new apiError(400, "Please provide perPerson, perRoom, perDay, and taxFee in pricing details.")
             );
-
         }
 
+        // ✅ Overview check
         if (
-            !Array.isArray(req.body.overview) ||
-            req.body.overview.length === 0 ||
-            !req.body.overview[0].title
+            !Array.isArray(body.overview) ||
+            body.overview.length === 0 ||
+            !body.overview[0].title
         ) {
             return res.status(400).json(
                 new apiError(400, "Please provide a title in the overview.")
             );
-
         }
 
-        // Duplicate check
-        const existingDestination = await Destination.findOne({ name: req.body.name, location: req.body.location });
+        // ✅ Duplicate check
+        const existingDestination = await Destination.findOne({ name: body.name, location: body.location });
         if (existingDestination) {
             return res.status(400).json(new apiError(400, "Destination already exists"));
         }
 
-       // ---------------------------
-        // Image uploads (only 1 each)
-        // ---------------------------
-
-        // Destination main image
+        // ✅ Image uploads
         let imageUrl = "";
         if (req.files?.imageUrl?.[0]) {
             const uploaded = await uploadImageOnCloudinary(req.files.imageUrl[0].path);
             imageUrl = uploaded.secure_url;
         }
 
-        // thingsToDo[0] image
         if (req.files?.thingsToDoImageUrl?.[0]) {
             const uploaded = await uploadImageOnCloudinary(req.files.thingsToDoImageUrl[0].path);
-            if (req.body.thingsToDo && req.body.thingsToDo[0]) {
-                req.body.thingsToDo[0].imageUrl = uploaded.secure_url;
+            if (body.thingsToDo && body.thingsToDo[0]) {
+                body.thingsToDo[0].imageUrl = uploaded.secure_url;
             }
         }
 
-        // accommodations[0] image
         if (req.files?.accommodationImageUrl?.[0]) {
             const uploaded = await uploadImageOnCloudinary(req.files.accommodationImageUrl[0].path);
-            if (req.body.accommodations && req.body.accommodations[0]) {
-                req.body.accommodations[0].imageUrl = uploaded.secure_url;
+            if (body.accommodations && body.accommodations[0]) {
+                body.accommodations[0].imageUrl = uploaded.secure_url;
             }
         }
 
-        // restaurants[0] image
         if (req.files?.restaurantImageUrl?.[0]) {
             const uploaded = await uploadImageOnCloudinary(req.files.restaurantImageUrl[0].path);
-            if (req.body.restaurants && req.body.restaurants[0]) {
-                req.body.restaurants[0].imageUrl = uploaded.secure_url;
+            if (body.restaurants && body.restaurants[0]) {
+                body.restaurants[0].imageUrl = uploaded.secure_url;
             }
         }
 
         const destinationData = {
-            ...req.body,
-            imageUrl: imageUrl || req.body.imageUrl
+            ...body,
+            imageUrl: imageUrl || body.imageUrl
         };
 
         const newDestination = await Destination.create(destinationData);
@@ -107,6 +149,7 @@ const addDestination = asyncHandler(async (req, res) => {
         res.status(500).json(new apiError(500, "Internal Server Error: Adding a destination failed"));
     }
 });
+
 
 
 const getDestinations = asyncHandler(async (req, res) => {
