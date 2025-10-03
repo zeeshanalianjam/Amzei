@@ -9,6 +9,7 @@ const DestinationPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [destination, setDestination] = useState(location?.state?.destination);
+  console.log("destination: ", destination)
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [isFavorite, setIsFavorite] = useState(false);
@@ -27,7 +28,7 @@ const DestinationPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Destination Not Found</h2>
-          <button 
+          <button
             onClick={() => navigate('/destinations')}
             className="px-6 py-3 bg-orange-500 text-white rounded-full font-medium hover:bg-orange-600 transition-colors"
           >
@@ -146,11 +147,11 @@ const DestinationPage = () => {
   };
 
   const handleBookNow = () => {
-    navigate('/booking', { 
-      state: { 
-        destination: destinationDetails.name,
-        destinationData: destinationDetails
-      } 
+    navigate('/booking', {
+      state: {
+        destination: destination.name,
+        destinationData: destination
+      }
     });
   };
 
@@ -162,11 +163,11 @@ const DestinationPage = () => {
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: destinationDetails.name,
-        text: destinationDetails.shortDescription,
+        title: destination.name,
+        text: destination.shortDescription,
         url: window.location.href,
       })
-      .catch(console.error);
+        .catch(console.error);
     } else {
       // Fallback for browsers that don't support the Web Share API
       navigator.clipboard.writeText(window.location.href);
@@ -189,7 +190,7 @@ const DestinationPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white pt-24 pb-16">
       <div className="container mx-auto px-4">
         {/* Header with back button */}
-        <motion.div 
+        <motion.div
           className="mb-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -205,7 +206,7 @@ const DestinationPage = () => {
           </motion.button>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="mb-8"
           variants={containerVariants}
           initial="hidden"
@@ -215,17 +216,17 @@ const DestinationPage = () => {
           <motion.div variants={itemVariants} className="mb-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">{destinationDetails.name}</h1>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">{destination.name || "Not Available"}</h1>
                 <div className="flex items-center text-gray-600 mb-2">
                   <FaMapMarkerAlt className="mr-2" />
-                  <span>{destinationDetails.location}</span>
+                  <span>{destination.location || "Not Available"}</span>
                 </div>
                 <div className="flex items-center">
                   <div className="flex items-center bg-orange-100 text-orange-500 px-2 py-1 rounded-md mr-3">
                     <FaStar className="mr-1" />
-                    <span>{destinationDetails.rating}</span>
+                    <span>{destination.rating || "Not Available"}</span>
                   </div>
-                  <span className="text-gray-500">({destinationDetails.reviews} reviews)</span>
+                  <span className="text-gray-500">({destination.reviews?.length} reviews)</span>
                 </div>
               </div>
               <div className="flex space-x-3 mt-4 md:mt-0">
@@ -250,27 +251,27 @@ const DestinationPage = () => {
           </motion.div>
 
           {/* Destination Image */}
-          <motion.div 
+          <motion.div
             className="relative h-96 rounded-2xl overflow-hidden shadow-xl mb-8"
             variants={itemVariants}
           >
-            <div 
-              className="h-full w-full transform transition-transform duration-700 hover:scale-105" 
-              style={{ 
-                backgroundImage: `url('${destinationDetails.imageUrl}')`, 
-                backgroundSize: 'cover', 
-                backgroundPosition: 'center' 
+            <div
+              className="h-full w-full transform transition-transform duration-700 hover:scale-105"
+              style={{
+                backgroundImage: `url('${destination.imageUrl}')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
               }}
             ></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
             <div className="absolute bottom-6 left-6 text-white">
               <div className="flex items-center mb-2">
                 <FaCalendarAlt className="mr-2" />
-                <span>Best time to visit: {destinationDetails.bestTimeToVisit}</span>
+                <span>Best time to visit: {destination.bestTimeToVisit || "Not Available"}</span>
               </div>
               <div className="flex items-center">
                 <FaMoneyBillWave className="mr-2" />
-                <span>Currency: {destinationDetails.currency}</span>
+                <span>Currency: {destination.currency || "Not Available"}</span>
               </div>
             </div>
           </motion.div>
@@ -296,24 +297,29 @@ const DestinationPage = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
                   <div className="bg-white rounded-2xl shadow-md p-6 mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">About {destinationDetails.name}</h2>
-                    <p className="text-gray-600 mb-4">{destinationDetails.shortDescription}</p>
-                    <p className="text-gray-700">{destinationDetails.detailedDescription}</p>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">About {destination.name || "Not Available"}</h2>
+                    <p className="text-gray-600 mb-4">{destination.shortDescription || "Not Available"}</p>
+                    <p className="text-gray-700">{destination.detailedDescription || "Not Available"}</p>
                   </div>
 
                   <div className="bg-white rounded-2xl shadow-md p-6">
                     <h3 className="text-xl font-bold text-gray-800 mb-4">Highlights</h3>
-                    <ul className="space-y-2">
-                      {destinationDetails.highlights.map((highlight, index) => (
-                        <li key={index} className="flex items-start">
-                          <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
-                            <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                          </div>
-                          <span className="text-gray-600">{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {destination.highlights && destination.highlights.length > 0 ? (
+                      <ul className="space-y-2">
+                        {destination.highlights.map((highlight, index) => (
+                          <li key={index} className="flex items-start">
+                            <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                              <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                            </div>
+                            <span className="text-gray-600">{highlight}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-500 italic">No highlights found</p>
+                    )}
                   </div>
+
                 </div>
 
                 <div>
@@ -324,21 +330,21 @@ const DestinationPage = () => {
                         <FaClock className="text-orange-500 mr-3" />
                         <div>
                           <div className="text-sm text-gray-500">Best Time to Visit</div>
-                          <div className="font-medium">{destinationDetails.bestTimeToVisit}</div>
+                          <div className="font-medium">{destination.bestTimeToVisit || 'Unknown'}</div>
                         </div>
                       </div>
                       <div className="flex items-center">
                         <FaUsers className="text-orange-500 mr-3" />
                         <div>
                           <div className="text-sm text-gray-500">Language</div>
-                          <div className="font-medium">{destinationDetails.language.join(', ')}</div>
+                          <div className="font-medium">{destination?.language?.join(', ') || 'Unknown'}</div>
                         </div>
                       </div>
                       <div className="flex items-center">
                         <FaMoneyBillWave className="text-orange-500 mr-3" />
                         <div>
                           <div className="text-sm text-gray-500">Currency</div>
-                          <div className="font-medium">{destinationDetails.currency}</div>
+                          <div className="font-medium">{destination.currency || 'Unknown'}</div>
                         </div>
                       </div>
                     </div>
@@ -346,7 +352,7 @@ const DestinationPage = () => {
 
                   <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-md p-6 text-white">
                     <h3 className="text-xl font-bold mb-4">Ready to Explore?</h3>
-                    <p className="mb-4">Book your trip to {destinationDetails.name} now and create unforgettable memories.</p>
+                    <p className="mb-4">Book your trip to {destination.name || "Not Available"} now and create unforgettable memories.</p>
                     <motion.button
                       onClick={handleBookNow}
                       className="w-full py-3 bg-white text-orange-500 rounded-lg font-bold shadow-md hover:bg-orange-50 transition-colors"
@@ -362,22 +368,22 @@ const DestinationPage = () => {
 
             {activeTab === 'thingsToDo' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {destinationDetails.thingsToDo.map((activity, index) => (
+                {destination.thingsToDo.map((activity, index) => (
                   <div key={index} className="bg-white rounded-2xl shadow-md overflow-hidden">
-                    <div className="h-48 bg-gray-200" style={{ 
-                      backgroundImage: `url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80')`, 
-                      backgroundSize: 'cover', 
-                      backgroundPosition: 'center' 
+                    <div className="h-48 bg-gray-200" style={{
+                      backgroundImage: `url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80')`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
                     }}></div>
                     <div className="p-6">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-xl font-bold text-gray-800">{activity.title}</h3>
-                        <span className="text-orange-500 font-bold">{activity.price}</span>
+                        <h3 className="text-xl font-bold text-gray-800">{activity.title || "Not Available"}</h3>
+                        <span className="text-orange-500 font-bold">{activity.price || "Not Available"} {destination.currency}</span>
                       </div>
-                      <p className="text-gray-600 mb-4">{activity.description}</p>
+                      <p className="text-gray-600 mb-4">{activity.description || "Not Available"}</p>
                       <div className="flex items-center text-gray-500 text-sm">
                         <FaClock className="mr-2" />
-                        <span>{activity.duration}</span>
+                        <span>{activity.duration || "Not Available"}</span>
                       </div>
                     </div>
                   </div>
@@ -387,17 +393,17 @@ const DestinationPage = () => {
 
             {activeTab === 'accommodations' && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {destinationDetails.accommodations.map((accommodation, index) => (
+                {destination.accommodations.map((accommodation, index) => (
                   <div key={index} className="bg-white rounded-2xl shadow-md overflow-hidden">
-                    <div className="h-48 bg-gray-200" style={{ 
-                      backgroundImage: `url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80')`, 
-                      backgroundSize: 'cover', 
-                      backgroundPosition: 'center' 
+                    <div className="h-48 bg-gray-200" style={{
+                      backgroundImage: `url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80')`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
                     }}></div>
                     <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-800 mb-2">{accommodation.name}</h3>
-                      <p className="text-gray-600 mb-4">{accommodation.description}</p>
-                      <div className="text-orange-500 font-bold">{accommodation.price}</div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{accommodation.title || "Not Available"}</h3>
+                      <p className="text-gray-600 mb-4">{accommodation.description || "Not Available"}</p>
+                      <div className="text-orange-500 font-bold">{accommodation.price || "Not Available"} {destination.currency}</div>
                     </div>
                   </div>
                 ))}
@@ -406,17 +412,17 @@ const DestinationPage = () => {
 
             {activeTab === 'restaurants' && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {destinationDetails.restaurants.map((restaurant, index) => (
+                {destination.restaurants.map((restaurant, index) => (
                   <div key={index} className="bg-white rounded-2xl shadow-md overflow-hidden">
-                    <div className="h-48 bg-gray-200" style={{ 
-                      backgroundImage: `url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80')`, 
-                      backgroundSize: 'cover', 
-                      backgroundPosition: 'center' 
+                    <div className="h-48 bg-gray-200" style={{
+                      backgroundImage: `url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80')`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
                     }}></div>
                     <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-800 mb-2">{restaurant.name}</h3>
-                      <div className="text-gray-600 mb-2">{restaurant.cuisine} Cuisine</div>
-                      <div className="text-orange-500 font-bold">{restaurant.price}</div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{restaurant.title || "Not Available"}</h3>
+                      <div className="text-gray-600 mb-2">{restaurant.cuisine || "Not Available"} Cuisine</div>
+                      <div className="text-orange-500 font-bold">{restaurant.price || "Not Available"} {destination.currency}</div>
                     </div>
                   </div>
                 ))}
@@ -425,14 +431,14 @@ const DestinationPage = () => {
 
             {activeTab === 'travelTips' && (
               <div className="bg-white rounded-2xl shadow-md p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Travel Tips for {destinationDetails.name}</h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-4">Travel Tips for {destination.name || "Not Available"}</h3>
                 <ul className="space-y-3">
-                  {destinationDetails.travelTips.map((tip, index) => (
+                  {destination.travelTips.map((tip, index) => (
                     <li key={index} className="flex items-start">
                       <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
                         <div className="w-2 h-2 rounded-full bg-orange-500"></div>
                       </div>
-                      <span className="text-gray-600">{tip}</span>
+                      <span className="text-gray-600">{tip.title || "Not Available"}</span>
                     </li>
                   ))}
                 </ul>
