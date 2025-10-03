@@ -82,18 +82,18 @@ const AdminDestinationForm = () => {
         detailedDescription: destination.detailedDescription || "",
         currency: destination.currency || "AED",
         bestTimeToVisit: destination.bestTimeToVisit || "",
-        
+
         pricingDetails: destination.pricingDetails || [{
           perPerson: "",
           perRoom: "",
           perDay: "",
           taxFee: ""
         }],
-        
+
         overview: destination.overview || [{
           title: ""
         }],
-        
+
         thingsToDo: destination.thingsToDo || [{
           title: "",
           description: "",
@@ -101,7 +101,7 @@ const AdminDestinationForm = () => {
           price: "",
           imageUrl: null
         }],
-        
+
         accommodations: destination.accommodations || [{
           title: "",
           description: "",
@@ -109,7 +109,7 @@ const AdminDestinationForm = () => {
           priceType: "night",
           imageUrl: null
         }],
-        
+
         restaurants: destination.restaurants || [{
           title: "",
           description: "",
@@ -117,15 +117,15 @@ const AdminDestinationForm = () => {
           priceType: "person",
           imageUrl: null
         }],
-        
+
         travelTips: destination.travelTips || [{
           title: "",
           options: []
         }],
-        
+
         imageUrl: null
       });
-      
+
       // Set start and end months if bestTimeToVisit exists
       if (destination.bestTimeToVisit) {
         const months = destination.bestTimeToVisit.split(' - ');
@@ -152,7 +152,7 @@ const AdminDestinationForm = () => {
     console.log("value : ", value)
     const updated = [...formData[parentField]];
     updated[index][field] = value;
-    setFormData({...formData, [parentField]: updated });
+    setFormData({ ...formData, [parentField]: updated });
   };
 
   const handleImageChange = (e) => {
@@ -212,27 +212,33 @@ const AdminDestinationForm = () => {
     data.append('accommodations', JSON.stringify(formData.accommodations));
     data.append('restaurants', JSON.stringify(formData.restaurants));
     data.append('travelTips', JSON.stringify(formData.travelTips));
-    
-    
-// 🔹 Main destination image
-if (formData.imageUrl) {
-  data.append("imageUrl", formData.imageUrl);
-}
 
-// 🔹 Things to do image (first item ke liye)
-if (formData.thingsToDo[0]?.imageUrl) {
-  data.append("thingsToDoImageUrl", formData.thingsToDo[0].imageUrl);
-}
+    // 🔹 Main destination image
+    if (formData.imageUrl) {
+      data.append("imageUrl", formData.imageUrl);
+    }
 
-// 🔹 Accommodation image (first item ke liye)
-if (formData.accommodations[0]?.imageUrl) {
-  data.append("accommodationImageUrl", formData.accommodations[0].imageUrl);
-}
+    // 🔹 Things to do images (all items)
+    formData.thingsToDo.forEach((item) => {
+      if (item.imageUrl) {
+        data.append("thingsToDoImageUrl", item.imageUrl); // 👈 same field name multiple times
+      }
+    });
 
-// 🔹 Restaurant image (first item ke liye)
-if (formData.restaurants[0]?.imageUrl) {
-  data.append("restaurantImageUrl", formData.restaurants[0].imageUrl);
-}
+
+    formData.accommodations.forEach((item) => {
+      if (item.imageUrl) {
+        data.append("accommodationImageUrl", item.imageUrl);
+      }
+    });
+
+
+    formData.restaurants.forEach((item) => {
+      if (item.imageUrl) {
+        data.append("restaurantImageUrl", item.imageUrl);
+      }
+    });
+
 
     if (isEditing) {
       try {
@@ -280,7 +286,7 @@ if (formData.restaurants[0]?.imageUrl) {
     } finally {
       setLoading(false);
     }
-    
+
     console.log("Form Data:", formData);
   };
 
@@ -340,12 +346,12 @@ if (formData.restaurants[0]?.imageUrl) {
       >
         <form onSubmit={handleSubmit}>
           {/* Basic Information Section */}
-          <motion.div 
+          <motion.div
             className="mb-8 p-4 bg-gray-50 rounded-lg"
             variants={sectionVariants}
           >
             <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">Basic Information</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <motion.div variants={itemVariants}>
                 <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -512,14 +518,14 @@ if (formData.restaurants[0]?.imageUrl) {
           </motion.div>
 
           {/* Pricing Details Section */}
-          <motion.div 
+          <motion.div
             className="mb-8 p-4 bg-gray-50 rounded-lg"
             variants={sectionVariants}
           >
             <div className="flex justify-between items-center mb-4 pb-2 border-b">
               <h2 className="text-xl font-semibold text-gray-800">Pricing Details</h2>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <motion.div variants={itemVariants}>
                 <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -576,14 +582,14 @@ if (formData.restaurants[0]?.imageUrl) {
           </motion.div>
 
           {/* Overview Section */}
-          <motion.div 
+          <motion.div
             className="mb-8 p-4 bg-gray-50 rounded-lg"
             variants={sectionVariants}
           >
             <div className="flex justify-between items-center mb-4 pb-2 border-b">
               <h2 className="text-xl font-semibold text-gray-800">Overview</h2>
             </div>
-            
+
             {formData.overview.map((item, index) => (
               <motion.div key={index} variants={itemVariants}>
                 <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -609,7 +615,7 @@ if (formData.restaurants[0]?.imageUrl) {
                 </div>
               </motion.div>
             ))}
-            
+
             <motion.div variants={itemVariants}>
               <button
                 type="button"
@@ -622,14 +628,14 @@ if (formData.restaurants[0]?.imageUrl) {
           </motion.div>
 
           {/* Things To Do Section */}
-          <motion.div 
+          <motion.div
             className="mb-8 p-4 bg-gray-50 rounded-lg"
             variants={sectionVariants}
           >
             <div className="flex justify-between items-center mb-4 pb-2 border-b">
               <h2 className="text-xl font-semibold text-gray-800">Things To Do</h2>
             </div>
-            
+
             {formData.thingsToDo.map((item, index) => (
               <motion.div key={index} className="mb-6 p-4 bg-white rounded-lg shadow-sm" variants={itemVariants}>
                 <div className="flex justify-between items-center mb-3">
@@ -644,7 +650,7 @@ if (formData.restaurants[0]?.imageUrl) {
                     </button>
                   )}
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <motion.div variants={itemVariants}>
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -714,16 +720,16 @@ if (formData.restaurants[0]?.imageUrl) {
                 </motion.div>
               </motion.div>
             ))}
-            
+
             <motion.div variants={itemVariants}>
               <button
                 type="button"
-                onClick={() => addNestedField("thingsToDo", { 
-                  title: "", 
-                  description: "", 
-                  duration: "", 
-                  price: "", 
-                  imageUrl: null 
+                onClick={() => addNestedField("thingsToDo", {
+                  title: "",
+                  description: "",
+                  duration: "",
+                  price: "",
+                  imageUrl: null
                 })}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors flex items-center"
               >
@@ -733,14 +739,14 @@ if (formData.restaurants[0]?.imageUrl) {
           </motion.div>
 
           {/* Accommodations Section */}
-          <motion.div 
+          <motion.div
             className="mb-8 p-4 bg-gray-50 rounded-lg"
             variants={sectionVariants}
           >
             <div className="flex justify-between items-center mb-4 pb-2 border-b">
               <h2 className="text-xl font-semibold text-gray-800">Accommodations</h2>
             </div>
-            
+
             {formData.accommodations.map((item, index) => (
               <motion.div key={index} className="mb-6 p-4 bg-white rounded-lg shadow-sm" variants={itemVariants}>
                 <div className="flex justify-between items-center mb-3">
@@ -755,7 +761,7 @@ if (formData.restaurants[0]?.imageUrl) {
                     </button>
                   )}
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <motion.div variants={itemVariants}>
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -831,16 +837,16 @@ if (formData.restaurants[0]?.imageUrl) {
                 </motion.div>
               </motion.div>
             ))}
-            
+
             <motion.div variants={itemVariants}>
               <button
                 type="button"
-                onClick={() => addNestedField("accommodations", { 
-                  title: "", 
-                  description: "", 
-                  price: "", 
-                  priceType: "night", 
-                  imageUrl: null 
+                onClick={() => addNestedField("accommodations", {
+                  title: "",
+                  description: "",
+                  price: "",
+                  priceType: "night",
+                  imageUrl: null
                 })}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors flex items-center"
               >
@@ -850,14 +856,14 @@ if (formData.restaurants[0]?.imageUrl) {
           </motion.div>
 
           {/* Restaurants Section */}
-          <motion.div 
+          <motion.div
             className="mb-8 p-4 bg-gray-50 rounded-lg"
             variants={sectionVariants}
           >
             <div className="flex justify-between items-center mb-4 pb-2 border-b">
               <h2 className="text-xl font-semibold text-gray-800">Restaurants</h2>
             </div>
-            
+
             {formData.restaurants.map((item, index) => (
               <motion.div key={index} className="mb-6 p-4 bg-white rounded-lg shadow-sm" variants={itemVariants}>
                 <div className="flex justify-between items-center mb-3">
@@ -872,7 +878,7 @@ if (formData.restaurants[0]?.imageUrl) {
                     </button>
                   )}
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <motion.div variants={itemVariants}>
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -948,16 +954,16 @@ if (formData.restaurants[0]?.imageUrl) {
                 </motion.div>
               </motion.div>
             ))}
-            
+
             <motion.div variants={itemVariants}>
               <button
                 type="button"
-                onClick={() => addNestedField("restaurants", { 
-                  title: "", 
-                  description: "", 
-                  price: "", 
-                  priceType: "person", 
-                  imageUrl: null 
+                onClick={() => addNestedField("restaurants", {
+                  title: "",
+                  description: "",
+                  price: "",
+                  priceType: "person",
+                  imageUrl: null
                 })}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors flex items-center"
               >
@@ -967,14 +973,14 @@ if (formData.restaurants[0]?.imageUrl) {
           </motion.div>
 
           {/* Travel Tips Section */}
-          <motion.div 
+          <motion.div
             className="mb-8 p-4 bg-gray-50 rounded-lg"
             variants={sectionVariants}
           >
             <div className="flex justify-between items-center mb-4 pb-2 border-b">
               <h2 className="text-xl font-semibold text-gray-800">Travel Tips</h2>
             </div>
-            
+
             {formData.travelTips.map((item, index) => (
               <motion.div key={index} className="mb-6 p-4 bg-white rounded-lg shadow-sm" variants={itemVariants}>
                 <div className="flex justify-between items-center mb-3">
@@ -989,7 +995,7 @@ if (formData.restaurants[0]?.imageUrl) {
                     </button>
                   )}
                 </div>
-                
+
                 <div className="grid grid-cols-1 gap-4">
                   <motion.div variants={itemVariants}>
                     <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -1021,13 +1027,13 @@ if (formData.restaurants[0]?.imageUrl) {
                 </div>
               </motion.div>
             ))}
-            
+
             <motion.div variants={itemVariants}>
               <button
                 type="button"
-                onClick={() => addNestedField("travelTips", { 
-                  title: "", 
-                  options: [] 
+                onClick={() => addNestedField("travelTips", {
+                  title: "",
+                  options: []
                 })}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors flex items-center"
               >
@@ -1037,12 +1043,12 @@ if (formData.restaurants[0]?.imageUrl) {
           </motion.div>
 
           {/* Image Upload Section */}
-          <motion.div 
+          <motion.div
             className="mb-8 p-4 bg-gray-50 rounded-lg"
             variants={sectionVariants}
           >
             <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b">Destination Image</h2>
-            
+
             <motion.div variants={itemVariants}>
               <label className="block text-sm font-medium text-gray-700 mb-2">Image *</label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
