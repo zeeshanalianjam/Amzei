@@ -146,10 +146,6 @@ const AdminDestinationForm = () => {
   };
 
   const handleNestedInputChange = (parentField, index, field, value) => {
-    console.log("parent field : ", parentField)
-    console.log("index : ", index)
-    console.log("field : ", field)
-    console.log("value : ", value)
     const updated = [...formData[parentField]];
     updated[index][field] = value;
     setFormData({ ...formData, [parentField]: updated });
@@ -171,13 +167,13 @@ const AdminDestinationForm = () => {
       setStartMonth(value);
       setFormData((prev) => ({
         ...prev,
-        bestTimeToVisit: value && endMonth ? `${value} - ${endMonth}` : "",
+        bestTimeToVisit: value && endMonth ? `${value} to ${endMonth}` : "",
       }));
     } else {
       setEndMonth(value);
       setFormData((prev) => ({
         ...prev,
-        bestTimeToVisit: startMonth && value ? `${startMonth} - ${value}` : "",
+        bestTimeToVisit: startMonth && value ? `${startMonth} to ${value}` : "",
       }));
     }
   };
@@ -364,6 +360,7 @@ const AdminDestinationForm = () => {
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
+                  placeholder='Enter destination name'
                 />
               </motion.div>
 
@@ -378,8 +375,9 @@ const AdminDestinationForm = () => {
                     onChange={handleInputChange}
                     className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
+                    placeholder='Select location'
                   >
-                    <option value="">Select Location</option>
+                    <option value="" disabled>Select Location</option>
                     <option value="Dubai">Dubai</option>
                     <option value="Abu Dhabi">Abu Dhabi</option>
                     <option value="Sharjah">Sharjah</option>
@@ -425,6 +423,7 @@ const AdminDestinationForm = () => {
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
+                  placeholder='Enter short description'
                 />
               </motion.div>
 
@@ -439,7 +438,9 @@ const AdminDestinationForm = () => {
                     onChange={handleInputChange}
                     className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
+                    placeholder='Select currency'
                   >
+                    <option value="" disabled>Select Currency</option>
                     <option value="AED">AED – United Arab Emirates Dirham</option>
                     <option value="USD">USD – United States Dollar</option>
                     <option value="PKR">PKR – Pakistani Rupee</option>
@@ -460,7 +461,7 @@ const AdminDestinationForm = () => {
                       className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
                     >
-                      <option value="">-- Start Month --</option>
+                      <option value="" disabled>-- Start Month --</option>
                       <option value="January">January</option>
                       <option value="February">February</option>
                       <option value="March">March</option>
@@ -483,7 +484,7 @@ const AdminDestinationForm = () => {
                       className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
                     >
-                      <option value="">-- End Month --</option>
+                      <option value="" disabled>-- End Month --</option>
                       <option value="January">January</option>
                       <option value="February">February</option>
                       <option value="March">March</option>
@@ -512,6 +513,7 @@ const AdminDestinationForm = () => {
                   rows="4"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
+                  placeholder='Enter detailed description'
                 ></textarea>
               </motion.div>
             </div>
@@ -537,6 +539,7 @@ const AdminDestinationForm = () => {
                   onChange={(e) => handleNestedInputChange("pricingDetails", 0, "perPerson", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
+                  placeholder="e.g., 500"
                 />
               </motion.div>
 
@@ -550,6 +553,7 @@ const AdminDestinationForm = () => {
                   onChange={(e) => handleNestedInputChange("pricingDetails", 0, "perRoom", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
+                  placeholder="e.g., 200"
                 />
               </motion.div>
 
@@ -563,6 +567,7 @@ const AdminDestinationForm = () => {
                   onChange={(e) => handleNestedInputChange("pricingDetails", 0, "perDay", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
+                  placeholder="e.g., 100"
                 />
               </motion.div>
 
@@ -576,6 +581,7 @@ const AdminDestinationForm = () => {
                   onChange={(e) => handleNestedInputChange("pricingDetails", 0, "taxFee", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
+                  placeholder="e.g., 5"
                 />
               </motion.div>
             </div>
@@ -602,6 +608,7 @@ const AdminDestinationForm = () => {
                     onChange={(e) => handleNestedInputChange("overview", index, "title", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
+                    placeholder="e.g., Overview of Dubai"
                   />
                   {formData.overview.length > 1 && (
                     <button
@@ -662,6 +669,7 @@ const AdminDestinationForm = () => {
                       onChange={(e) => handleNestedInputChange("thingsToDo", index, "title", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
+                      placeholder="e.g., Visit Burj Khalifa"
                     />
                   </motion.div>
 
@@ -674,6 +682,7 @@ const AdminDestinationForm = () => {
                       value={item.duration}
                       onChange={(e) => handleNestedInputChange("thingsToDo", index, "duration", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="e.g., 2 hours"
                     />
                   </motion.div>
 
@@ -686,6 +695,7 @@ const AdminDestinationForm = () => {
                       value={item.price}
                       onChange={(e) => handleNestedInputChange("thingsToDo", index, "price", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="e.g., 100"
                     />
                   </motion.div>
 
@@ -716,6 +726,7 @@ const AdminDestinationForm = () => {
                     onChange={(e) => handleNestedInputChange("thingsToDo", index, "description", e.target.value)}
                     rows="3"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    placeholder="e.g., Experience the tallest building in the world"
                   ></textarea>
                 </motion.div>
               </motion.div>
@@ -773,6 +784,7 @@ const AdminDestinationForm = () => {
                       onChange={(e) => handleNestedInputChange("accommodations", index, "title", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
+                      placeholder="e.g., Burj Al Arab"
                     />
                   </motion.div>
 
@@ -786,6 +798,7 @@ const AdminDestinationForm = () => {
                       onChange={(e) => handleNestedInputChange("accommodations", index, "price", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
+                      placeholder="e.g., 500"
                     />
                   </motion.div>
 
@@ -833,6 +846,7 @@ const AdminDestinationForm = () => {
                     rows="3"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
+                    placeholder="e.g., Luxury hotel with stunning views"
                   ></textarea>
                 </motion.div>
               </motion.div>
@@ -890,6 +904,7 @@ const AdminDestinationForm = () => {
                       onChange={(e) => handleNestedInputChange("restaurants", index, "title", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
+                      placeholder="e.g., Al Mahara"
                     />
                   </motion.div>
 
@@ -903,6 +918,7 @@ const AdminDestinationForm = () => {
                       onChange={(e) => handleNestedInputChange("restaurants", index, "price", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
+                      placeholder="e.g., 200"
                     />
                   </motion.div>
 
@@ -950,6 +966,7 @@ const AdminDestinationForm = () => {
                     rows="3"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
+                    placeholder="e.g., Seafood restaurant with underwater dining"
                   ></textarea>
                 </motion.div>
               </motion.div>
@@ -1007,6 +1024,7 @@ const AdminDestinationForm = () => {
                       onChange={(e) => handleNestedInputChange("travelTips", index, "title", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
+                      placeholder="e.g., Best Time to Visit"
                     />
                   </motion.div>
 
@@ -1022,6 +1040,7 @@ const AdminDestinationForm = () => {
                       }}
                       rows="3"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="e.g., November to March, Avoid peak summer"
                     ></textarea>
                   </motion.div>
                 </div>
