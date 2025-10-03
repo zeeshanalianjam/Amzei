@@ -51,7 +51,7 @@ const addDestination = asyncHandler(async (req, res) => {
             }
         }
 
-        if (typeof body.travelTips === "string"){
+        if (typeof body.travelTips === "string") {
             try {
                 body.travelTips = JSON.parse(body.travelTips);
             } catch (err) {
@@ -115,26 +115,47 @@ const addDestination = asyncHandler(async (req, res) => {
             imageUrl = uploaded.secure_url;
         }
 
-        if (req.files?.thingsToDoImageUrl?.[0]) {
-            const uploaded = await uploadImageOnCloudinary(req.files.thingsToDoImageUrl[0].path);
-            if (body.thingsToDo && body.thingsToDo[0]) {
-                body.thingsToDo[0].imageUrl = uploaded.secure_url;
-            }
+        if (req.files?.thingsToDoImageUrl) {
+            body.thingsToDo = await Promise.all(
+                body.thingsToDo.map(async (item, index) => {
+                    const file = req.files.thingsToDoImageUrl[index];
+                    if (file) {
+                        const uploaded = await uploadImageOnCloudinary(file.path);
+                        return { ...item, imageUrl: uploaded.secure_url };
+                    }
+                    return item;
+                })
+            );
         }
 
-        if (req.files?.accommodationImageUrl?.[0]) {
-            const uploaded = await uploadImageOnCloudinary(req.files.accommodationImageUrl[0].path);
-            if (body.accommodations && body.accommodations[0]) {
-                body.accommodations[0].imageUrl = uploaded.secure_url;
-            }
+
+        if (req.files?.accommodationImageUrl) {
+            body.accommodations = await Promise.all(
+                body.accommodations.map(async (item, index) => {
+                    const file = req.files.accommodationImageUrl[index];
+                    if (file) {
+                        const uploaded = await uploadImageOnCloudinary(file.path);
+                        return { ...item, imageUrl: uploaded.secure_url };
+                    }
+                    return item;
+                })
+            );
         }
 
-        if (req.files?.restaurantImageUrl?.[0]) {
-            const uploaded = await uploadImageOnCloudinary(req.files.restaurantImageUrl[0].path);
-            if (body.restaurants && body.restaurants[0]) {
-                body.restaurants[0].imageUrl = uploaded.secure_url;
-            }
+
+        if (req.files?.restaurantImageUrl) {
+            body.restaurants = await Promise.all(
+                body.restaurants.map(async (item, index) => {
+                    const file = req.files.restaurantImageUrl[index];
+                    if (file) {
+                        const uploaded = await uploadImageOnCloudinary(file.path);
+                        return { ...item, imageUrl: uploaded.secure_url };
+                    }
+                    return item;
+                })
+            );
         }
+
 
         const destinationData = {
             ...body,

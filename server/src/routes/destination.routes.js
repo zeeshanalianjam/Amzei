@@ -7,9 +7,9 @@ const destinationRouter = Router()
 
 destinationRouter.route('/add').post(jwtVerify, upload.fields([
     { name: "imageUrl", maxCount: 1 },
-    { name: "thingsToDoImageUrl", maxCount: 1 },
-    { name: "accommodationImageUrl", maxCount: 1 },
-    { name: "restaurantImageUrl", maxCount: 1 }
+    { name: "thingsToDoImageUrl", maxCount: 10 },
+    { name: "accommodationImageUrl", maxCount: 10 },
+    { name: "restaurantImageUrl", maxCount: 10 }
 ]), addDestination);
 destinationRouter.route('/get-all-destinations').get(getDestinations);
 destinationRouter.route('/update/:id').put(jwtVerify, upload.single('image'), updateDestination);
