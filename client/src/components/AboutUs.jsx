@@ -1,12 +1,10 @@
 // src/components/AboutUs.js
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaArrowLeft, FaUsers, FaAward, FaGlobe, FaHeart, FaStar, FaArrowRight } from 'react-icons/fa';
+import { FaUsers, FaAward, FaGlobe, FaHeart, FaStar, FaArrowRight } from 'react-icons/fa';
 
 const AboutUs = () => {
-  const navigate = useNavigate();
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -87,22 +85,6 @@ const AboutUs = () => {
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-100 rounded-full filter blur-3xl opacity-20 -ml-32 -mb-32"></div>
       
       <div className="container relative z-10">
-        <motion.div 
-          className="mb-8"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <motion.button
-            onClick={() => navigate(-1)}
-            className="flex items-center text-orange-500 font-medium mb-6"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FaArrowLeft className="mr-2" /> Back
-          </motion.button>
-        </motion.div>
-        
         <motion.div 
           className="flex flex-col lg:flex-row items-center"
           variants={containerVariants}
