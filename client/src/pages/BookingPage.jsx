@@ -1,5 +1,5 @@
 // src/pages/BookingPage.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getTourById } from '../data/Tours';
 import { toast } from 'react-hot-toast';
@@ -13,49 +13,10 @@ const BookingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useSelector(state => state.user);
+  const places = useSelector(state => state.places.allDestinations);
   
   const [loading, setLoading] = useState(false);
   const [tour, setTour] = useState(null);
-  
-  // Destination pricing configuration
-  const destinationPricing = {
-    dubai: {
-      perPerson: 300,
-      perRoom: 100,
-      perDay: 40, // Price per day in Dubai
-      description: "Experience the luxury of Dubai with our exclusive tour package. Visit iconic landmarks like Burj Khalifa, Dubai Mall, Palm Jumeirah, and more.",
-      highlights: [
-        "Pickup from Dubai International Airport and drop at Burj Khalifa (30 km, 45 minutes)",
-        "Scenic route via Sheikh Zayed Road with city skyline views",
-        "Visit to Dubai Mall and Fountain Show (2 hours)",
-        "Desert Safari with dinner and entertainment (6 hours)"
-      ]
-    },
-    abu_dhabi: {
-      perPerson: 250,
-      perRoom: 90,
-      perDay: 20, // Price per day in Abu Dhabi
-      description: "Discover the capital of UAE with its rich cultural heritage and modern architecture.",
-      highlights: [
-        "Pickup from Abu Dhabi Airport and drop at Sheikh Zayed Grand Mosque (35 km, 50 minutes)",
-        "Route via Corniche Road with coastal views",
-        "Visit to Louvre Abu Dhabi and Qasr Al Watan (3 hours)",
-        "Yas Island tour including Ferrari World (4 hours)"
-      ]
-    },
-    sharjah: {
-      perPerson: 200,
-      perRoom: 80,
-      perDay: 15, // Price per day in Sharjah
-      description: "Explore the cultural capital of UAE with its museums, heritage sites, and beautiful mosques.",
-      highlights: [
-        "Pickup from Sharjah Airport and drop at Al Noor Mosque (20 km, 30 minutes)",
-        "Route via King Faisal Street with cultural landmarks",
-        "Visit to Sharjah Museum of Islamic Civilization (2 hours)",
-        "Al Qasba and Al Majaz Waterfront tour (3 hours)"
-      ]
-    }
-  };
   
   // Trip type pricing
   const tripTypePricing = {
@@ -74,6 +35,49 @@ const BookingPage = () => {
     historical: 180
   };
 
+  // Generate destination pricing dynamically from places
+  const destinationPricing = useMemo(() => {
+    const pricing = {};
+    
+    if (places && places.length > 0) {
+      places.forEach(destination => {
+        const key = destination.location.toLowerCase().replace(/\s+/g, '_');
+        
+        // Check if destination has pricing details, otherwise use defaults
+        if (destination.pricingDetails && destination.pricingDetails.length > 0) {
+          pricing[key] = {
+            perPerson: destination.pricingDetails[0].perPerson || 0,
+            perRoom: destination.pricingDetails[0].perRoom || 0,
+            perDay: destination.pricingDetails[0].perDay || 0,
+            taxFee: destination.pricingDetails[0].taxFee || 0,
+            description: destination.shortDescription || `Experience the beauty of ${destination.location}.`,
+            highlights: destination.highlights || [
+              `Visit ${destination.location}`,
+              `Explore the culture of ${destination.location}`,
+              `Enjoy the attractions in ${destination.location}`
+            ]
+          };
+        } else {
+          // Default pricing if no pricing details available
+          pricing[key] = {
+            perPerson: 250, // Default per person cost
+            perRoom: 100,  // Default per room cost
+            perDay: 30,    // Default per day cost
+            taxFee: 5,     // Default tax fee percentage
+            description: destination.shortDescription || `Experience the beauty of ${destination.location}.`,
+            highlights: destination.highlights || [
+              `Visit ${destination.location}`,
+              `Explore the culture of ${destination.location}`,
+              `Enjoy the attractions in ${destination.location}`
+            ]
+          };
+        }
+      });
+    }
+    
+    return pricing;
+  }, [places]);
+
   const [bookingData, setBookingData] = useState({
     FullName: '',
     email: '',
@@ -86,7 +90,7 @@ const BookingPage = () => {
     specialRequests: '',
     tripType: 'solo',
     kindOfTour: 'adventure',
-    numberOfDays: 1, // Default to 1 day
+    numberOfDays: 1,
     numberOfRooms: '',
     nationality: '',
   });
@@ -155,16 +159,16 @@ const BookingPage = () => {
   // Calculate pricing
   const calculatePricing = () => {
     const destination = bookingData.destination.toLowerCase().replace(' ', '_');
-    const destConfig = destinationPricing[destination] || { perPerson: 0, perRoom: 0, perDay: 0 };
+    const destConfig = destinationPricing[destination] || { perPerson: 0, perRoom: 0, perDay: 0, taxFee: 0 };
     
     const personCost = destConfig.perPerson * bookingData.numberOfGuests;
     const roomCost = destConfig.perRoom * bookingData.numberOfRooms;
-    const dayCost = destConfig.perDay * bookingData.numberOfDays; // Cost based on number of days
+    const dayCost = destConfig.perDay * bookingData.numberOfDays;
     const tripCost = tripTypePricing[bookingData.tripType] || 0;
     const tourCost = tourTypePricing[bookingData.kindOfTour] || 0;
     
     const subtotal = personCost + roomCost + dayCost + tripCost + tourCost;
-    const tax = subtotal * 0.05; // 5% tax
+    const tax = subtotal * (destConfig.taxFee / 100); // Use taxFee from destination config
     const total = subtotal + tax;
     
     return {
@@ -236,6 +240,24 @@ const BookingPage = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                       required
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Destination</label>
+                    <select
+                      name="destination"
+                      value={bookingData.destination}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      required
+                    >
+                      <option value="">Select a destination</option>
+                      {places && places.map((destination, index) => (
+                        <option key={index} value={destination.location}>
+                          {destination.location}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>
@@ -422,7 +444,7 @@ const BookingPage = () => {
                     <span>AED {pricing.subtotal}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Tax (5%)</span>
+                    <span>Tax ({destinationInfo?.taxFee || 0}%)</span>
                     <span>AED {pricing.tax.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-200">
