@@ -22,6 +22,8 @@ const destinationSchema = new mongoose.Schema({
     overview: [
         {
             title: { type: String, required: true },
+            highlights: { type: [String], default: [] },
+            languages: { type: [String], default: [] },
         }
     ],
     thingsToDo: [
