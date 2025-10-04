@@ -29,6 +29,8 @@ const AdminDestinationForm = () => {
     detailedDescription: "",
     currency: "AED",
     bestTimeToVisit: "",
+    reviews: [],
+    rating: 3.4,
 
     pricingDetails: [{
       perPerson: "",
@@ -38,7 +40,8 @@ const AdminDestinationForm = () => {
     }],
 
     overview: [{
-      title: ""
+      title: "",
+      highlights: []
     }],
 
     thingsToDo: [{
@@ -82,6 +85,9 @@ const AdminDestinationForm = () => {
         detailedDescription: destination.detailedDescription || "",
         currency: destination.currency || "AED",
         bestTimeToVisit: destination.bestTimeToVisit || "",
+        reviews: destination.reviews || [],
+        rating: destination.rating || 3.4,
+
 
         pricingDetails: destination.pricingDetails || [{
           perPerson: "",
@@ -91,7 +97,8 @@ const AdminDestinationForm = () => {
         }],
 
         overview: destination.overview || [{
-          title: ""
+          title: "",
+          highlights: []
         }],
 
         thingsToDo: destination.thingsToDo || [{
@@ -128,7 +135,7 @@ const AdminDestinationForm = () => {
 
       // Set start and end months if bestTimeToVisit exists
       if (destination.bestTimeToVisit) {
-        const months = destination.bestTimeToVisit.split(' - ');
+        const months = destination.bestTimeToVisit.split(' to ');
         if (months.length === 2) {
           setStartMonth(months[0]);
           setEndMonth(months[1]);
@@ -202,6 +209,8 @@ const AdminDestinationForm = () => {
     data.append('detailedDescription', formData.detailedDescription);
     data.append('currency', formData.currency);
     data.append('bestTimeToVisit', formData.bestTimeToVisit);
+    data.append('rating', formData.rating);
+    data.append('reviews', formData.reviews);
     data.append('pricingDetails', JSON.stringify(formData.pricingDetails));
     data.append('overview', JSON.stringify(formData.overview));
     data.append('thingsToDo', JSON.stringify(formData.thingsToDo));
@@ -502,6 +511,40 @@ const AdminDestinationForm = () => {
                 </div>
               </motion.div>
 
+              <motion.div variants={itemVariants}>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Rating
+                </label>
+                <input
+                  type="number"
+                  name="rating"
+                  value={formData.rating}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                  placeholder='Enter rating'
+                />
+              </motion.div>
+
+              <motion.div variants={itemVariants} className="md:col-span-2">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Reviews (comma separated)
+                </label>
+                <textarea
+                  value={formData.reviews?.join(', ')}
+                  onChange={(e) => {
+                    const options = e.target.value.split(',').map(opt => opt.trim());
+                    setFormData({
+                      ...formData,
+                      reviews: options
+                    });
+                  }}
+                  rows="3"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  placeholder="e.g., Review 1, Review 2, Review 3"
+                ></textarea>
+              </motion.div>
+
               <motion.div variants={itemVariants} className="md:col-span-2">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Detailed Description *
@@ -516,6 +559,8 @@ const AdminDestinationForm = () => {
                   placeholder='Enter detailed description'
                 ></textarea>
               </motion.div>
+
+
             </div>
           </motion.div>
 
@@ -535,7 +580,7 @@ const AdminDestinationForm = () => {
                 </label>
                 <input
                   type="number"
-                  value={formData.pricingDetails[0].perPerson}
+                  value={formData?.pricingDetails[0]?.perPerson}
                   onChange={(e) => handleNestedInputChange("pricingDetails", 0, "perPerson", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
@@ -549,7 +594,7 @@ const AdminDestinationForm = () => {
                 </label>
                 <input
                   type="number"
-                  value={formData.pricingDetails[0].perRoom}
+                  value={formData?.pricingDetails[0]?.perRoom}
                   onChange={(e) => handleNestedInputChange("pricingDetails", 0, "perRoom", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
@@ -563,7 +608,7 @@ const AdminDestinationForm = () => {
                 </label>
                 <input
                   type="number"
-                  value={formData.pricingDetails[0].perDay}
+                  value={formData?.pricingDetails[0]?.perDay}
                   onChange={(e) => handleNestedInputChange("pricingDetails", 0, "perDay", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
@@ -577,7 +622,7 @@ const AdminDestinationForm = () => {
                 </label>
                 <input
                   type="number"
-                  value={formData.pricingDetails[0].taxFee}
+                  value={formData?.pricingDetails[0]?.taxFee}
                   onChange={(e) => handleNestedInputChange("pricingDetails", 0, "taxFee", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
@@ -597,24 +642,45 @@ const AdminDestinationForm = () => {
             </div>
 
             {formData.overview.map((item, index) => (
-              <motion.div key={index} variants={itemVariants}>
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Title *
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={item.title}
-                    onChange={(e) => handleNestedInputChange("overview", index, "title", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    required
-                    placeholder="e.g., Overview of Dubai"
-                  />
+              <motion.div key={index} className="mb-6 p-4 bg-white rounded-lg shadow-sm" variants={itemVariants}>
+                <div className="grid grid-cols-1 gap-4">
+                  <motion.div variants={itemVariants}>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Title *
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={item.title}
+                        onChange={(e) => handleNestedInputChange("overview", index, "title", e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        required
+                        placeholder="e.g., Overview of Dubai"
+                      />
+                    </div>
+                  </motion.div>
+
+                  <motion.div variants={itemVariants}>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Highlights (comma separated)
+                    </label>
+                    <textarea
+                      value={item.highlights?.join(', ')}
+                      onChange={(e) => {
+                        const highlights = e.target.value.split(',').map(opt => opt.trim());
+                        handleNestedInputChange("overview", index, "highlights", highlights);
+                      }}
+                      rows="3"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="e.g., November to March, Avoid peak summer"
+                    ></textarea>
+                  </motion.div>
                 </div>
               </motion.div>
+
             ))}
 
-           
+
           </motion.div>
 
           {/* Things To Do Section */}
@@ -1018,7 +1084,7 @@ const AdminDestinationForm = () => {
                     <textarea
                       value={item.options.join(', ')}
                       onChange={(e) => {
-                        const options = e.target.value.split(',').map(opt => opt.trim()).filter(opt => opt);
+                        const options = e.target.value.split(',').map(opt => opt.trim());
                         handleNestedInputChange("travelTips", index, "options", options);
                       }}
                       rows="3"
