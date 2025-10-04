@@ -610,28 +610,11 @@ const AdminDestinationForm = () => {
                     required
                     placeholder="e.g., Overview of Dubai"
                   />
-                  {formData.overview.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeNestedField("overview", index)}
-                      className="p-2 text-red-500 hover:text-red-700"
-                    >
-                      <FaMinus />
-                    </button>
-                  )}
                 </div>
               </motion.div>
             ))}
 
-            <motion.div variants={itemVariants}>
-              <button
-                type="button"
-                onClick={() => addNestedField("overview", { title: "" })}
-                className="mt-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors flex items-center"
-              >
-                <FaPlus className="mr-2" /> Add Overview
-              </button>
-            </motion.div>
+           
           </motion.div>
 
           {/* Things To Do Section */}
