@@ -45,17 +45,17 @@ const ContactPage = () => {
               <div className="space-y-4">
                 <div>
                   <h3 className="font-semibold text-gray-800">Address</h3>
-                  <p className="text-gray-600">123 Sheikh Zayed Road, Dubai, UAE</p>
+                  <p className="text-gray-600">Ras AL-khaimah marjan, Dubai, UAE</p>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold text-gray-800">Phone</h3>
-                  <p className="text-gray-600">+971 4 123 4567</p>
+                  <p className="text-gray-600">0581867078</p>
                 </div>
                 
                 <div>
                   <h3 className="font-semibold text-gray-800">Email</h3>
-                  <p className="text-gray-600">info@uaetours.com</p>
+                  <p className="text-gray-600">ubaidali052@icloud.com</p>
                 </div>
                 
                 <div>

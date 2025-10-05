@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\admin",
+    "\\admin\\src",
+    "\\admin\\src\\common",
+    "\\client",
+    "\\client\\src",
+    "\\client\\src\\components",
+    "\\client\\src\\pages",
+    "\\server",
+    "\\server\\src"
+  ],
+  "SelectedNode": "\\client\\src",
+  "PreviewInSolutionExplorer": false
+}
