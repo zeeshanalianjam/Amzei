@@ -221,7 +221,7 @@ const ContactPage = () => {
               <div className="mt-8 p-4 bg-orange-50 rounded-lg">
                 <h3 className="font-semibold text-gray-800 mb-2">Need Immediate Assistance?</h3>
                 <p className="text-gray-600 text-sm">For urgent inquiries, please call our emergency support line available 24/7.</p>
-                <p className="text-orange-500 font-medium mt-2">+971 50 123 4567</p>
+                <p className="text-orange-500 font-medium mt-2">0581867078</p>
               </div>
             </div>
           </motion.div>
@@ -385,7 +385,7 @@ const ContactPage = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/30 flex items-center justify-center">
               <div className="text-center text-white bg-black bg-opacity-50 p-6 rounded-xl">
                 <FaMapMarkerAlt className="text-3xl mx-auto mb-2" />
-                <h3 className="text-xl font-bold">123 Sheikh Zayed Road, Dubai</h3>
+                <h3 className="text-xl font-bold">Ras AL-Khaima marjan</h3>
                 <p>Interactive map would be displayed here</p>
               </div>
             </div>
