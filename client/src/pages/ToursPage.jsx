@@ -1,7 +1,7 @@
 // src/pages/ToursPage.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { tours } from '../data/tours';
+import { tours } from '../data/Tours';
 
 const ToursPage = () => {
   return (

@@ -1,4 +1,8 @@
-const baseURL = "http://localhost:8080";
+const viteUrl = import.meta.env.VITE_BACKEND_URL.split(",");
+const [localUrl, prodUrl] = viteUrl;
+
+const baseURL =
+  import.meta.env.MODE === "development" ? localUrl : prodUrl;
 
 
 const summaryApi = {
@@ -22,22 +26,21 @@ const summaryApi = {
         url: "/api/v1/tour-bookings/book",
         method: "POST"
     },
-    fetchAllTourBookings: {
-        url: "/api/v1/tour-bookings/fetch-all-tour-bookings",
+    fetchAllDestinations : {
+        url: "/api/v1/destinations/get-all-destinations",
         method: "GET"
     },
-    fetchTourBookingByUser: {
-        url: "/api/v1/tour-bookings/fetch-tour-booking-by-user",
-        method: "GET"
-    },
-    fetchTourBookingById: {
-        url: "/api/v1/tour-bookings/fetch-tour-booking/:bookingId",
-        method: "GET"
-    },
-    updateTourBookingStatus: {
-        url: "/api/v1/tour-bookings/update/:bookingId",
-        method: "PUT"
-    }
+
+     // Payment endpoints
+  createPaymentOrder: {
+    url: '/payment/create-order',
+    method: 'post'
+  },
+  
+  verifyPayment: {
+    url: '/payment/verify',
+    method: 'post'
+  },
 }
 
 export { baseURL, summaryApi };

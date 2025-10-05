@@ -16,8 +16,6 @@ const Header = () => {
   const [loading, setLoading] = useState(false);
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
-  console.log("User from Redux:", user);
-  console.log("Access Token:", accessToken);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -82,7 +80,7 @@ const Header = () => {
               <ul className="flex flex-col md:flex-row md:space-x-4 space-y-2 md:space-y-0">
                 {[
                   { name: 'Home', path: '/' },
-                  { name: 'Destinations', path: '/#destinations' },
+                  { name: 'Destinations', path: '/destinations' },
                   { name: 'Tours', path: '/tours' },
                   { name: 'About', path: '/about' },
                   { name: 'Contact', path: '/contact' }

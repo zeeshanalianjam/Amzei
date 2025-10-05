@@ -1,8 +1,12 @@
 import { User } from "../models/user.model.js";
+import { sendEmail } from "../services/verifyEmail.js";
 import { apiError } from "../utils/apiError.js";
 import { apiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
+import { verifyEmailTemplate } from "../utils/verifyEmailTemplate.js";
+import bcrypt from "bcrypt";
+import { welcomeEmailTemplate } from "../utils/welcomeEmailTemplate.js";
 
 const generateAccessAndRefreshTokens = async userId => {
   try {
@@ -55,15 +59,41 @@ const register = asyncHandler(async (req, res) => {
       return res.status(400).json(new apiError(400, "You must accept the terms and conditions"));
     }
 
+      const opt = Math.floor(100000 + Math.random() * 900000);
+
+    const otpExpiryTime = Date.now() + 60 * 60 * 1000;
+
+    const otpStandardTime = new Date(otpExpiryTime).toLocaleString('en-US', {
+      timeZone: 'Asia/Karachi',
+      timezone: 'IST',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+
+
     const newUser = await User.create({
       username,
       email,
       phone,
       password,
       termsConditions,
+      forgotPasswordOTP: opt,
+      forgotPasswordOTPExpiryTime: otpExpiryTime,
     });
 
     const data = await User.findById(newUser._id).select("-password -refreshToken");
+
+     await sendEmail({
+      sendTo: newUser.email,
+      subject: 'Welcome to our platform',
+      html: welcomeEmailTemplate({
+        name: newUser.username,
+        otp: opt,
+        otpExpiryTime: otpStandardTime,
+      }),
+    });
 
     return res.status(201).json(new apiResponse(201, "You are registered successfully", true, data));
 
@@ -92,9 +122,13 @@ const login = asyncHandler(async (req, res) => {
     if (!isMatch) {
       return res.status(403).json(new apiError(403, "Invalid credentials - Password does not match"));
     }
-    
-    if(user?.role === 'admin' && user?.email !== 'admin@gmail.com')
-      { return res.status(404).json(new apiError(404, "You are not an admin!")); }
+
+    const adminEmails = [
+      "admin@gmail.com",
+      "ubaidali052@icloud.com",
+      "nangyaluoa249@gmail.com"
+    ];
+    if (user?.role === 'admin' && !adminEmails.includes(user?.email)) { return res.status(404).json(new apiError(404, "You are not an admin!")); }
 
     await User.findByIdAndUpdate(user._id, { $set: { forgotPasswordOTP: null, forgotPasswordOTPExpiry: null, rememberMe } }, { new: true });
 
@@ -238,7 +272,286 @@ const fetchAllUsers = asyncHandler(async (req, res) => {
   }
 });
 
+const updateStatus = asyncHandler(async (req, res) => {
+  const userId = req.params.userId;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json(new apiError(400, "Status is required"));
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res.status(404).json(new apiError(404, "User not found"));
+  }
+
+  user.status = status;
+  await user.save();
+
+  res.status(200).json(new apiResponse(200, "User status changed successfully", { id: user._id, status: user.status }));
+});
+
+const forgotPassword = asyncHandler(async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res
+        .status(400)
+        .json(
+          new apiError(
+            400,
+            'Email is required',
+          )
+        );
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json(
+          new apiError(
+            404,
+            'Email not found. please enter a valid email',
+          )
+        );
+    }
+
+    const opt = Math.floor(100000 + Math.random() * 900000);
+
+    const otpExpiryTime = Date.now() + 60 * 60 * 1000;
+
+    const otpStandardTime = new Date(otpExpiryTime).toLocaleString('en-US', {
+      timeZone: 'Asia/Karachi',
+      timezone: 'IST',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      {
+        $set: {
+          forgotPasswordOTP: opt,
+          forgotPasswordOTPExpiry: otpExpiryTime,
+        },
+      },
+      {
+        new: true,
+        runValidators: true, // to ensure that the updated data meets the schema validation
+      }
+    ).select('-password -refreshToken');
+
+    await sendEmail({
+      sendTo: user.email,
+      subject: 'Forgot Password OTP',
+      html: verifyEmailTemplate({
+        name: user.username,
+        otp: opt,
+        otpExpiryTime: otpStandardTime,
+      }),
+    });
+
+    return res.status(200).json(
+      new apiResponse(
+        200,
+        'OTP sent to your email successfully',
+        {
+          user: updatedUser,
+          otp: opt,
+          otpExpiryTime: otpStandardTime,
+        },
+        true
+      )
+    );
+  } catch (error) {
+    console.error('Error in forgotPassword:', error);
+    return res
+      .status(500)
+      .json(
+        new apiError(
+          500,
+          'Internal Server Error: Failed to send OTP',
+        )
+      );
+  }
+});
+
+const forgotPasswordOTPVerification = asyncHandler(async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res
+        .status(400)
+        .json(
+          new apiError(
+            400,
+            'Email and OTP is required',
+          )
+        );
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json(
+          new apiError(
+            404,
+            'Email not found',
+          )
+        );
+    }
+
+    if (user.forgotPasswordOTP !== otp) {
+      return res
+        .status(400)
+        .json(
+          new apiError(400, 'Invalid OTP')
+        );
+    }
+
+    const expiryStandardTime = new Date(user.forgotPasswordOTPExpiry).toLocaleString('eng-US', {
+      timeZone: 'Asia/Karachi',
+      timezone: 'IST',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+
+    if (new Date() > user.forgotPasswordOTPExpiry) {
+      return res
+        .status(400)
+        .json(
+          new apiError(
+            400,
+            `OTP expired at ${expiryStandardTime}. Please request a new OTP.`
+          )
+        );
+    }
+
+    return res.status(200).json(
+      new apiResponse(
+        200,
+        'OTP verified successfully',
+        {
+          user: {
+            _id: user._id,
+            name: user.username,
+            email: user.email,
+            mobile: user.mobile,
+          },
+          otpExpiryTime: expiryStandardTime,
+        }
+      )
+    );
+  } catch (error) {
+    console.error('Error in forgotPasswordOTPVerification:', error);
+    return res
+      .status(500)
+      .json(
+        new apiError(
+          500,
+          'Internal Server Error, OTP Verification Failed',
+        )
+      );
+  }
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+
+  try {
+    const { email, newPassword, confirmPassword } = req.body;
+
+    if (!email || !newPassword || !confirmPassword) {
+      return res
+        .status(400)
+        .json(
+          new apiError(
+            400,
+            'Email, New Password, and Confirm Password are required',
+          )
+        );
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json(
+          new apiError(
+            404,
+            'Email not found',
+          )
+        );
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json(
+          new apiError(
+            400,
+            'New Password and Confirm Password do not match',
+          )
+        );
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await User.findByIdAndUpdate(
+      user._id,
+      {
+        $set: {
+          password: hashedPassword,
+          forgotPasswordOTP: null, // clear the OTP after password reset
+          forgotPasswordOTPExpiry: null, // clear the OTP expiry time after password reset
+        },
+      },
+      {
+        new: true,
+        runValidators: true, // to ensure that the updated data meets the schema validation
+      }
+    ).select('-password -refreshToken');
+
+    return res.status(200).json(
+      new apiResponse(
+        200,
+        'Password reset successfully',
+        {
+          user: {
+            _id: user._id,
+            name: user.username,
+            email: user.email,
+            mobile: user.mobile,
+          },
+        },
+        true
+      )
+    );
+  } catch (error) {
+    console.error('Error in resetPassword:', error);
+    return res
+      .status(500)
+      .json(
+        new apiError(
+          500,
+        )
+      );
+  }
+});
 
 
 
-export { register, login, logout, refreshToken, fetchAllUsers };
+
+
+export { register, login, logout, refreshToken, fetchAllUsers, updateStatus, forgotPassword, forgotPasswordOTPVerification, resetPassword };

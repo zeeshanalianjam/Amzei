@@ -8,7 +8,7 @@ const bookATour = asyncHandler(async (req, res) => {
     try {
         const {FullName, email, phone, destination, preferredTravelDate, checkIn, checkOut, numberOfGuests, specialRequests, tripType,  kindOfTour, numberOfDays, numberOfRooms, nationality} = req.body;
 
-        if (!FullName || !email || !phone || !destination || !preferredTravelDate  || !numberOfGuests || !tripType || !kindOfTour || !numberOfDays || !numberOfRooms || !nationality) {
+        if (!FullName || !email || !phone || !destination || !preferredTravelDate  || !numberOfGuests || !tripType || !kindOfTour || !numberOfDays) {
             return res.status(400).json(new apiError(400, "Please fill all required fields"));
         }
 

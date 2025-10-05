@@ -18,11 +18,17 @@ const uploadImageOnCloudinary = async (imagePath) => {
             resource_type: 'image',
         });
 
-        fs.unlinkSync(imagePath); 
+         // ✅ Safe delete: only if file exists
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    }
 
         return result; 
     } catch (error) {
-        fs.unlinkSync(imagePath);
+         // ✅ Safe delete even on error
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    }
         console.error("Error uploading image to Cloudinary:", error);
         throw new Error('Image upload failed');
     }

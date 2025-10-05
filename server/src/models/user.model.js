@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     termsConditions: { type: Boolean, required: true, default: false },
     password: { type: String, required: true },
     forgotPasswordOTP: { type: String, default: null },
-    forgotPasswordOTPExpiry: { type: String, default: null },
+    forgotPasswordOTPExpiry: { type: Date, default: null },
     rememberMe: {type: Boolean, default: false},
     refreshToken: {
         type: String,
@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['active', 'inactive'],
-        default: 'active'
+        default: 'inactive'
     }
 }, { timestamps: true });
 

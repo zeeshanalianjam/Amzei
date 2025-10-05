@@ -12,12 +12,14 @@ import {
   FaBars,
   FaTimes,
   FaBell,
-  FaSearch
+  FaSearch,
+  FaChevronLeft,
+  FaChevronRight
 } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 const AdminLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -45,17 +47,26 @@ const AdminLayout = () => {
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <motion.div 
-        className={`bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition duration-200 ease-in-out z-30`}
+        className={`bg-gray-800 text-white space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} md:relative md:transition-all md:duration-300 z-30`}
         initial={false}
-        animate={{ width: sidebarOpen ? '16rem' : '0' }}
+        animate={{ width: sidebarOpen ? '16rem' : '4rem' }}
       >
         <div className="flex items-center justify-between mb-10 px-4">
-          <h1 className="text-2xl font-bold text-orange-500">Amzei Admin</h1>
+          {sidebarOpen && (
+            <motion.h1 
+              className="text-2xl font-bold text-orange-500"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              Amzei Admin
+            </motion.h1>
+          )}
           <button 
             onClick={toggleSidebar}
-            className="md:hidden text-gray-400 hover:text-white focus:outline-none"
+            className="text-gray-400 hover:text-white focus:outline-none p-2 rounded-full hover:bg-gray-700"
           >
-            <FaTimes />
+            {sidebarOpen ? <FaChevronLeft /> : <FaChevronRight />}
           </button>
         </div>
         
@@ -64,12 +75,21 @@ const AdminLayout = () => {
             <Link
               key={item.name}
               to={item.path}
-              className={`flex items-center space-x-3 py-2.5 px-4 rounded transition duration-200 ${
+              className={`flex items-center py-2.5 px-4 rounded transition duration-200 ${
                 location.pathname === item.path ? 'bg-orange-600 text-white' : 'text-gray-300 hover:bg-gray-700'
               }`}
             >
-              <span>{item.icon}</span>
-              <span>{item.name}</span>
+              <span className="text-lg">{item.icon}</span>
+              {sidebarOpen && (
+                <motion.span 
+                  className="ml-3"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {item.name}
+                </motion.span>
+              )}
             </Link>
           ))}
         </nav>
@@ -77,10 +97,19 @@ const AdminLayout = () => {
         <div className="absolute bottom-0 w-full p-4">
           <button 
             onClick={handleLogout}
-            className="flex items-center space-x-3 py-2.5 px-4 rounded text-gray-300 hover:bg-gray-700 transition duration-200 w-full"
+            className="flex items-center w-full py-2.5 px-4 rounded text-gray-300 hover:bg-gray-700 transition duration-200"
           >
-            <FaSignOutAlt />
-            <span>Logout</span>
+            <span className="text-lg"><FaSignOutAlt /></span>
+            {sidebarOpen && (
+              <motion.span 
+                className="ml-3"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                Logout
+              </motion.span>
+            )}
           </button>
         </div>
       </motion.div>

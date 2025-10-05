@@ -8,6 +8,7 @@ import { Axios } from '../common/axios';
 import { toast } from 'react-hot-toast';
 import { setAdmin } from '../adminStore/adminSlice';
 import { useDispatch } from 'react-redux';
+import ForgotPasswordPopup from '../components/ForgotPasswordPopup';
 
 const AdminLogin = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const AdminLogin = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -131,11 +133,11 @@ const AdminLogin = () => {
           variants={itemVariants}
         >
           <motion.div
-            className="mx-auto w-20 h-20 bg-orange-500 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4"
+            className="mx-auto w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4"
             whileHover={{ rotate: 10, scale: 1.1 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            UAE
+            Amzei
           </motion.div>
           <motion.h1
             className="text-3xl font-bold text-gray-800"
@@ -173,7 +175,7 @@ const AdminLogin = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="admin@uaetours.com"
+                placeholder="Enter admin email"
                 required
               />
             </div>
@@ -227,9 +229,9 @@ const AdminLogin = () => {
               />
               <span className="ml-2 text-sm text-gray-600">Remember me</span>
             </label>
-            <a href="#" className="text-sm text-orange-500 hover:text-orange-600 transition-colors">
+            <button type="button" onClick={() => setIsForgotPasswordOpen(true)} className="text-sm text-orange-500 hover:text-orange-600 transition-colors">
               Forgot password?
-            </a>
+            </button>
           </motion.div>
 
           {/* Submit Button */}
@@ -276,8 +278,14 @@ const AdminLogin = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
       >
-        © {new Date().getFullYear()} UAE Tours Admin Panel. All rights reserved.
+        © {new Date().getFullYear()} Amzei Travelers Admin Panel. All rights reserved.
       </motion.div>
+
+      {/* Forgot Password Popup */}
+      <ForgotPasswordPopup 
+        isOpen={isForgotPasswordOpen}
+        onClose={() => setIsForgotPasswordOpen(false)}
+      />
     </div>
   );
 };

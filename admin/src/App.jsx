@@ -23,6 +23,8 @@ import { setAllUsers, setAllTours, setAllDestinations, setAllEvents, setAllTourB
 import ComingSoon from './components/ComingSoon';
 import ComingSoonCSS3D from './components/ComingSoonCSS3D';
 import AdminBookings from './admin/AdminBookings';
+import OTPPage from './components/OTPPage';
+import ResetPasswordPage from './components/ResetPasswordPage';
 
 
 
@@ -127,6 +129,8 @@ function App() {
         <Routes>
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
+           <Route path="/admin/otp" element={<OTPPage />} />
+          <Route path="/admin/reset-password" element={<ResetPasswordPage />} />
           <Route path="/admin" element={<ProtectedRoute>
               <AdminLayout />
             </ProtectedRoute>}>

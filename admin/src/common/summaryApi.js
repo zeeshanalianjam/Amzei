@@ -1,4 +1,8 @@
-const baseURL = "http://localhost:8080";
+const viteUrl = import.meta.env.VITE_BACKEND_URL.split(",");
+const [localUrl, prodUrl] = viteUrl;
+
+const baseURL =
+  import.meta.env.MODE === "development" ? localUrl : prodUrl;
 
 
 const summaryApi = {
@@ -14,6 +18,10 @@ const summaryApi = {
         url: "/api/v1/users/logout",
         method: "POST"
     },
+    updateUserStatus: (userId) => ({
+        url: `/api/v1/users/status/${userId}`,
+        method: "PUT"
+    }),
     fetchTourBookingByUser: {
         url: "/api/v1/tour-bookings/fetch-tour-booking-by-user",
         method: "GET"
@@ -89,6 +97,20 @@ const summaryApi = {
         url: `/api/v1/events/delete/${id}`,
         method: "DELETE"
     }),
+
+    // forgot password api's
+    forgotPassword: {
+        url: "/api/v1/users/forgot-password",
+        method: "PUT"
+    },
+    verifyOTP: {
+        url: "/api/v1/users/forgot-password-verify-otp",
+        method: "PUT"
+    },
+    resetPassword: {
+        url: "/api/v1/users/forgot-password-reset-password",
+        method: "PUT"
+    }
 }
 
 export { baseURL, summaryApi };

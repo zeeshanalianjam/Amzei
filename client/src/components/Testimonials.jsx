@@ -1,6 +1,6 @@
 // src/components/Testimonials.js
 import React from 'react';
-import { testimonials } from '../data/testimonials';
+import { testimonials } from '../data/Testimonials';
 
 const Testimonials = () => {
   return (
