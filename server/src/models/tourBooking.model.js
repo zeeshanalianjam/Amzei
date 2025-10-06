@@ -31,6 +31,7 @@ const tourBookingSchema = new mongoose.Schema({
     numberOfGuests: {
         type: Number,
         default: 1,
+        min: 1,
     },
     specialRequests: {
         type: String,
@@ -58,16 +59,54 @@ const tourBookingSchema = new mongoose.Schema({
     numberOfDays: {
         type: Number,
         default: 1,
+        min: 1,
     },
     numberOfRooms: {
         type: Number,
         default: 0,
+        min: 0,
     },
     nationality: {
         type: String,
         trim: true,
         default: "Not specified",
     },
+    pricingDetails: [
+        {
+            personCost: {
+                type: Number,
+                required: true,
+            },
+            roomCost: {
+                type: Number,
+                required: true,
+            },
+            dayCost: {
+                type: Number,
+                required: true,
+            },
+            tripTypeCost: {
+                type: Number,
+                required: true,
+            },
+            tourTypeCost: {
+                type: Number,
+                required: true,
+            },
+            subtotal: {
+                type: Number,
+                required: true,
+            },
+            tax: {
+                type: Number,
+                required: true,
+            },
+            total: {
+                type: Number,
+                required: true,
+            },
+        }
+    ]
 }, { timestamps: true });
 
 export const TourBooking = mongoose.model("TourBooking", tourBookingSchema);

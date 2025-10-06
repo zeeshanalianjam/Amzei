@@ -6,51 +6,68 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const bookATour = asyncHandler(async (req, res) => {
     try {
-        const {FullName, email, phone, destination, preferredTravelDate, checkIn, checkOut, numberOfGuests, specialRequests, tripType,  kindOfTour, numberOfDays, numberOfRooms, nationality} = req.body;
+        let body = { ...req.body };
 
-        if (!FullName || !email || !phone || !destination || !preferredTravelDate  || !numberOfGuests || !tripType || !kindOfTour || !numberOfDays) {
-            return res.status(400).json(new apiError(400, "Please fill all required fields"));
+
+        const requiredFields = [
+            "FullName",
+            "email",
+            "phone",
+            "destination",
+            "preferredTravelDate",
+            "numberOfGuests",
+            "tripType",
+            "kindOfTour",
+            "numberOfDays",
+            "pricingDetails"
+        ];
+
+
+        for (const field of requiredFields) {
+            if (!body[field]) {
+                return res.status(400).json(new apiError(400, `${field} is required`));
+            }
         }
 
-        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(body.email)) {
             return res.status(400).json(new apiError(400, 'Please enter a valid email address'));
         }
 
-        if (!/^(?:\+971|0)(?:2|3|4|6|7|9|5[024568])\d{7}$/.test(phone)) {
+        if (!/^(?:\+971|0)(?:2|3|4|6|7|9|5[024568])\d{7}$/.test(body.phone)) {
             return res.status(400).json(new apiError(400, "Please enter a valid UAE phone number"));
         }
 
-        if (FullName.length < 3) {
+        if (body.FullName.length < 3) {
             return res.status(400).json(new apiError(400, "Full Name must be at least 3 characters long"));
         }
 
-        const existingBooking = await TourBooking.findOne({ email, destination, preferredTravelDate });
+        const existingBooking = await TourBooking.findOne({
+            email: body.email,
+            destination: body.destination,
+            preferredTravelDate: {
+                $gte: new Date(body.preferredTravelDate),
+                $lt: new Date(new Date(body.preferredTravelDate).getTime() + 24 * 60 * 60 * 1000)
+            }
+        });
+
+
         if (existingBooking) {
             return res.status(400).json(new apiError(400, "You have already booked a tour for this destination on the selected date"));
         }
 
+        const bookingData = {
+            ...body
+        }
+
         const newTourBooking = await TourBooking.create({
-            FullName,
-            email,
-            phone,
-            destination,
-            preferredTravelDate,
-            checkIn,
-            checkOut,
-            numberOfGuests,
-            specialRequests,
-            tripType,
-            kindOfTour,
-            numberOfDays,
-            numberOfRooms,
-            nationality,
+            ...bookingData,
             user: req.user._id
         });
 
         res.status(201).json(new apiResponse(201, "Tour booked successfully", newTourBooking));
 
     } catch (error) {
-         console.error("Error during booking a tour:", error);
+        console.error("Error during booking a tour:", error);
         res.status(500).json(new apiError(500, "Internal Server Error: Booking a tour failed"));
     }
 });
@@ -58,7 +75,7 @@ const bookATour = asyncHandler(async (req, res) => {
 const getAllTourBookings = asyncHandler(async (req, res) => {
     try {
         const tourBookings = await TourBooking.find().sort({ createdAt: -1 });
-        const totalBookings = await TourBooking.countDocuments(); 
+        const totalBookings = await TourBooking.countDocuments();
 
         res.status(200).json(new apiResponse(
             200,
@@ -92,7 +109,7 @@ const getTourBookingByUserId = asyncHandler(async (req, res) => {
 
 const getTourBookingById = asyncHandler(async (req, res) => {
     try {
-        const bookingId = req.params.bookingId; 
+        const bookingId = req.params.bookingId;
         const tourBooking = await TourBooking.findById(bookingId);
 
         if (!tourBooking) {
@@ -119,7 +136,7 @@ const updateTourBookingStatus = asyncHandler(async (req, res) => {
             return res.status(400).json(new apiError(400, "Invalid status value"));
         }
         const updatedBooking = await TourBooking.findByIdAndUpdate(
-            bookingId ,
+            bookingId,
             { status },
             { new: true }
         );
