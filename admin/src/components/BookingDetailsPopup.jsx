@@ -1,7 +1,7 @@
 // src/components/BookingDetailsPopup.js
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaUser, FaEnvelope, FaPhone, FaCalendarAlt, FaMapMarkerAlt, FaUsers, FaBed, FaClock, FaGlobe, FaHeart } from 'react-icons/fa';
+import { FaTimes, FaUser, FaEnvelope, FaPhone, FaCalendarAlt, FaMapMarkerAlt, FaUsers, FaBed, FaClock, FaGlobe, FaHeart, FaMoneyBillWave, FaTag, FaPercent } from 'react-icons/fa';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Text, Stars, Float, Sphere, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -162,6 +162,16 @@ const BookingDetailsPopup = ({
     });
   };
 
+  // Format currency function
+  const formatCurrency = (amount) => {
+    if (!amount && amount !== 0) return 'N/A';
+    return new Intl.NumberFormat('en-AE', {
+      style: 'currency',
+      currency: 'AED',
+      minimumFractionDigits: 2
+    }).format(amount);
+  };
+
   // Status badge component
   const StatusBadge = ({ status }) => {
     const getStatusClass = () => {
@@ -181,7 +191,7 @@ const BookingDetailsPopup = ({
   };
 
   // Detail row component
-  const DetailRow = ({ icon, label, value }) => (
+  const DetailRow = ({ icon, label, value, highlight = false }) => (
     <motion.div 
       className="flex items-start py-2 border-b border-gray-100 last:border-0"
       initial={{ opacity: 0, x: -20 }}
@@ -193,10 +203,70 @@ const BookingDetailsPopup = ({
       </div>
       <div className="flex-1">
         <div className="text-sm font-medium text-gray-500">{label}</div>
-        <div className="text-sm text-gray-900 mt-1">{value || 'N/A'}</div>
+        <div className={`text-sm mt-1 ${highlight ? 'font-bold text-orange-500' : 'text-gray-900'}`}>
+          {value || 'N/A'}
+        </div>
       </div>
     </motion.div>
   );
+
+  // Pricing details component
+  const PricingDetails = ({ pricingDetails }) => {
+    if (!pricingDetails || pricingDetails.length === 0) return null;
+
+    const pricing = pricingDetails[0]; // Get the first pricing object
+
+    return (
+      <div className="bg-gray-50 rounded-xl p-5 mb-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+          <FaMoneyBillWave className="text-orange-500 mr-2" />
+          Pricing Details
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <div className="text-sm text-gray-500 mb-1">Person Cost</div>
+            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.personCost)}</div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <div className="text-sm text-gray-500 mb-1">Room Cost</div>
+            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.roomCost)}</div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <div className="text-sm text-gray-500 mb-1">Day Cost</div>
+            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.dayCost)}</div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <div className="text-sm text-gray-500 mb-1">Trip Type Cost</div>
+            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.tripTypeCost)}</div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <div className="text-sm text-gray-500 mb-1">Tour Type Cost</div>
+            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.tourTypeCost)}</div>
+          </div>
+          
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <div className="text-sm text-gray-500 mb-1">Tax</div>
+            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.tax)}</div>
+          </div>
+        </div>
+        
+        <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+          <div className="text-sm text-gray-500">Subtotal</div>
+          <div className="text-lg font-bold text-gray-800">{formatCurrency(pricing.subtotal)}</div>
+        </div>
+        
+        <div className="flex justify-between items-center pt-3">
+          <div className="text-sm text-gray-500">Total</div>
+          <div className="text-2xl font-bold text-orange-500">{formatCurrency(pricing.total)}</div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <AnimatePresence>
@@ -255,6 +325,11 @@ const BookingDetailsPopup = ({
               
               {/* Body */}
               <motion.div className="p-6">
+                {/* Pricing Details */}
+                {bookingData.pricingDetails && bookingData.pricingDetails.length > 0 && (
+                  <PricingDetails pricingDetails={bookingData.pricingDetails} />
+                )}
+                
                 <motion.div 
                   className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"
                   initial={{ opacity: 0 }}
