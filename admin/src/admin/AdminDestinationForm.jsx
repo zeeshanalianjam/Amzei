@@ -32,6 +32,7 @@ const AdminDestinationForm = () => {
     reviews: [],
     rating: 3.4,
     highlights: [],
+    language: "",
 
     pricingDetails: [{
       perPerson: "",
@@ -55,6 +56,7 @@ const AdminDestinationForm = () => {
         reviews: destination.reviews || [],
         rating: destination.rating || 3.4,
         highlights: destination.highlights || [],
+        language: destination.language || "",
 
 
         pricingDetails: destination.pricingDetails || [{
@@ -131,6 +133,7 @@ const AdminDestinationForm = () => {
     data.append('rating', formData.rating);
     data.append('reviews', formData.reviews);
     data.append('highlights',formData.highlights);
+    data.append('language', formData.language);
     data.append('pricingDetails', JSON.stringify(formData.pricingDetails));
 
     // 🔹 Main destination image
@@ -326,6 +329,21 @@ const AdminDestinationForm = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
                   placeholder='Enter short description'
+                />
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Language *
+                </label>
+                <input
+                  type="text"
+                  name="language"
+                  value={formData.language}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                  placeholder='Enter language: eg. English, Arabic'
                 />
               </motion.div>
 
