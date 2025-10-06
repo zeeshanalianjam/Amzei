@@ -18,23 +18,6 @@ const BookingPage = () => {
   const [loading, setLoading] = useState(false);
   const [tour, setTour] = useState(null);
 
-  // Trip type pricing
-  const tripTypePricing = {
-    solo: 100,
-    couple: 150,
-    family: 200,
-    group: 250
-  };
-
-  // Tour type pricing
-  const tourTypePricing = {
-    adventure: 200,
-    cultural: 150,
-    relaxation: 100,
-    wildlife: 250,
-    historical: 180
-  };
-
   // Generate destination pricing dynamically from places
   const destinationPricing = useMemo(() => {
     const pricing = {};
@@ -55,15 +38,15 @@ const BookingPage = () => {
             `Enjoy the attractions in ${destination.location}`
           ],
 
-          // ✅ Add trip type pricing from DB or fallback
+          // Add trip type pricing from DB or fallback
           tripTypePricing: destination.tripTypePricing || {
-            solo: 10001,
+            solo: 100,
             couple: 150,
             family: 200,
             group: 250
           },
 
-          // ✅ Add tour type pricing from DB or fallback
+          // Add tour type pricing from DB or fallback
           tourTypePricing: destination.tourTypePricing || {
             adventure: 200,
             cultural: 150,
@@ -77,7 +60,6 @@ const BookingPage = () => {
 
     return pricing;
   }, [places]);
-
 
   const [bookingData, setBookingData] = useState({
     FullName: '',
@@ -94,6 +76,7 @@ const BookingPage = () => {
     numberOfDays: 1,
     numberOfRooms: '',
     nationality: '',
+    pricingDetails: null // Initialize as null, will be set before submission
   });
 
   useEffect(() => {
@@ -114,16 +97,49 @@ const BookingPage = () => {
   const handleSubmitBooking = async (e) => {
     e.preventDefault();
 
+    // Calculate pricing before submission
+    const destination = bookingData.destination.toLowerCase().replace(' ', '_');
+    const destConfig = destinationPricing[destination] || { perPerson: 0, perRoom: 0, perDay: 0, taxFee: 0 };
+
+    const personCost = destConfig.perPerson * bookingData.numberOfGuests;
+    const roomCost = destConfig.perRoom * bookingData.numberOfRooms;
+    const dayCost = destConfig.perDay * bookingData.numberOfDays;
+    const tripCost = destConfig.tripTypePricing[0][bookingData.tripType] || 0;
+    const tourCost = destConfig.tourTypePricing[0][bookingData.kindOfTour] || 0;
+
+    const subtotal = personCost + roomCost + dayCost + tripCost + tourCost;
+    const tax = subtotal * (destConfig.taxFee / 100);
+    const total = subtotal + tax;
+
+    // Create pricingDetails object
+    const pricingDetails = {
+      personCost,
+      roomCost,
+      dayCost,
+      tripTypeCost: tripCost,
+      tourTypeCost: tourCost,
+      subtotal,
+      tax,
+      total
+    };
+
+    // Update bookingData with pricingDetails before submission
+    const bookingDataWithPricing = {
+      ...bookingData,
+      pricingDetails
+    };
+
     try {
       setLoading(true);
       const res = await Axios({
         ...summaryApi.bookATour,
-        data: bookingData
-      })
+        data: bookingDataWithPricing
+      });
 
       if (res?.data?.success) {
         toast.success(res?.data?.message || 'Booking successful!');
         navigate('/');
+        // Reset form after successful booking
         setBookingData({
           FullName: '',
           email: '',
@@ -134,12 +150,13 @@ const BookingPage = () => {
           checkOut: '',
           numberOfGuests: 1,
           specialRequests: '',
-          tripType: '',
-          kindOfTour: '',
+          tripType: 'solo',
+          kindOfTour: 'adventure',
           numberOfDays: 1,
           numberOfRooms: '',
           nationality: '',
-        })
+          pricingDetails: null
+        });
       }
 
     } catch (error) {
@@ -157,7 +174,7 @@ const BookingPage = () => {
     }
   }, []);
 
-  // Calculate pricing
+  // Calculate pricing for display
   const calculatePricing = () => {
     const destination = bookingData.destination.toLowerCase().replace(' ', '_');
     const destConfig = destinationPricing[destination] || { perPerson: 0, perRoom: 0, perDay: 0, taxFee: 0 };
@@ -165,12 +182,11 @@ const BookingPage = () => {
     const personCost = destConfig.perPerson * bookingData.numberOfGuests;
     const roomCost = destConfig.perRoom * bookingData.numberOfRooms;
     const dayCost = destConfig.perDay * bookingData.numberOfDays;
-    const tripCost = destConfig.tripTypePricing[0]?.[bookingData.tripType] || 0;
-    const tourCost = destConfig.tourTypePricing[0]?.[bookingData.kindOfTour] || 0;
-
+    const tripCost = destConfig.tripTypePricing[0][bookingData.tripType] || 0;
+    const tourCost = destConfig.tourTypePricing[0][bookingData.kindOfTour] || 0;
 
     const subtotal = personCost + roomCost + dayCost + tripCost + tourCost;
-    const tax = subtotal * (destConfig.taxFee / 100); // Use taxFee from destination config
+    const tax = subtotal * (destConfig.taxFee / 100);
     const total = subtotal + tax;
 
     return {
@@ -289,7 +305,6 @@ const BookingPage = () => {
                           {type.charAt(0).toUpperCase() + type.slice(1)} (AED {destinationInfo?.tripTypePricing[0]?.[type] || 0})
                         </option>
                       ))}
-
                     </select>
                   </div>
 
@@ -306,7 +321,6 @@ const BookingPage = () => {
                           {type.charAt(0).toUpperCase() + type.slice(1)} (AED {destinationInfo?.tourTypePricing[0]?.[type] || 0})
                         </option>
                       ))}
-
                     </select>
                   </div>
 
@@ -336,7 +350,7 @@ const BookingPage = () => {
                       onChange={handleInputChange}
                       min="1"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      required
+                  
                     />
                   </div>
 
@@ -361,7 +375,6 @@ const BookingPage = () => {
                       value={bookingData.nationality}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      required
                     />
                   </div>
 
