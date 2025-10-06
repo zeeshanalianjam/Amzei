@@ -53,10 +53,10 @@ const addDestination = asyncHandler(async (req, res) => {
             return res.status(400).json(new apiError(400, "Destination already exists"));
         }
 
-        
+
         let imageUrl = "";
-        if (req.files?.imageUrl?.[0]) {
-            const uploaded = await uploadImageOnCloudinary(req.files.imageUrl[0].path);
+        if (req.file?.path) {
+            const uploaded = await uploadImageOnCloudinary(req.file.path);
             imageUrl = uploaded.secure_url;
         }
 
@@ -94,74 +94,36 @@ const updateDestination = asyncHandler(async (req, res) => {
     const { id } = req.params;
     let body = { ...req.body };
 
-    // ✅ Parse JSON fields (same as addDestination)
-    const jsonFields = ["pricingDetails", "overview", "thingsToDo", "accommodations", "restaurants", "travelTips"];
-    for (const field of jsonFields) {
-      if (typeof body[field] === "string") {
-        try {
-          body[field] = JSON.parse(body[field]);
-        } catch (err) {
-          return res.status(400).json(new apiError(400, `Invalid JSON format for ${field}`));
-        }
+    // ✅ Parse JSON field (only if exists and is string)
+    if (typeof body.pricingDetails === "string") {
+      try {
+        body.pricingDetails = JSON.parse(body.pricingDetails);
+      } catch (err) {
+        return res.status(400).json(new apiError(400, "Invalid JSON format for pricingDetails"));
       }
     }
 
-    let destination = await Destination.findById(id);
+    // ✅ Find existing destination
+    const destination = await Destination.findById(id);
     if (!destination) {
       return res.status(404).json(new apiError(404, "Destination not found"));
     }
 
-    // ✅ Update Main Image
-    if (req.files?.imageUrl?.[0]) {
-      const uploaded = await uploadImageOnCloudinary(req.files.imageUrl[0].path);
-      body.imageUrl = uploaded.secure_url;
+    // ✅ Handle single image upload (same as addDestination)
+    let imageUrl = destination.imageUrl;
+    if (req.file?.path) {
+      const uploaded = await uploadImageOnCloudinary(req.file.path);
+      imageUrl = uploaded.secure_url;
     }
 
-    // ✅ Update Things To Do Images
-    if (req.files?.thingsToDoImageUrl) {
-      body.thingsToDo = await Promise.all(
-        body.thingsToDo.map(async (item, index) => {
-          const file = req.files.thingsToDoImageUrl[index];
-          if (file) {
-            const uploaded = await uploadImageOnCloudinary(file.path);
-            return { ...item, imageUrl: uploaded.secure_url };
-          }
-          return item;
-        })
-      );
-    }
+    // ✅ Construct updated data
+    const updatedData = {
+      ...body,
+      imageUrl: imageUrl || body.imageUrl,
+    };
 
-    // ✅ Update Accommodations Images
-    if (req.files?.accommodationImageUrl) {
-      body.accommodations = await Promise.all(
-        body.accommodations.map(async (item, index) => {
-          const file = req.files.accommodationImageUrl[index];
-          if (file) {
-            const uploaded = await uploadImageOnCloudinary(file.path);
-            return { ...item, imageUrl: uploaded.secure_url };
-          }
-          return item;
-        })
-      );
-    }
-
-    // ✅ Update Restaurants Images
-    if (req.files?.restaurantImageUrl) {
-      body.restaurants = await Promise.all(
-        body.restaurants.map(async (item, index) => {
-          const file = req.files.restaurantImageUrl[index];
-          if (file) {
-            const uploaded = await uploadImageOnCloudinary(file.path);
-            return { ...item, imageUrl: uploaded.secure_url };
-          }
-          return item;
-        })
-      );
-    }
-
-    // ✅ Update document in DB
-    Object.assign(destination, body);
-
+    // ✅ Update destination in DB
+    Object.assign(destination, updatedData);
     const updatedDestination = await destination.save();
 
     res.status(200).json(new apiResponse(200, "Destination updated successfully", updatedDestination));
@@ -170,6 +132,7 @@ const updateDestination = asyncHandler(async (req, res) => {
     res.status(500).json(new apiError(500, "Internal Server Error: Updating destination failed"));
   }
 });
+
 
 
 const deleteDestination = asyncHandler(async (req, res) => {
