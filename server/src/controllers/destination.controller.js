@@ -18,6 +18,22 @@ const addDestination = asyncHandler(async (req, res) => {
             }
         }
 
+        if(typeof body.tripTypePricing === "string") {
+            try {
+                body.tripTypePricing = JSON.parse(body.tripTypePricing);
+            } catch (err) {
+                return res.status(400).json(new apiError(400, "Invalid JSON format for tripTypePricing"));
+            }
+        }
+
+        if(typeof body.tourTypePricing === "string") {
+            try {
+                body.tourTypePricing = JSON.parse(body.tourTypePricing);
+            } catch (err) {
+                return res.status(400).json(new apiError(400, "Invalid JSON format for tourTypePricing"));
+            }
+        }
+
         const requiredFields = [
             'name',
             'location',
@@ -26,6 +42,10 @@ const addDestination = asyncHandler(async (req, res) => {
             'currency',
             'bestTimeToVisit',
             'pricingDetails',
+            'tripTypePricing',
+            'tourTypePricing',
+            'language',
+            'highlights'
         ];
 
         for (const field of requiredFields) {
@@ -44,6 +64,33 @@ const addDestination = asyncHandler(async (req, res) => {
         ) {
             return res.status(400).json(
                 new apiError(400, "Please provide perPerson, perRoom, perDay, and taxFee in pricing details.")
+            );
+        }
+
+        if (
+            !Array.isArray(body.tripTypePricing) ||
+            body.tripTypePricing.length === 0 ||
+            !body.tripTypePricing[0].solo ||
+            !body.tripTypePricing[0].couple ||
+            !body.tripTypePricing[0].family ||
+            !body.tripTypePricing[0].group
+        ) {
+            return res.status(400).json(
+                new apiError(400, "Please provide solo, couple, family, and group in tripTypePricing.")
+            );
+        }
+
+        if (
+            !Array.isArray(body.tourTypePricing) ||
+            body.tourTypePricing.length === 0 ||
+            !body.tourTypePricing[0].adventure ||
+            !body.tourTypePricing[0].cultural ||
+            !body.tourTypePricing[0].relaxation ||
+            !body.tourTypePricing[0].wildlife ||
+            !body.tourTypePricing[0].historical
+        ) {
+            return res.status(400).json(
+                new apiError(400, "Please provide adventure, cultural, relaxation, wildlife, and historical in tourTypePricing.")
             );
         }
 
@@ -101,6 +148,22 @@ const updateDestination = asyncHandler(async (req, res) => {
       } catch (err) {
         return res.status(400).json(new apiError(400, "Invalid JSON format for pricingDetails"));
       }
+    }
+
+    if(typeof body.tripTypePricing === "string") {
+        try {
+            body.tripTypePricing = JSON.parse(body.tripTypePricing);
+        } catch (err) {
+            return res.status(400).json(new apiError(400, "Invalid JSON format for tripTypePricing"));
+        }
+    }
+
+    if(typeof body.tourTypePricing === "string") {
+        try {
+            body.tourTypePricing = JSON.parse(body.tourTypePricing);
+        } catch (err) {
+            return res.status(400).json(new apiError(400, "Invalid JSON format for tourTypePricing"));
+        }
     }
 
     // ✅ Find existing destination
