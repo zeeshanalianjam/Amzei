@@ -7,6 +7,7 @@ import {
   FaMoneyBillWave, FaCalendarAlt, FaHeart, FaShareAlt 
 } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
+import { useSelector } from 'react-redux';
 
 const DestinationPage = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const DestinationPage = () => {
   const [destination, setDestination] = useState(location?.state?.destination);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
+  const user = useSelector((state) => state.user);
   console.log("location , ", location)
 
   useEffect(() => {
@@ -40,9 +42,14 @@ const DestinationPage = () => {
   }
 
   const handleBookNow = () => {
-    navigate('/booking', {
+    if (!user._id) {
+      navigate("/login");
+      return;
+    }
+    
+    navigate(`/booking/${user._id}`, {
       state: {
-        destination: destination.name,
+        destination: destination.location,
         destinationData: destination
       }
     });

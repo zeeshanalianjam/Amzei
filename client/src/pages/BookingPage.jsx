@@ -182,8 +182,8 @@ const BookingPage = () => {
     const personCost = destConfig.perPerson * bookingData.numberOfGuests;
     const roomCost = destConfig.perRoom * bookingData.numberOfRooms;
     const dayCost = destConfig.perDay * bookingData.numberOfDays;
-    const tripCost = destConfig.tripTypePricing[0][bookingData.tripType] || 0;
-    const tourCost = destConfig.tourTypePricing[0][bookingData.kindOfTour] || 0;
+    const tripCost = destConfig?.tripTypePricing[0][bookingData?.tripType] || 0;
+    const tourCost = destConfig.tourTypePricing[0][bookingData?.kindOfTour] || 0;
 
     const subtotal = personCost + roomCost + dayCost + tripCost + tourCost;
     const tax = subtotal * (destConfig.taxFee / 100);
