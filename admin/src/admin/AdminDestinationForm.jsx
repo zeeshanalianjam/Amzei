@@ -416,7 +416,7 @@ const AdminDestinationForm = () => {
                 />
               </motion.div>
 
-              <motion.div variants={itemVariants} className="md:col-span-2">
+              <motion.div variants={itemVariants}>
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Reviews (comma separated)
                 </label>
@@ -432,6 +432,25 @@ const AdminDestinationForm = () => {
                   rows="3"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder="e.g., Review 1, Review 2, Review 3"
+                ></textarea>
+              </motion.div>
+
+              <motion.div variants={itemVariants} >
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Highlights (comma separated)
+                </label>
+                <textarea
+                  value={formData.highlights?.join(', ')}
+                  onChange={(e) => {
+                    const options = e.target.value.split(',').map(opt => opt.trim());
+                    setFormData({
+                      ...formData,
+                      highlights: options
+                    });
+                  }}
+                  rows="3"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  placeholder="e.g., Highlight 1, Highlight 2, Highlight 3"
                 ></textarea>
               </motion.div>
 
