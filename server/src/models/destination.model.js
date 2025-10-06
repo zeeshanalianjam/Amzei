@@ -6,10 +6,10 @@ const destinationSchema = new mongoose.Schema({
     imageUrl: { type: String, required: true },
     shortDescription: { type: String, required: true },
     detailedDescription: { type: String, required: true },
-    reviews: { type: [String], default: [] },
+    reviews: { type: [String], default: [], set: v => Array.isArray(v) ? v : String(v).split(',').map(s => s.trim())},
     rating: { type: Number, default: 0 },
     currency: { type: String, required: true, default: "AED" },
-    highlights: { type: [String], required: true },
+    highlights: { type: [String], required: true, set: v => Array.isArray(v) ? v : String(v).split(',').map(s => s.trim())},
     bestTimeToVisit: { type: String, required: true },
     pricingDetails: [
         {
