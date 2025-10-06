@@ -437,7 +437,7 @@ const AdminDestinationForm = () => {
 
               <motion.div variants={itemVariants} >
                 <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Highlights (comma separated)
+                  Highlights (comma separated) *
                 </label>
                 <textarea
                   value={formData.highlights?.join(', ')}
