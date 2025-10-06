@@ -437,7 +437,7 @@ const AdminDestinationForm = () => {
                 />
               </motion.div>
 
-              <motion.div variants={itemVariants}>
+              <motion.div variants={itemVariants} className="md:col-span-2">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Reviews (comma separated)
                 </label>
@@ -456,7 +456,7 @@ const AdminDestinationForm = () => {
                 ></textarea>
               </motion.div>
 
-              <motion.div variants={itemVariants} >
+              <motion.div variants={itemVariants} className="md:col-span-2">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Highlights (comma separated) *
                 </label>
