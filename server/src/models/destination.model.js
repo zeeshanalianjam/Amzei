@@ -11,6 +11,7 @@ const destinationSchema = new mongoose.Schema({
     currency: { type: String, required: true, default: "AED" },
     highlights: { type: [String], required: true, set: v => Array.isArray(v) ? v : String(v).split(',').map(s => s.trim())},
     bestTimeToVisit: { type: String, required: true },
+    language: { type: String, required: true },
     pricingDetails: [
         {
             perPerson: { type: Number, required: true },
