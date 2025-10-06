@@ -31,6 +31,7 @@ const AdminDestinationForm = () => {
     bestTimeToVisit: "",
     reviews: [],
     rating: 3.4,
+    highlights: [],
 
     pricingDetails: [{
       perPerson: "",
@@ -53,6 +54,7 @@ const AdminDestinationForm = () => {
         bestTimeToVisit: destination.bestTimeToVisit || "",
         reviews: destination.reviews || [],
         rating: destination.rating || 3.4,
+        highlights: destination.highlights || [],
 
 
         pricingDetails: destination.pricingDetails || [{
@@ -128,6 +130,7 @@ const AdminDestinationForm = () => {
     data.append('bestTimeToVisit', formData.bestTimeToVisit);
     data.append('rating', formData.rating);
     data.append('reviews', formData.reviews);
+    data.append('highlights',formData.highlights);
     data.append('pricingDetails', JSON.stringify(formData.pricingDetails));
 
     // 🔹 Main destination image
