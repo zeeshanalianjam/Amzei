@@ -213,7 +213,7 @@ const DestinationPage = () => {
                     <FaUsers className="text-orange-500 mr-3" />
                     <div>
                       <div className="text-sm text-gray-500">Language</div>
-                      <div className="font-medium">{destination?.language?.join(', ') || 'Unknown'}</div>
+                      <div className="font-medium">{destination?.language || 'Unknown'}</div>
                     </div>
                   </div>
                   <div className="flex items-center">
