@@ -8,7 +8,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const addDestination = asyncHandler(async (req, res) => {
     try {
-        // ✅ Parse JSON fields if they are strings
         let body = { ...req.body };
 
         if (typeof body.pricingDetails === "string") {
@@ -19,47 +18,6 @@ const addDestination = asyncHandler(async (req, res) => {
             }
         }
 
-        if (typeof body.overview === "string") {
-            try {
-                body.overview = JSON.parse(body.overview);
-            } catch (err) {
-                return res.status(400).json(new apiError(400, "Invalid JSON format for overview"));
-            }
-        }
-
-        if (typeof body.thingsToDo === "string") {
-            try {
-                body.thingsToDo = JSON.parse(body.thingsToDo);
-            } catch (err) {
-                return res.status(400).json(new apiError(400, "Invalid JSON format for thingsToDo"));
-            }
-        }
-
-        if (typeof body.accommodations === "string") {
-            try {
-                body.accommodations = JSON.parse(body.accommodations);
-            } catch (err) {
-                return res.status(400).json(new apiError(400, "Invalid JSON format for accommodations"));
-            }
-        }
-
-        if (typeof body.restaurants === "string") {
-            try {
-                body.restaurants = JSON.parse(body.restaurants);
-            } catch (err) {
-                return res.status(400).json(new apiError(400, "Invalid JSON format for restaurants"));
-            }
-        }
-
-        if (typeof body.travelTips === "string") {
-            try {
-                body.travelTips = JSON.parse(body.travelTips);
-            } catch (err) {
-                return res.status(400).json(new apiError(400, "Invalid JSON format for travelTips"));
-            }
-        }
-
-        // ✅ Required fields validation
         const requiredFields = [
             'name',
             'location',
@@ -68,7 +26,6 @@ const addDestination = asyncHandler(async (req, res) => {
             'currency',
             'bestTimeToVisit',
             'pricingDetails',
-            'overview'
         ];
 
         for (const field of requiredFields) {
@@ -77,7 +34,6 @@ const addDestination = asyncHandler(async (req, res) => {
             }
         }
 
-        // ✅ Pricing Details check
         if (
             !Array.isArray(body.pricingDetails) ||
             body.pricingDetails.length === 0 ||
@@ -91,70 +47,20 @@ const addDestination = asyncHandler(async (req, res) => {
             );
         }
 
-        // ✅ Overview check
-        if (
-            !Array.isArray(body.overview) ||
-            body.overview.length === 0 ||
-            !body.overview[0].title
-        ) {
-            return res.status(400).json(
-                new apiError(400, "Please provide a title in the overview.")
-            );
-        }
-
-        // ✅ Duplicate check
+      
         const existingDestination = await Destination.findOne({ name: body.name, location: body.location });
         if (existingDestination) {
             return res.status(400).json(new apiError(400, "Destination already exists"));
         }
 
-        // ✅ Image uploads
+        
         let imageUrl = "";
         if (req.files?.imageUrl?.[0]) {
             const uploaded = await uploadImageOnCloudinary(req.files.imageUrl[0].path);
             imageUrl = uploaded.secure_url;
         }
 
-        if (req.files?.thingsToDoImageUrl) {
-            body.thingsToDo = await Promise.all(
-                body.thingsToDo.map(async (item, index) => {
-                    const file = req.files.thingsToDoImageUrl[index];
-                    if (file) {
-                        const uploaded = await uploadImageOnCloudinary(file.path);
-                        return { ...item, imageUrl: uploaded.secure_url };
-                    }
-                    return item;
-                })
-            );
-        }
-
-
-        if (req.files?.accommodationImageUrl) {
-            body.accommodations = await Promise.all(
-                body.accommodations.map(async (item, index) => {
-                    const file = req.files.accommodationImageUrl[index];
-                    if (file) {
-                        const uploaded = await uploadImageOnCloudinary(file.path);
-                        return { ...item, imageUrl: uploaded.secure_url };
-                    }
-                    return item;
-                })
-            );
-        }
-
-
-        if (req.files?.restaurantImageUrl) {
-            body.restaurants = await Promise.all(
-                body.restaurants.map(async (item, index) => {
-                    const file = req.files.restaurantImageUrl[index];
-                    if (file) {
-                        const uploaded = await uploadImageOnCloudinary(file.path);
-                        return { ...item, imageUrl: uploaded.secure_url };
-                    }
-                    return item;
-                })
-            );
-        }
+    
 
 
         const destinationData = {

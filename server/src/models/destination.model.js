@@ -9,7 +9,7 @@ const destinationSchema = new mongoose.Schema({
     reviews: { type: [String], default: [] },
     rating: { type: Number, default: 0 },
     currency: { type: String, required: true, default: "AED" },
-    highlights: { type: [String], default: [] },
+    highlights: { type: [String], required: true },
     bestTimeToVisit: { type: String, required: true },
     pricingDetails: [
         {
@@ -19,46 +19,6 @@ const destinationSchema = new mongoose.Schema({
             taxFee: { type: Number, required: true },
         }
     ],
-    overview: [
-        {
-            title: { type: String, required: true },
-            highlights: { type: [String], default: [] },
-            languages: { type: [String], default: [] },
-        }
-    ],
-    thingsToDo: [
-        {
-            title: { type: String, default: "" },
-            description: { type: String, default: "" },
-            imageUrl: { type: String, default: "" },
-            duration: { type: String, default: "" },
-            price: { type: Number, default: 0 },
-        },
-    ],
-    accommodations: [
-        {
-            title: { type: String, default: "" },
-            description: { type: String, default: "" },
-            imageUrl: { type: String, default: "" },
-            price: { type: Number, default: 0 },
-            priceType: { type: String, default: "night" },
-        }
-    ],
-    restaurants: [
-        {
-            title: { type: String, default: "" },
-            description: { type: String, default: "" },
-            imageUrl: { type: String, default: "" },
-            price: { type: Number, default: 0 },
-            priceType: { type: String, default: "person" },
-        }
-    ],
-    travelTips: [
-        {
-            title: { type: String, default: "" },
-            options: { type: [String], default: [] },
-        }
-    ]
 
 
 }, { timestamps: true });
