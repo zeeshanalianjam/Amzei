@@ -41,6 +41,25 @@ const AdminDestinationForm = () => {
       taxFee: ""
     }],
 
+    tripTypePricing: [
+      {
+        solo: "",
+        couple: "",
+        family: "",
+        group: ""
+      }
+    ],
+
+    tourTypePricing: [
+      {
+        adventure: "",
+        cultural: "",
+        relaxation: "",
+        wildlife: "",
+        historical: ""
+      }
+    ],
+
     imageUrl: null
   });
 
@@ -65,6 +84,25 @@ const AdminDestinationForm = () => {
           perDay: "",
           taxFee: ""
         }],
+
+        tripTypePricing: destination.tripTypePricing || [
+          {
+            solo: "",
+            couple: "",
+            family: "",
+            group: ""
+          }
+        ],
+
+        tourTypePricing: destination.tourTypePricing || [
+          {
+            adventure: "",
+            cultural: "",
+            relaxation: "",
+            wildlife: "",
+            historical: ""
+          }
+        ],
 
         imageUrl: null
       });
@@ -132,9 +170,11 @@ const AdminDestinationForm = () => {
     data.append('bestTimeToVisit', formData.bestTimeToVisit);
     data.append('rating', formData.rating);
     data.append('reviews', formData.reviews);
-    data.append('highlights',formData.highlights);
+    data.append('highlights', formData.highlights);
     data.append('language', formData.language);
     data.append('pricingDetails', JSON.stringify(formData.pricingDetails));
+    data.append('tripTypePricing', JSON.stringify(formData.tripTypePricing));
+    data.append('tourTypePricing', JSON.stringify(formData.tourTypePricing));
 
     // 🔹 Main destination image
     if (formData.imageUrl) {
@@ -557,6 +597,156 @@ const AdminDestinationForm = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
                   placeholder="e.g., 5"
+                />
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* TripType Pricing Section */}
+          <motion.div
+            className="mb-8 p-4 bg-gray-50 rounded-lg"
+            variants={sectionVariants}
+          >
+            <div className="flex justify-between items-center mb-4 pb-2 border-b">
+              <h2 className="text-xl font-semibold text-gray-800">TripType Pricing</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <motion.div variants={itemVariants}>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Solo *
+                </label>
+                <input
+                  type="number"
+                  value={formData?.tripTypePricing[0]?.solo}
+                  onChange={(e) => handleNestedInputChange("tripTypePricing", 0, "solo", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                  placeholder="e.g., 40"
+                />
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Couple *
+                </label>
+                <input
+                  type="number"
+                  value={formData?.tripTypePricing[0]?.couple}
+                  onChange={(e) => handleNestedInputChange("tripTypePricing", 0, "couple", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                  placeholder="e.g., 50"
+                />
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Family *
+                </label>
+                <input
+                  type="number"
+                  value={formData?.tripTypePricing[0]?.family}
+                  onChange={(e) => handleNestedInputChange("tripTypePricing", 0, "family", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                  placeholder="e.g., 65"
+                />
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Group *
+                </label>
+                <input
+                  type="number"
+                  value={formData?.tripTypePricing[0]?.group}
+                  onChange={(e) => handleNestedInputChange("tripTypePricing", 0, "group", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                  placeholder="e.g., 80"
+                />
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* TourType Pricing Section */}
+          <motion.div
+            className="mb-8 p-4 bg-gray-50 rounded-lg"
+            variants={sectionVariants}
+          >
+            <div className="flex justify-between items-center mb-4 pb-2 border-b">
+              <h2 className="text-xl font-semibold text-gray-800">TourType Pricing</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <motion.div variants={itemVariants}>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Adventure *
+                </label>
+                <input
+                  type="number"
+                  value={formData?.tourTypePricing[0]?.adventure}
+                  onChange={(e) => handleNestedInputChange("tourTypePricing", 0, "adventure", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                  placeholder="e.g., 20"
+                />
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Cultural *
+                </label>
+                <input
+                  type="number"
+                  value={formData?.tourTypePricing[0]?.cultural}
+                  onChange={(e) => handleNestedInputChange("tourTypePricing", 0, "cultural", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                  placeholder="e.g., 40"
+                />
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Relaxation *
+                </label>
+                <input
+                  type="number"
+                  value={formData?.tourTypePricing[0]?.relaxation}
+                  onChange={(e) => handleNestedInputChange("tourTypePricing", 0, "relaxation", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                  placeholder="e.g., 100"
+                />
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Wildlife *
+                </label>
+                <input
+                  type="number"
+                  value={formData?.tourTypePricing[0]?.wildlife}
+                  onChange={(e) => handleNestedInputChange("tourTypePricing", 0, "wildlife", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                  placeholder="e.g., 120"
+                />
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Historical *
+                </label>
+                <input
+                  type="number"
+                  value={formData?.tourTypePricing[0]?.historical}
+                  onChange={(e) => handleNestedInputChange("tourTypePricing", 0, "historical", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  required
+                  placeholder="e.g., 130"
                 />
               </motion.div>
             </div>
