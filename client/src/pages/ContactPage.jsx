@@ -18,33 +18,25 @@ const contactInfo = [
   {
     icon: <FaMapMarkerAlt className="text-orange-500 text-xl" />,
     title: "Head Office",
-    details: ["123 Sheikh Zayed Road, Dubai, UAE", "P.O. Box: 12345"],
+    details: ["Ras AL-khaima marjan"],
   },
-  {
-    icon: <FaBuilding className="text-orange-500 text-xl" />,
-    title: "Branch Offices",
-    details: [
-      "Abu Dhabi: Corniche Road, Abu Dhabi",
-      "Sharjah: Al Qasba, Sharjah",
-      "Fujairah: Fujairah Corniche",
-    ],
-  },
+ 
   {
     icon: <FaPhone className="text-orange-500 text-xl" />,
     title: "Phone Numbers",
     details: [
-      "Dubai: +971 4 123 4567",
-      "Abu Dhabi: +971 2 765 4321",
-      "Toll Free: 800-UAETOURS",
+      "Dubai: 0581867078",
+      "Abu Dhabi: 0544003554",
+      
     ],
   },
   {
     icon: <FaEnvelope className="text-orange-500 text-xl" />,
     title: "Email Addresses",
     details: [
-      "info@uaetours.com",
-      "bookings@uaetours.com",
-      "support@uaetours.com",
+      "ubaidali052@icloud.com",
+      "nangyaluoa249@gmail.com",
+      
     ],
   },
   {
