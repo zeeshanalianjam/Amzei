@@ -14,10 +14,10 @@ const BookingPage = () => {
   const location = useLocation();
   const user = useSelector(state => state.user);
   const places = useSelector(state => state.places.allDestinations);
-  
+
   const [loading, setLoading] = useState(false);
   const [tour, setTour] = useState(null);
-  
+
   // Trip type pricing
   const tripTypePricing = {
     solo: 100,
@@ -25,7 +25,7 @@ const BookingPage = () => {
     family: 200,
     group: 250
   };
-  
+
   // Tour type pricing
   const tourTypePricing = {
     adventure: 200,
@@ -38,45 +38,46 @@ const BookingPage = () => {
   // Generate destination pricing dynamically from places
   const destinationPricing = useMemo(() => {
     const pricing = {};
-    
+
     if (places && places.length > 0) {
       places.forEach(destination => {
         const key = destination.location.toLowerCase().replace(/\s+/g, '_');
-        
-        // Check if destination has pricing details, otherwise use defaults
-        if (destination.pricingDetails && destination.pricingDetails.length > 0) {
-          pricing[key] = {
-            perPerson: destination.pricingDetails[0].perPerson || 0,
-            perRoom: destination.pricingDetails[0].perRoom || 0,
-            perDay: destination.pricingDetails[0].perDay || 0,
-            taxFee: destination.pricingDetails[0].taxFee || 0,
-            description: destination.shortDescription || `Experience the beauty of ${destination.location}.`,
-            highlights: destination.highlights || [
-              `Visit ${destination.location}`,
-              `Explore the culture of ${destination.location}`,
-              `Enjoy the attractions in ${destination.location}`
-            ]
-          };
-        } else {
-          // Default pricing if no pricing details available
-          pricing[key] = {
-            perPerson: 250, // Default per person cost
-            perRoom: 100,  // Default per room cost
-            perDay: 30,    // Default per day cost
-            taxFee: 5,     // Default tax fee percentage
-            description: destination.shortDescription || `Experience the beauty of ${destination.location}.`,
-            highlights: destination.highlights || [
-              `Visit ${destination.location}`,
-              `Explore the culture of ${destination.location}`,
-              `Enjoy the attractions in ${destination.location}`
-            ]
-          };
-        }
+
+        pricing[key] = {
+          perPerson: destination.pricingDetails?.[0]?.perPerson || 250,
+          perRoom: destination.pricingDetails?.[0]?.perRoom || 100,
+          perDay: destination.pricingDetails?.[0]?.perDay || 30,
+          taxFee: destination.pricingDetails?.[0]?.taxFee || 5,
+          description: destination.shortDescription || `Experience the beauty of ${destination.location}.`,
+          highlights: destination.highlights || [
+            `Visit ${destination.location}`,
+            `Explore the culture of ${destination.location}`,
+            `Enjoy the attractions in ${destination.location}`
+          ],
+
+          // ✅ Add trip type pricing from DB or fallback
+          tripTypePricing: destination.tripTypePricing || {
+            solo: 10001,
+            couple: 150,
+            family: 200,
+            group: 250
+          },
+
+          // ✅ Add tour type pricing from DB or fallback
+          tourTypePricing: destination.tourTypePricing || {
+            adventure: 200,
+            cultural: 150,
+            relaxation: 100,
+            wildlife: 250,
+            historical: 180
+          }
+        };
       });
     }
-    
+
     return pricing;
   }, [places]);
+
 
   const [bookingData, setBookingData] = useState({
     FullName: '',
@@ -120,7 +121,7 @@ const BookingPage = () => {
         data: bookingData
       })
 
-      if(res?.data?.success) {
+      if (res?.data?.success) {
         toast.success(res?.data?.message || 'Booking successful!');
         navigate('/');
         setBookingData({
@@ -142,7 +143,7 @@ const BookingPage = () => {
       }
 
     } catch (error) {
-      toast.error(error?.response?.data?.message ||'Failed to submit booking. Please try again.');
+      toast.error(error?.response?.data?.message || 'Failed to submit booking. Please try again.');
       console.error('Booking submission error:', error);
       return;
     } finally {
@@ -151,7 +152,7 @@ const BookingPage = () => {
   };
 
   useEffect(() => {
-    if(!user?._id){
+    if (!user?._id) {
       navigate('/login');
     }
   }, []);
@@ -160,17 +161,18 @@ const BookingPage = () => {
   const calculatePricing = () => {
     const destination = bookingData.destination.toLowerCase().replace(' ', '_');
     const destConfig = destinationPricing[destination] || { perPerson: 0, perRoom: 0, perDay: 0, taxFee: 0 };
-    
+
     const personCost = destConfig.perPerson * bookingData.numberOfGuests;
     const roomCost = destConfig.perRoom * bookingData.numberOfRooms;
     const dayCost = destConfig.perDay * bookingData.numberOfDays;
-    const tripCost = tripTypePricing[bookingData.tripType] || 0;
-    const tourCost = tourTypePricing[bookingData.kindOfTour] || 0;
-    
+    const tripCost = destConfig.tripTypePricing[0]?.[bookingData.tripType] || 0;
+    const tourCost = destConfig.tourTypePricing[0]?.[bookingData.kindOfTour] || 0;
+
+
     const subtotal = personCost + roomCost + dayCost + tripCost + tourCost;
     const tax = subtotal * (destConfig.taxFee / 100); // Use taxFee from destination config
     const total = subtotal + tax;
-    
+
     return {
       personCost,
       roomCost,
@@ -182,7 +184,7 @@ const BookingPage = () => {
       total
     };
   };
-  
+
   const pricing = calculatePricing();
   const destinationKey = bookingData.destination.toLowerCase().replace(' ', '_');
   const destinationInfo = destinationPricing[destinationKey] || null;
@@ -284,12 +286,13 @@ const BookingPage = () => {
                     >
                       {["solo", "couple", "family", "group"].map(type => (
                         <option key={type} value={type}>
-                          {type.charAt(0).toUpperCase() + type.slice(1)} (AED {tripTypePricing[type]})
+                          {type.charAt(0).toUpperCase() + type.slice(1)} (AED {destinationInfo?.tripTypePricing[0]?.[type] || 0})
                         </option>
                       ))}
+
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-700 text-sm font-bold mb-2">What kind of tour?</label>
                     <select
@@ -300,9 +303,10 @@ const BookingPage = () => {
                     >
                       {["adventure", "cultural", "relaxation", "wildlife", "historical"].map(type => (
                         <option key={type} value={type}>
-                          {type.charAt(0).toUpperCase() + type.slice(1)} (AED {tourTypePricing[type]})
+                          {type.charAt(0).toUpperCase() + type.slice(1)} (AED {destinationInfo?.tourTypePricing[0]?.[type] || 0})
                         </option>
                       ))}
+
                     </select>
                   </div>
 
@@ -401,7 +405,7 @@ const BookingPage = () => {
                 <div className="mb-6">
                   <h3 className="font-semibold text-lg text-gray-800 mb-2">{bookingData.destination}</h3>
                   <p className="text-gray-600 text-sm mb-3">{destinationInfo.description}</p>
-                  
+
                   <div className="mb-4">
                     <h4 className="font-semibold text-gray-800 mb-2">Tour Highlights</h4>
                     <ul className="text-sm text-gray-600 space-y-2">
