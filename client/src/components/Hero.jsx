@@ -178,6 +178,8 @@ const Hero = () => {
                       required
                       className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-white appearance-none"
                     >
+                      {destinations.length === 1 &&  <option value="">Select a destination</option>}
+                     
                       {destinations.length > 0 ? (
                         destinations.map((dest) => (
                           <option key={dest} value={dest} className="text-gray-800">
