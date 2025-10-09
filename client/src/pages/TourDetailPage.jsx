@@ -1,6 +1,6 @@
 // src/pages/TourDetailPage.js
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getTourById } from '../data/Tours';
 import { toast } from 'react-hot-toast';
@@ -9,7 +9,9 @@ import { FaStar, FaMapMarkerAlt, FaClock, FaUsers, FaCalendarAlt, FaArrowLeft, F
 const TourDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [tour, setTour] = useState(null);
+  const location = useLocation();
+  // console.log("location", location?.state?.tour);
+  const tour = location?.state?.tour
   const [loading, setLoading] = useState(true);
   const [bookingData, setBookingData] = useState({
     numberOfGuests: 1,
@@ -18,36 +20,36 @@ const TourDetailPage = () => {
     travelDate: ''
   });
 
-  useEffect(() => {
-    const fetchTour = async () => {
-      setLoading(true);
-      try {
-        // Simulate API call
-        setTimeout(() => {
-          const foundTour = getTourById(id);
-          if (foundTour) {
-            setTour(foundTour);
-            // Set default number of days to tour duration
-            const days = parseInt(foundTour.duration);
-            setBookingData(prev => ({
-              ...prev,
-              numberOfDays: days
-            }));
-          } else {
-            toast.error("Tour not found");
-            navigate('/tours');
-          }
-          setLoading(false);
-        }, 800);
-      } catch (error) {
-        toast.error("Failed to load tour details");
-        console.error(error);
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchTour = async () => {
+  //     setLoading(true);
+  //     try {
+  //       // Simulate API call
+  //       setTimeout(() => {
+  //         const foundTour = getTourById(id);
+  //         if (foundTour) {
+  //           setTour(foundTour);
+  //           // Set default number of days to tour duration
+  //           const days = parseInt(foundTour.duration);
+  //           setBookingData(prev => ({
+  //             ...prev,
+  //             numberOfDays: days
+  //           }));
+  //         } else {
+  //           toast.error("Tour not found");
+  //           navigate('/tours');
+  //         }
+  //         setLoading(false);
+  //       }, 800);
+  //     } catch (error) {
+  //       toast.error("Failed to load tour details");
+  //       console.error(error);
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchTour();
-  }, [id, navigate]);
+  //   fetchTour();
+  // }, [id, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -86,15 +88,18 @@ const TourDetailPage = () => {
       toast.error("Please select a travel date");
       return;
     }
+
+    console.log("Booking data:", bookingData);
+    console.log("Pricing:", pricing);
     
     // Navigate to booking page with tour and booking data
-    navigate('/booking', { 
-      state: { 
-        tour, 
-        bookingData,
-        pricing
-      } 
-    });
+    // navigate('/booking', { 
+    //   state: { 
+    //     tour, 
+    //     bookingData,
+    //     pricing
+    //   } 
+    // });
   };
 
   const containerVariants = {
@@ -131,16 +136,16 @@ const TourDetailPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading tour details...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-orange-500 mx-auto mb-4"></div>
+  //         <p className="text-gray-600">Loading tour details...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (!tour) {
     return (
@@ -193,7 +198,7 @@ const TourDetailPage = () => {
                 <div 
                   className="h-full w-full bg-gray-200" 
                   style={{ 
-                    backgroundImage: `url('${tour.image}')`, 
+                    backgroundImage: `url('${tour.imageUrl}')`, 
                     backgroundSize: 'cover', 
                     backgroundPosition: 'center' 
                   }}

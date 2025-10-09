@@ -1,17 +1,22 @@
 // src/components/Tours.js
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { tours } from '../data/Tours';
 import { FaStar, FaMapMarkerAlt, FaClock, FaUsers, FaArrowRight } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 const Tours = () => {
-  const [featuredTours, setFeaturedTours] = useState([]);
+  const places = useSelector((state) => state.places);
+  const toursData = places?.allTours
+  const featuredTours = toursData.slice(0, 3)
+  console.log("Featured Tours:", featuredTours);
+  const navigate = useNavigate();
   
-  useEffect(() => {
-    // Get the first 3 tours as featured
-    setFeaturedTours(tours.slice(0, 3));
-  }, []);
+  // useEffect(() => {
+  //   // Get the first 3 tours as featured
+  //   setFeaturedTours(tours.slice(0, 3));
+  // }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -103,7 +108,7 @@ const Tours = () => {
                 <div 
                   className="h-full w-full bg-gray-200 transform transition-transform duration-700 hover:scale-110" 
                   style={{ 
-                    backgroundImage: `url('${tour.image}')`, 
+                    backgroundImage: `url('${tour.imageUrl}')`, 
                     backgroundSize: 'cover', 
                     backgroundPosition: 'center' 
                   }}
@@ -147,12 +152,12 @@ const Tours = () => {
                     <span className="text-gray-500 text-sm">/person</span>
                   </div>
                   <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                    <Link 
-                      to={`/tour/${tour.id}`}
+                    <button 
+                      onClick={() => navigate(`/tour/${tour._id}`, { state: { tour } })}
                       className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all"
                     >
                       View Details
-                    </Link>
+                    </button>
                   </motion.div>
                 </div>
               </div>

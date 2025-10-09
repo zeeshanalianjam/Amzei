@@ -30,6 +30,10 @@ const summaryApi = {
         url: "/api/v1/destinations/get-all-destinations",
         method: "GET"
     },
+    fetchAllTours: {
+        url: "/api/v1/tours/get-all-tours",
+        method: "GET"
+    },
 
      // Payment endpoints
   createPaymentOrder: {

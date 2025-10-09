@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     allDestinations: [],
+    allTours: [],
 
 }
 
@@ -13,9 +14,12 @@ const placesSlice = createSlice({
         setAllDestinations: (state, action) => {
             state.allDestinations = action.payload;
         },
+        setAllTours: (state, action) => {
+            state.allTours = action.payload;
+        },
     },
 });
 
 
-export const {  setAllDestinations} = placesSlice.actions;
+export const {  setAllDestinations, setAllTours} = placesSlice.actions;
 export default placesSlice.reducer;

@@ -11,7 +11,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { Axios } from "./common/axios";
 import { summaryApi } from "./common/summaryApi";
 import { useDispatch } from "react-redux";
-import { setAllDestinations } from "./store/placesSlice";
+import { setAllDestinations, setAllTours } from "./store/placesSlice";
 import { useCallback, useEffect } from "react";
 import AllDestinations from "./pages/AllDestinations";
 import AllToursPage from "./pages/AllToursPage";
@@ -36,9 +36,26 @@ export default function App() {
   }
 }, []);
 
+const fetchAllTours = useCallback(async () => {
+  try {
+    const res = await Axios({
+      ...summaryApi.fetchAllTours
+    });
+
+    if (res?.data?.success) {
+      dispatch(setAllTours(res?.data?.data));
+    }
+
+  } catch (error) {
+    console.log("error in fetching all tours", error);
+    toast.error(error?.response?.data?.message || 'Failed to fetching tours. Please try again.');
+  }
+}, []);
+
   useEffect(() => {
     fetchAllDestinations();
-  }, [fetchAllDestinations])
+    fetchAllTours();
+  }, [fetchAllDestinations, fetchAllTours])
 
   return (
     <>
