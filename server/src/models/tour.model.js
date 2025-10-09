@@ -7,8 +7,8 @@ const tourSchema = new mongoose.Schema({
     duration: { type: Number, required: true }, 
     location: { type: String, required: true },
     imageUrl: { type: String, required: true },
-    rating: { type: Number, default: 0 },
-    highlights: { type: [String] },
+    rating: { type: Number },
+    highlights: { type: [String], required:true, set: v => Array.isArray(v) ? v : String(v).split(',').map(s => s.trim()) },
 }, { timestamps: true });
 
 export const Tour = mongoose.model("Tour", tourSchema);
