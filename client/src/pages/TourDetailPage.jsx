@@ -10,7 +10,6 @@ const TourDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  // console.log("location", location?.state?.tour);
   const tour = location?.state?.tour
   const [loading, setLoading] = useState(true);
   const [bookingData, setBookingData] = useState({
@@ -20,36 +19,36 @@ const TourDetailPage = () => {
     travelDate: ''
   });
 
-  // useEffect(() => {
-  //   const fetchTour = async () => {
-  //     setLoading(true);
-  //     try {
-  //       // Simulate API call
-  //       setTimeout(() => {
-  //         const foundTour = getTourById(id);
-  //         if (foundTour) {
-  //           setTour(foundTour);
-  //           // Set default number of days to tour duration
-  //           const days = parseInt(foundTour.duration);
-  //           setBookingData(prev => ({
-  //             ...prev,
-  //             numberOfDays: days
-  //           }));
-  //         } else {
-  //           toast.error("Tour not found");
-  //           navigate('/tours');
-  //         }
-  //         setLoading(false);
-  //       }, 800);
-  //     } catch (error) {
-  //       toast.error("Failed to load tour details");
-  //       console.error(error);
-  //       setLoading(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchTour = async () => {
+      setLoading(true);
+      try {
+        // Simulate API call
+        setTimeout(() => {
+          const foundTour = id;
+          if (foundTour) {
+            
+            // Set default number of days to tour duration
+            const days = parseInt(tour.duration);
+            setBookingData(prev => ({
+              ...prev,
+              numberOfDays: days
+            }));
+          } else {
+            toast.error("Tour not found");
+            navigate('/tours');
+          }
+          setLoading(false);
+        }, 300);
+      } catch (error) {
+        toast.error("Failed to load tour details");
+        console.error(error);
+        setLoading(false);
+      }
+    };
 
-  //   fetchTour();
-  // }, [id, navigate]);
+    fetchTour();
+  }, [id, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -92,14 +91,14 @@ const TourDetailPage = () => {
     console.log("Booking data:", bookingData);
     console.log("Pricing:", pricing);
     
-    // Navigate to booking page with tour and booking data
-    // navigate('/booking', { 
-    //   state: { 
-    //     tour, 
-    //     bookingData,
-    //     pricing
-    //   } 
-    // });
+   // Navigate to the confirmation page instead of directly to booking
+    navigate('/tour-confirmation', { 
+      state: { 
+        tour, 
+        bookingData,
+        pricing
+      } 
+    });
   };
 
   const containerVariants = {
@@ -136,16 +135,16 @@ const TourDetailPage = () => {
     }
   };
 
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center">
-  //       <div className="text-center">
-  //         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-orange-500 mx-auto mb-4"></div>
-  //         <p className="text-gray-600">Loading tour details...</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading tour details...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!tour) {
     return (

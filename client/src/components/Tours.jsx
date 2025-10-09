@@ -10,13 +10,8 @@ const Tours = () => {
   const places = useSelector((state) => state.places);
   const toursData = places?.allTours
   const featuredTours = toursData.slice(0, 3)
-  console.log("Featured Tours:", featuredTours);
   const navigate = useNavigate();
-  
-  // useEffect(() => {
-  //   // Get the first 3 tours as featured
-  //   setFeaturedTours(tours.slice(0, 3));
-  // }, []);
+
 
   const containerVariants = {
     hidden: { opacity: 0 },

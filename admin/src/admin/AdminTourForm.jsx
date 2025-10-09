@@ -33,16 +33,16 @@ const AdminTourForm = () => {
   useEffect(() => {
     if (isEditing) {
       const tour = location?.state?.tour || {};
-
+      console.log("tour", tour);
       const mockTour = {
-        id: tour?.id,
+        id: tour?._id,
         title: tour?.title,
         description: tour?.description,
         rating: tour?.rating,
         price: tour?.price,
         duration: tour?.duration,
         location: tour?.location,
-        highlights: tour?.highlight,
+        highlights: tour?.highlights,
         image: tour?.imageUrl
       };
 
@@ -77,12 +77,8 @@ const AdminTourForm = () => {
     e.preventDefault();
 
     // Filter out empty highlights
-    const filteredHighlights = formData.highlights.filter(highlight => highlight.trim() !== '');
+    const filteredHighlights = formData.highlights?.filter(highlight => highlight.trim() !== '');
 
-    const tourData = {
-      ...formData,
-      highlights: filteredHighlights
-    };
 
     const data = new FormData();
     data.append("title", formData.title);
@@ -156,8 +152,6 @@ const AdminTourForm = () => {
     }
 
 
-    // In a real app, you would send the data to an API
-    console.log('Tour data:', tourData);
 
 
   };

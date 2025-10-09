@@ -17,40 +17,41 @@ import AllDestinations from "./pages/AllDestinations";
 import AllToursPage from "./pages/AllToursPage";
 import TourDetailPage from "./pages/TourDetailPage";
 import BookingSuccess from "./pages/BookingSuccess";
+import TourConfirmationPage from "./pages/TourConfirmationPage";
 
 export default function App() {
   const dispatch = useDispatch();
 
- const fetchAllDestinations = useCallback(async () => {
-  try {
-    const res = await Axios({
-      ...summaryApi.fetchAllDestinations
-    });
+  const fetchAllDestinations = useCallback(async () => {
+    try {
+      const res = await Axios({
+        ...summaryApi.fetchAllDestinations
+      });
 
-    if (res?.data?.success) {
-      dispatch(setAllDestinations(res?.data?.data));
+      if (res?.data?.success) {
+        dispatch(setAllDestinations(res?.data?.data));
+      }
+    } catch (error) {
+      console.log("error in fetching all destinations", error);
+      toast.error(error?.response?.data?.message || 'Failed to fetching destinations. Please try again.');
     }
-  } catch (error) {
-    console.log("error in fetching all destinations", error);
-    toast.error(error?.response?.data?.message || 'Failed to fetching destinations. Please try again.');
-  }
-}, []);
+  }, []);
 
-const fetchAllTours = useCallback(async () => {
-  try {
-    const res = await Axios({
-      ...summaryApi.fetchAllTours
-    });
+  const fetchAllTours = useCallback(async () => {
+    try {
+      const res = await Axios({
+        ...summaryApi.fetchAllTours
+      });
 
-    if (res?.data?.success) {
-      dispatch(setAllTours(res?.data?.data));
+      if (res?.data?.success) {
+        dispatch(setAllTours(res?.data?.data));
+      }
+
+    } catch (error) {
+      console.log("error in fetching all tours", error);
+      toast.error(error?.response?.data?.message || 'Failed to fetching tours. Please try again.');
     }
-
-  } catch (error) {
-    console.log("error in fetching all tours", error);
-    toast.error(error?.response?.data?.message || 'Failed to fetching tours. Please try again.');
-  }
-}, []);
+  }, []);
 
   useEffect(() => {
     fetchAllDestinations();
@@ -68,10 +69,11 @@ const fetchAllTours = useCallback(async () => {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-         <Route path="/destinations" element={<AllDestinations />} /> 
-          <Route path="/tours" element={<AllToursPage />} />
-      <Route path="/tour/:id" element={<TourDetailPage />} />
-       <Route path="/booking-success" element={<BookingSuccess />} />
+        <Route path="/destinations" element={<AllDestinations />} />
+        <Route path="/tours" element={<AllToursPage />} />
+        <Route path="/tour/:id" element={<TourDetailPage />} />
+        <Route path="/booking-success" element={<BookingSuccess />} />
+        <Route path="/tour-confirmation" element={<TourConfirmationPage />} />
       </Routes>
       <Toaster />
     </>
