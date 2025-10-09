@@ -26,7 +26,7 @@ const AdminTourForm = () => {
     price: '',
     duration: '',
     location: 'Dubai',
-    highlights: ['', '', '', ''],
+    highlights: [],
     image: ''
   });
 
@@ -42,16 +42,12 @@ const AdminTourForm = () => {
         price: tour?.price,
         duration: tour?.duration,
         location: tour?.location,
-        highlights: Array.isArray(tour?.highlights) ? tour?.highlights.flat() : [],
+        highlights: tour?.highlight,
         image: tour?.imageUrl
       };
 
       setFormData({
-        ...mockTour,
-        highlights:
-          mockTour.highlights.length >= 4
-            ? mockTour.highlights
-            : [...mockTour.highlights, ...Array(4 - mockTour.highlights.length).fill('')]
+        ...mockTour
       });
     }
   }, [isEditing, id]);
@@ -75,14 +71,6 @@ const AdminTourForm = () => {
     }
   };
 
-  const handleHighlightChange = (index, value) => {
-    const newHighlights = [...formData.highlights];
-    newHighlights[index] = value;
-    setFormData({
-      ...formData,
-      highlights: newHighlights
-    });
-  };
   
 
   const handleSubmit = async (e) => {
@@ -103,7 +91,7 @@ const AdminTourForm = () => {
     data.append("price", formData.price);
     data.append("duration", formData.duration);
     data.append("location", formData.location);
-    data.append("highlights", JSON.stringify(filteredHighlights));
+    data.append("highlights", filteredHighlights);
     data.append("image", formData.image);
 
     if (isEditing) {
@@ -154,7 +142,7 @@ const AdminTourForm = () => {
           price: 0,
           duration: '',
           location: 'Dubai',
-          highlights: ['', '', '', ''],
+          highlights: [],
           image: ''
         });
         navigate('/admin/tours');
@@ -356,21 +344,23 @@ const AdminTourForm = () => {
             </motion.div>
 
             <motion.div variants={itemVariants} className="md:col-span-2">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Highlights
-              </label>
-              {formData.highlights.map((highlight, index) => (
-                <div key={index} className="mb-2">
-                  <input
-                    type="text"
-                    value={highlight}
-                    onChange={(e) => handleHighlightChange(index, e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    placeholder={`Highlight ${index + 1}`}
-                  />
-                </div>
-              ))}
-            </motion.div>
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                              Highlights (comma separated) *
+                            </label>
+                            <textarea
+                              value={formData.highlights?.join(', ')}
+                              onChange={(e) => {
+                                const options = e.target.value.split(',').map(opt => opt.trim());
+                                setFormData({
+                                  ...formData,
+                                  highlights: options
+                                });
+                              }}
+                              rows="3"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                              placeholder="e.g., Highlight 1, Highlight 2, Highlight 3"
+                            ></textarea>
+                          </motion.div>
           </div>
 
           <motion.div
