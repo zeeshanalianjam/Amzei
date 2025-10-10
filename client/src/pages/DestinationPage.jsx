@@ -16,7 +16,6 @@ const DestinationPage = () => {
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const user = useSelector((state) => state.user);
-  console.log("location , ", location)
 
   useEffect(() => {
     const timer = setTimeout(() => {

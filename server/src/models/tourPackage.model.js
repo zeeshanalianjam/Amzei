@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 const tourPackageSchema = new mongoose.Schema({
-    tourId: {
-        type: String,
-        required: true,
-    },
     fullName: {
         type: String,
         required: true,

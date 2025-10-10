@@ -8,7 +8,6 @@ const add = asyncHandler(async (req, res) => {
      let body = { ...req.body };
 
      const requiredFields = [
-        "tourId",
         "fullName",
         "email",
         "phone",
@@ -68,3 +67,6 @@ const updateTourPackageStatus = asyncHandler(async (req, res) => {
         res.status(500).json(new apiError(500, "Internal Server Error: Updating tour booking status failed"));
     }
 });
+
+
+export { add, getAll, updateTourPackageStatus };

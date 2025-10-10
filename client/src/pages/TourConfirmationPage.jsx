@@ -7,10 +7,12 @@ import { Axios } from '../common/axios';
 import { summaryApi } from '../common/summaryApi';
 import LoadingPopup from '../utils/LoadingPopup';
 import { FaCheck, FaCalendarAlt, FaUsers, FaMoneyBillWave, FaMapMarkerAlt, FaStar, FaArrowLeft, FaHotel, FaUtensils, FaBus, FaHiking, FaSwimmer, FaCamera, FaClock } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 const TourConfirmationPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const user = useSelector(state => state.user);
   const { tour, bookingData, pricing } = location.state || {};
   const [loading, setLoading] = useState(false);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
@@ -53,21 +55,24 @@ const TourConfirmationPage = () => {
       // Prepare the booking data for API
       const bookingPayload = {
         ...bookingData,
-        tourId: tour._id,
+        fullName: user?.username,
+        email: user?.email,
+        phone: user?.phone,
         tourTitle: tour.title,
         tourLocation: tour.location,
-        pricingDetails: {
+        pricingDetails: [{
           basePrice: pricing.basePrice,
           perPersonPrice: pricing.perPersonPrice,
           additionalCost: pricing.additionalCost,
           totalPrice: pricing.totalPrice,
-          currency: 'AED'
-        }
+        }]
       };
+
+      console.log("Booking Payload:", bookingPayload);
 
       // Call the booking API
       const response = await Axios({
-        ...summaryApi.bookATour,
+        ...summaryApi.addTourPackage,
         data: bookingPayload
       });
 
@@ -107,6 +112,12 @@ const TourConfirmationPage = () => {
       }
     }
   };
+
+   useEffect(() => {
+      if (!user?._id) {
+        navigate('/login');
+      }
+    }, []);
 
   if (!tour || !bookingData || !pricing) {
     return (
@@ -162,7 +173,8 @@ const TourConfirmationPage = () => {
                   variants={itemVariants}
                 >
                   <h3 className="text-xl font-bold text-gray-800 mb-2">Booking Details</h3>
-                  <p className="text-gray-600">Booking ID: <span className="font-mono">{bookingId}</span></p>
+                  <p className="text-gray-600">Booked Username: <span className="font-mono capitalize">{user?.username}</span></p>
+                  <p className="text-gray-600">Email: <span className="font-mono">{user?.email}</span></p>
                 </motion.div>
                 
                 <motion.div 

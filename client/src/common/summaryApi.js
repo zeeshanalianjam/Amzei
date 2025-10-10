@@ -34,6 +34,10 @@ const summaryApi = {
         url: "/api/v1/tours/get-all-tours",
         method: "GET"
     },
+    addTourPackage: {
+        url: "/api/v1/tour-packages/book",
+        method: "POST"
+    },
 
      // Payment endpoints
   createPaymentOrder: {

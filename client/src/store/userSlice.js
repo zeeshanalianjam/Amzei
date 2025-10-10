@@ -4,6 +4,7 @@ const initialState = {
     _id: "",
     username: "",
     email: "",
+    phone: "",
 };
 
 const userSlice = createSlice({
@@ -15,11 +16,13 @@ const userSlice = createSlice({
             state._id = action.payload._id;
             state.username = action.payload.username;
             state.email = action.payload.email;
+            state.phone = action.payload.phone;
         },
         logout: (state) => {
             state._id = "";
             state.username = "";
             state.email = "";
+            state.phone = "";
         },
     }
 });
