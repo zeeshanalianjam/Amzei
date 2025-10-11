@@ -7,6 +7,7 @@ const initialState = {
     allDestinations: [],
     allEvents: [],
     allTourBookings: [],
+    allTourPackages: [],
 
 }
 
@@ -29,9 +30,12 @@ const dashboardSlice = createSlice({
         setAllTourBookings: (state, action) => {
             state.allTourBookings = action.payload;
         },
+        setAllTourPackages: (state, action) => {
+            state.allTourPackages = action.payload;
+        }
     },
 });
 
 
-export const { setAllUsers, setAllTours, setAllDestinations, setAllEvents, setAllTourBookings } = dashboardSlice.actions;
+export const { setAllUsers, setAllTours, setAllDestinations, setAllEvents, setAllTourBookings, setAllTourPackages } = dashboardSlice.actions;
 export default dashboardSlice.reducer;

@@ -110,7 +110,18 @@ const summaryApi = {
     resetPassword: {
         url: "/api/v1/users/forgot-password-reset-password",
         method: "PUT"
-    }
+    },
+
+
+    // Tour Packages API's
+    getAllToursPackages : {
+        url: "/api/v1/tour-packages/fetch-all-tour-packages",
+        method: "GET"
+    },
+    updateTourPackageStatus: (bookingId) => ({
+        url: `/api/v1/tour-packages/update/${bookingId}`,
+        method: "PUT"
+    }),
 }
 
 export { baseURL, summaryApi };
