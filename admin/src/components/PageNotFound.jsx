@@ -184,7 +184,7 @@ const PageNotFound = () => {
             transition={{ duration: 0.8, delay: 1.1 }}
           >
             <button
-             onClick={() => navigate(-1)}
+             onClick={() => navigate("/login")}
               className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               Go to Homepage
