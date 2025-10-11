@@ -9,7 +9,7 @@ import { summaryApi } from '../common/summaryApi';
 
 const AdminUsers = () => {
   const dashboard = useSelector((state) => state?.dashboard);
-  const [users, setUsers] = useState(dashboard?.allUsers || []);
+  const [users, setUsers] = useState(dashboard?.allUsers.filter(user => user.role !== 'admin') || []);
 
   const [filteredUsers, setFilteredUsers] = useState(users);
   const [searchTerm, setSearchTerm] = useState('');
