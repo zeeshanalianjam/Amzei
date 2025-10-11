@@ -14,6 +14,7 @@ const AdminDashboard = () => {
     destinations: dashboard.allDestinations.length,
     events: dashboard.allEvents.length,
     bookings: dashboard?.allTourBookings.length,
+    packageTourBookings: dashboard?.allTourPackages.length,
   });
   const navigate = useNavigate();
 
@@ -83,13 +84,14 @@ const dec = preferredDate.filter(booking => booking.preferredTravelDate.includes
       </motion.h1>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {[
           { title: 'Total Users', value: stats.users, icon: <FaUsers className="text-blue-500" />, color: 'bg-blue-100' },
           { title: 'Total Tours', value: stats.tours, icon: <FaRoute className="text-green-500" />, color: 'bg-green-100' },
           { title: 'Destinations', value: stats.destinations, icon: <FaMapMarkedAlt className="text-purple-500" />, color: 'bg-purple-100' },
           { title: 'Events', value: stats.events, icon: <FaCalendarAlt className="text-yellow-500" />, color: 'bg-yellow-100' },
-          { title: 'Total Bookings', value: stats.bookings, icon: <FaChartLine className="text-red-500" />, color: 'bg-red-100' },
+          { title: 'Destinaton Bookings', value: stats.bookings, icon: <FaChartLine className="text-red-500" />, color: 'bg-red-100' },
+          { title: 'Package Tour Bookings', value: stats.packageTourBookings, icon: <FaChartLine className="text-red-500" />, color: 'bg-red-100' },
         ].map((stat, index) => (
           <motion.div
             key={index}
@@ -118,7 +120,7 @@ const dec = preferredDate.filter(booking => booking.preferredTravelDate.includes
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Monthly Booking Tours</h2>
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Monthly Booking Destinations</h2>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={tourData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -201,7 +203,7 @@ const dec = preferredDate.filter(booking => booking.preferredTravelDate.includes
                     hour12: true,
                     timeZone: "Asia/Dubai"
                   })}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.amount || 'N/A'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.pricingDetails?.total || 'N/A'}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${booking.status === 'approved' ? 'bg-green-100 text-green-800' :
                         booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
