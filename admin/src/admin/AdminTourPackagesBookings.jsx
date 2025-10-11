@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEdit, FaTrash, FaPlus, FaSearch, FaFilter, FaCheck, FaTimes, FaEye } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Axios } from '../common/axios';
@@ -9,12 +9,14 @@ import { summaryApi } from '../common/summaryApi';
 import toast from 'react-hot-toast';
 import ConfirmPopup from '../components/ConfirmPopup';
 import BookingDetailsPopup from '../components/BookingDetailsPopup';
-import { setAllTourBookings } from '../adminStore/dashboardSlice';
+import { setAllTourPackages } from '../adminStore/dashboardSlice';
 
-const AdminBookings = () => {
+const AdminTourPackagesBookings = () => {
     const dashboard = useSelector((state) => state?.dashboard);
-    const [tours, setTours] = useState(dashboard?.allTourBookings);
     const dispatch = useDispatch();
+    const [tours, setTours] = useState(dashboard?.allTourPackages);
+    console.log("tours", tours)
+    const navigate = useNavigate();
     const [loadingId, setLoadingId] = useState(null)
 
     const [filteredTours, setFilteredTours] = useState(tours);
@@ -32,8 +34,8 @@ const AdminBookings = () => {
 
         if (searchTerm) {
             result = result.filter(tour =>
-                tour.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                tour.destination.toLowerCase().includes(searchTerm.toLowerCase())
+                tour.tourTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                tour.tourLocation.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
@@ -42,7 +44,7 @@ const AdminBookings = () => {
         }
 
         if (locationFilter !== 'All') {
-            result = result.filter(tour => tour.destination === locationFilter);
+            result = result.filter(tour => tour.tourLocation === locationFilter);
         }
 
         setFilteredTours(result);
@@ -65,7 +67,7 @@ const AdminBookings = () => {
         try {
             setLoadingId(id)
             const res = await Axios({
-                ...summaryApi.updateTourBookingStatus(id),
+                ...summaryApi.updateTourPackageStatus(id),
                 data: { status: newStatus }
             })
 
@@ -74,8 +76,7 @@ const AdminBookings = () => {
                 const updatedTour = tours.map(tour =>
                     tour._id === id ? { ...tour, status: newStatus } : tour
                 );
-                setFilteredTours(updatedTour);
-                dispatch(setAllTourBookings(updatedTour));
+                dispatch(setAllTourPackages(updatedTour));
                 setTours(updatedTour);
             }
 
@@ -107,7 +108,7 @@ const AdminBookings = () => {
         }
     };
 
-    const locations = ['All', ...new Set(tours.map(tour => tour.destination))];
+    const locations = ['All', ...new Set(tours.map(tour => tour.tourLocation))];
 
     return (
         <div>
@@ -118,7 +119,7 @@ const AdminBookings = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    All Bookings
+                    All Tour Packages Bookings
                 </motion.h1>
             </div>
 
@@ -200,17 +201,17 @@ const AdminBookings = () => {
                                     variants={itemVariants}
                                 >
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1 || 'N/A'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 max-w-xs truncate">{tour.FullName || 'N/A'}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 max-w-xs truncate">{tour.fullName || 'N/A'}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tour.email || 'N/A'}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tour.phone || 'N/A'}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tour.numberOfGuests || 'N/A'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">  {new Date(tour.preferredTravelDate).toLocaleString("en-AE", {
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">  {new Date(tour.travelDate).toLocaleString("en-AE", {
                                         day: "2-digit",
                                         month: "short",
                                         year: "numeric",
                                         timeZone: "Asia/Dubai"
                                     })}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tour.destination || 'N/A'}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tour.tourLocation || 'N/A'}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex space-x-2">
                                             {tour.status?.toLowerCase().trim() === 'pending' && (
@@ -259,11 +260,6 @@ const AdminBookings = () => {
                                         >
                                             <FaEye />
                                         </motion.button>
-                                        {/* <button
-                                            className="text-red-600 hover:text-red-900"
-                                        >
-                                            <FaTrash />
-                                        </button> */}
                                     </td>
                                 </motion.tr>
                             ))}
@@ -288,4 +284,4 @@ const AdminBookings = () => {
     );
 };
 
-export default AdminBookings;
+export default AdminTourPackagesBookings;

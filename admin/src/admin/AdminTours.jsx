@@ -14,7 +14,6 @@ const AdminTours = () => {
   const [tours, setTours] = useState(dashboard?.allTours);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false)
-  // console.log("tours data :", tours)
 
   const [filteredTours, setFilteredTours] = useState(tours);
   const [searchTerm, setSearchTerm] = useState('');

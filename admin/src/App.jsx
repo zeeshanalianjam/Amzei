@@ -25,6 +25,7 @@ import ResetPasswordPage from './components/ResetPasswordPage';
 
 // ✅ Import single API function
 import { fetchAllAdminData } from './api/fetchAdminData';
+import AdminTourPackagesBookings from './admin/AdminTourPackagesBookings';
 
 function App() {
   const location = useLocation();
@@ -36,7 +37,8 @@ function App() {
 
   useEffect(() => {
     if (location.pathname === '/' || location.pathname === '/login') {
-      window.history.replaceState(null, '', '/admin');
+      // Navigate to the /admin
+      window.location.href = '/admin';
     }
   }, [location.pathname]);
 
@@ -63,6 +65,7 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="bookings" element={<AdminBookings />} />
+          <Route path="package-bookings" element={<AdminTourPackagesBookings />} />
           <Route path="tours" element={<AdminTours />} />
           <Route path="tours/add" element={<AdminTourForm />} />
           <Route path="tours/edit/:id" element={<AdminTourForm />} />

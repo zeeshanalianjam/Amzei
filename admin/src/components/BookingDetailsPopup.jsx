@@ -9,7 +9,7 @@ import * as THREE from 'three';
 // 3D Floating Card Component
 function FloatingCard() {
   const meshRef = useRef();
-  
+
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.1;
@@ -22,8 +22,8 @@ function FloatingCard() {
     <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.2}>
       <mesh ref={meshRef}>
         <boxGeometry args={[4, 0.1, 2]} />
-        <meshStandardMaterial 
-          color="#fb923c" 
+        <meshStandardMaterial
+          color="#fb923c"
           metalness={0.7}
           roughness={0.2}
           transparent
@@ -37,7 +37,7 @@ function FloatingCard() {
 // 3D Floating Orbs Component
 function FloatingOrbs() {
   const groupRef = useRef();
-  
+
   useFrame((state) => {
     if (groupRef.current) {
       groupRef.current.rotation.y = state.clock.elapsedTime * 0.1;
@@ -52,7 +52,7 @@ function FloatingOrbs() {
         const x = Math.cos(angle) * radius;
         const z = Math.sin(angle) * radius;
         const y = Math.sin(i) * 0.5;
-        
+
         return (
           <Float
             key={i}
@@ -63,8 +63,8 @@ function FloatingOrbs() {
           >
             <mesh>
               <sphereGeometry args={[0.2, 32, 32]} />
-              <meshStandardMaterial 
-                color={i % 2 === 0 ? '#fb923c' : '#ffffff'} 
+              <meshStandardMaterial
+                color={i % 2 === 0 ? '#fb923c' : '#ffffff'}
                 metalness={0.5}
                 roughness={0.2}
               />
@@ -80,18 +80,18 @@ function FloatingOrbs() {
 function ParticleField({ count = 150 }) {
   const meshRef = useRef();
   const particlesRef = useRef();
-  
+
   useEffect(() => {
     if (particlesRef.current) {
       const positions = new Float32Array(count * 3);
-      
+
       for (let i = 0; i < count; i++) {
         const i3 = i * 3;
         positions[i3] = (Math.random() - 0.5) * 15;
         positions[i3 + 1] = (Math.random() - 0.5) * 15;
         positions[i3 + 2] = (Math.random() - 0.5) * 15;
       }
-      
+
       particlesRef.current.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     }
   }, [count]);
@@ -105,10 +105,10 @@ function ParticleField({ count = 150 }) {
   return (
     <points ref={meshRef}>
       <bufferGeometry ref={particlesRef} />
-      <pointsMaterial 
-        size={0.05} 
-        color="#ffffff" 
-        transparent 
+      <pointsMaterial
+        size={0.05}
+        color="#ffffff"
+        transparent
         opacity={0.7}
         sizeAttenuation={true}
       />
@@ -124,17 +124,17 @@ function Scene() {
       <ambientLight intensity={0.3} />
       <pointLight position={[10, 10, 10]} intensity={1} color="#fb923c" />
       <pointLight position={[-10, -10, -10]} intensity={0.5} color="#ffffff" />
-      
+
       <FloatingCard />
       <FloatingOrbs />
       <ParticleField count={150} />
       <Stars radius={20} depth={20} count={500} factor={2} />
-      
-      <OrbitControls 
-        enableZoom={false} 
-        enablePan={false} 
-        autoRotate 
-        autoRotateSpeed={0.5} 
+
+      <OrbitControls
+        enableZoom={false}
+        enablePan={false}
+        autoRotate
+        autoRotateSpeed={0.5}
         maxPolarAngle={Math.PI / 2}
         minPolarAngle={Math.PI / 2}
       />
@@ -142,10 +142,10 @@ function Scene() {
   );
 }
 
-const BookingDetailsPopup = ({ 
-  isOpen, 
-  onClose, 
-  bookingData 
+const BookingDetailsPopup = ({
+  isOpen,
+  onClose,
+  bookingData
 }) => {
   if (!bookingData) return null;
 
@@ -192,7 +192,7 @@ const BookingDetailsPopup = ({
 
   // Detail row component
   const DetailRow = ({ icon, label, value, highlight = false }) => (
-    <motion.div 
+    <motion.div
       className="flex items-start py-2 border-b border-gray-100 last:border-0"
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
@@ -222,47 +222,47 @@ const BookingDetailsPopup = ({
           <FaMoneyBillWave className="text-orange-500 mr-2" />
           Pricing Details
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div className="bg-white rounded-lg p-4 shadow-sm">
-            <div className="text-sm text-gray-500 mb-1">Person Cost</div>
-            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.personCost)}</div>
+            <div className="text-sm text-gray-500 mb-1">{pricing.personCost ? 'Person Cost' : 'Additional Cost'} </div>
+            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.personCost || pricing.additionalCost)}</div>
           </div>
-          
+
           <div className="bg-white rounded-lg p-4 shadow-sm">
-            <div className="text-sm text-gray-500 mb-1">Room Cost</div>
-            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.roomCost)}</div>
+            <div className="text-sm text-gray-500 mb-1">{pricing.roomCost ? 'Room Cost' : 'Base Price'}</div>
+            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.roomCost || pricing.basePrice)}</div>
           </div>
-          
+
           <div className="bg-white rounded-lg p-4 shadow-sm">
-            <div className="text-sm text-gray-500 mb-1">Day Cost</div>
-            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.dayCost)}</div>
+            <div className="text-sm text-gray-500 mb-1">{pricing.dayCost ? 'Day Cost' : 'Per Person Price'}</div>
+            <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.dayCost || pricing.perPersonPrice)}</div>
           </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm">
+
+          {pricing?.tripTypeCost && <div className="bg-white rounded-lg p-4 shadow-sm">
             <div className="text-sm text-gray-500 mb-1">Trip Type Cost</div>
             <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.tripTypeCost)}</div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm">
+          </div>}
+
+          {pricing?.tourTypeCost && <div className="bg-white rounded-lg p-4 shadow-sm">
             <div className="text-sm text-gray-500 mb-1">Tour Type Cost</div>
             <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.tourTypeCost)}</div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 shadow-sm">
+          </div>}
+
+          {pricing?.tax && <div className="bg-white rounded-lg p-4 shadow-sm">
             <div className="text-sm text-gray-500 mb-1">Tax</div>
             <div className="text-lg font-bold text-orange-500">{formatCurrency(pricing.tax)}</div>
-          </div>
+          </div>}
         </div>
-        
-        <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+
+        {pricing?.subtotal && <div className="flex justify-between items-center pt-3 border-t border-gray-200">
           <div className="text-sm text-gray-500">Subtotal</div>
           <div className="text-lg font-bold text-gray-800">{formatCurrency(pricing.subtotal)}</div>
-        </div>
-        
+        </div>}
+
         <div className="flex justify-between items-center pt-3">
           <div className="text-sm text-gray-500">Total</div>
-          <div className="text-2xl font-bold text-orange-500">{formatCurrency(pricing.total)}</div>
+          <div className="text-2xl font-bold text-orange-500">{formatCurrency(pricing.total || pricing.totalPrice)}</div>
         </div>
       </div>
     );
@@ -285,7 +285,7 @@ const BookingDetailsPopup = ({
                 <Scene />
               </Canvas>
             </div>
-            
+
             {/* Popup Content */}
             <motion.div
               className="relative z-10 bg-white rounded-2xl shadow-2xl overflow-hidden max-w-2xl w-full max-h-[90vh] overflow-y-auto"
@@ -308,8 +308,8 @@ const BookingDetailsPopup = ({
                 >
                   <FaTimes className="text-xl" />
                 </motion.button>
-                
-                <motion.div 
+
+                <motion.div
                   className="flex items-center justify-between"
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -322,15 +322,15 @@ const BookingDetailsPopup = ({
                   <StatusBadge status={bookingData.status} />
                 </motion.div>
               </div>
-              
+
               {/* Body */}
               <motion.div className="p-6">
                 {/* Pricing Details */}
                 {bookingData.pricingDetails && bookingData.pricingDetails.length > 0 && (
                   <PricingDetails pricingDetails={bookingData.pricingDetails} />
                 )}
-                
-                <motion.div 
+
+                <motion.div
                   className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -342,72 +342,72 @@ const BookingDetailsPopup = ({
                       <FaUser className="text-orange-500 mr-2" />
                       Customer Information
                     </h3>
-                    
+
                     <div className="space-y-3">
-                      <DetailRow 
+                      <DetailRow
                         icon={<FaUser />}
                         label="Full Name"
-                        value={bookingData.FullName}
+                        value={bookingData.FullName || bookingData.fullName}
                       />
-                      <DetailRow 
+                      <DetailRow
                         icon={<FaEnvelope />}
                         label="Email"
                         value={bookingData.email}
                       />
-                      <DetailRow 
+                      <DetailRow
                         icon={<FaPhone />}
                         label="Phone"
                         value={bookingData.phone}
                       />
-                      <DetailRow 
+                      {bookingData?.nationality && <DetailRow
                         icon={<FaGlobe />}
                         label="Nationality"
                         value={bookingData.nationality}
-                      />
+                      />}
                     </div>
                   </div>
-                  
+
                   {/* Booking Information */}
                   <div className="bg-gray-50 rounded-xl p-5">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                       <FaCalendarAlt className="text-orange-500 mr-2" />
                       Booking Information
                     </h3>
-                    
+
                     <div className="space-y-3">
-                      <DetailRow 
+                      <DetailRow
                         icon={<FaCalendarAlt />}
                         label="Preferred Travel Date"
-                        value={formatDate(bookingData.preferredTravelDate)}
+                        value={formatDate(bookingData.preferredTravelDate || bookingData.travelDate)}
                       />
-                      <DetailRow 
+                      <DetailRow
                         icon={<FaClock />}
                         label="Created At"
                         value={formatDate(bookingData.createdAt)}
                       />
-                      <DetailRow 
+                      <DetailRow
                         icon={<FaClock />}
                         label="Updated At"
                         value={formatDate(bookingData.updatedAt)}
                       />
-                      <DetailRow 
+                      <DetailRow
                         icon={<FaMapMarkerAlt />}
                         label="Destination"
-                        value={bookingData.destination}
+                        value={bookingData.destination || bookingData.tourLocation}
                       />
                     </div>
                   </div>
                 </motion.div>
-                
+
                 {/* Trip Details */}
                 <div className="bg-gray-50 rounded-xl p-5 mb-6">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                     <FaHeart className="text-orange-500 mr-2" />
                     Trip Details
                   </h3>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <motion.div 
+                    <motion.div
                       className="bg-white rounded-lg p-4 shadow-sm"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -416,8 +416,8 @@ const BookingDetailsPopup = ({
                       <div className="text-3xl font-bold text-orange-500 mb-1">{bookingData.numberOfDays || 0}</div>
                       <div className="text-sm text-gray-500">Number of Days</div>
                     </motion.div>
-                    
-                    <motion.div 
+
+                    <motion.div
                       className="bg-white rounded-lg p-4 shadow-sm"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -426,8 +426,8 @@ const BookingDetailsPopup = ({
                       <div className="text-3xl font-bold text-orange-500 mb-1">{bookingData.numberOfGuests || 0}</div>
                       <div className="text-sm text-gray-500">Number of Guests</div>
                     </motion.div>
-                    
-                    <motion.div 
+
+                    {bookingData?.numberOfRooms && <motion.div
                       className="bg-white rounded-lg p-4 shadow-sm"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -435,9 +435,9 @@ const BookingDetailsPopup = ({
                     >
                       <div className="text-3xl font-bold text-orange-500 mb-1">{bookingData.numberOfRooms || 0}</div>
                       <div className="text-sm text-gray-500">Number of Rooms</div>
-                    </motion.div>
-                    
-                    <motion.div 
+                    </motion.div>}
+
+                    {bookingData?.tripType && <motion.div
                       className="bg-white rounded-lg p-4 shadow-sm"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -445,44 +445,44 @@ const BookingDetailsPopup = ({
                     >
                       <div className="text-lg font-bold text-orange-500 mb-1 capitalize">{bookingData.tripType || 'N/A'}</div>
                       <div className="text-sm text-gray-500">Trip Type</div>
-                    </motion.div>
+                    </motion.div>}
                   </div>
                 </div>
-                
+
                 {/* Additional Information */}
                 <div className="bg-gray-50 rounded-xl p-5">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Additional Information</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                  {bookingData?.FullName && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Kind of Tour</label>
                       <div className="px-3 py-2 bg-white rounded-lg border border-gray-200 text-gray-900 capitalize">
                         {bookingData.kindOfTour || 'N/A'}
                       </div>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
                       <div className="px-3 py-2 bg-white rounded-lg border border-gray-200 text-gray-900">
                         {bookingData.checkIn ? formatDate(bookingData.checkIn) : 'N/A'}
                       </div>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Check-out</label>
                       <div className="px-3 py-2 bg-white rounded-lg border border-gray-200 text-gray-900">
                         {bookingData.checkOut ? formatDate(bookingData.checkOut) : 'N/A'}
                       </div>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">User ID</label>
                       <div className="px-3 py-2 bg-white rounded-lg border border-gray-200 text-gray-900 font-mono text-sm">
                         {bookingData.user || 'N/A'}
                       </div>
                     </div>
-                  </div>
-                  
+                  </div>}
+
                   {bookingData.specialRequests && (
                     <div className="mt-4">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Special Requests</label>
@@ -492,9 +492,9 @@ const BookingDetailsPopup = ({
                     </div>
                   )}
                 </div>
-                
+
                 {/* Action Buttons */}
-                <motion.div 
+                <motion.div
                   className="flex justify-end mt-6 pt-4 border-t border-gray-200"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
