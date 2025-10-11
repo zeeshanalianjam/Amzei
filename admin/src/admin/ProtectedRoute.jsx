@@ -8,7 +8,13 @@ const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('accessToken') ;
   const admin = useSelector((state) => state?.admin);
 
-  if (!isAuthenticated || admin?.email !== 'admin@gmail.com') {
+  const adminEmails = [
+      "admin@gmail.com",
+      "ubaidali052@icloud.com",
+      "nangyaluoa249@gmail.com"
+    ];
+
+  if (!isAuthenticated || !adminEmails.includes(admin?.email)) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
