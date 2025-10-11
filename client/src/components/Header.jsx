@@ -36,7 +36,6 @@ const Header = () => {
       })
 
       if(res?.data?.success){
-        toast.success(res?.data?.message || 'Logout successful!');
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         setAccessToken('');

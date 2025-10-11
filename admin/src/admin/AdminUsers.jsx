@@ -51,7 +51,6 @@ const AdminUsers = () => {
       })
 
       if (res?.data?.success) {
-        toast.success(res?.data?.message || 'Status updated successfully!');
         setUsers(users.map(user =>
           user._id === id ? { ...user, status: newStatus } : user
         ));

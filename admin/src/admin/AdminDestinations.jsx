@@ -58,7 +58,6 @@ const AdminDestinations = () => {
       })
 
       if (res?.data?.success) {
-        toast.success(res?.data?.message || 'Destination deleted successfully!');
         setDestinations(destinations.filter(destination => destination._id !== deleteConfirm.tourId));
         setDeleteConfirm({ isOpen: false, tourId: null, tourTitle: '' });
       }

@@ -100,7 +100,6 @@ const AdminTourForm = () => {
         })
 
         if (res?.data?.success) {
-          toast.success(res?.data?.message || 'Tour updated successfully!');
           const updatedTour = res?.data?.data;
           const updatedTours = tours.map(tour =>
             tour._id === updatedTour._id ? updatedTour : tour
@@ -129,7 +128,6 @@ const AdminTourForm = () => {
       })
 
       if (res?.data?.success) {
-        toast.success(isEditing ? 'Tour updated successfully!' : 'Tour added successfully!');
         dispatch(setAllTours([...tours, res?.data?.data]));
         setFormData({
           title: '',

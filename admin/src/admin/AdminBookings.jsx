@@ -70,7 +70,6 @@ const AdminBookings = () => {
             })
 
             if (res?.data?.success) {
-                toast.success(res?.data?.message || 'Status updated successfully!');
                 const updatedTour = tours.map(tour =>
                     tour._id === id ? { ...tour, status: newStatus } : tour
                 );

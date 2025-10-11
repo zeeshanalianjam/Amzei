@@ -43,7 +43,6 @@ const AdminLogin = () => {
         if(res?.data?.data?.user?.role !== 'admin'){
          return toast.error('You are not an admin!');
         }
-        toast.success(res?.data?.message || 'Login successful!');
         dispatch(setAdmin(res?.data?.data?.user));
         localStorage.setItem('accessToken', res?.data?.data?.accessToken);
         localStorage.setItem('refreshToken', res?.data?.data?.refreshToken);

@@ -191,7 +191,6 @@ const AdminDestinationForm = () => {
         });
 
         if (res?.data?.success) {
-          toast.success(res?.data?.message || 'Destination updated successfully!');
           const updatedDestination = res?.data?.data;
           const updatedDestinations = destinations.map((dest) =>
             dest._id === updatedDestination._id ? updatedDestination : dest
@@ -217,7 +216,6 @@ const AdminDestinationForm = () => {
       });
 
       if (res?.data?.success) {
-        toast.success(res?.data?.message || 'Destination added successfully!');
         dispatch(setAllDestinations([...destinations, res?.data?.data]));
         navigate('/destinations');
       }

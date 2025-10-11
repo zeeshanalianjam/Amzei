@@ -61,7 +61,6 @@ const AdminTours = () => {
       })
 
       if (res?.data?.success) {
-        toast.success(res?.data?.message || 'Tour deleted successfully!');
         setTours(tours.filter(tour => tour._id !== deleteConfirm.tourId));
         setDeleteConfirm({ isOpen: false, tourId: null, tourTitle: '' });
       }

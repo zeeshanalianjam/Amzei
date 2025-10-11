@@ -88,7 +88,6 @@ const AdminEventForm = () => {
         })
 
         if (res?.data?.success) {
-          toast.success(res?.data?.message || 'Event updated successfully!');
           const updatedEvent = res?.data?.data;
           const updatedEvents = events.map((event) =>
             event._id === updatedEvent._id ? updatedEvent : event
@@ -116,7 +115,6 @@ const AdminEventForm = () => {
       })
 
       if (res?.data?.success) {
-        toast.success(res?.data?.message || 'Event added successfully!');
         dispatch(setAllEvents([...events, res?.data?.data]));
         navigate('/events');
       }

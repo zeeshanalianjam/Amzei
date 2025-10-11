@@ -58,7 +58,6 @@ const AdminEvents = () => {
       })
 
       if (res?.data?.success) {
-        toast.success(res?.data?.message || 'Event deleted successfully!');
         setEvents(events.filter(event => event._id !== deleteConfirm.tourId));
         setDeleteConfirm({ isOpen: false, tourId: null, tourTitle: '' });
       }

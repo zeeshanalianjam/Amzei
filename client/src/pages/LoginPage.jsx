@@ -42,7 +42,6 @@ const LoginPage = () => {
       });
 
       if (res?.data?.success) {
-        toast.success(res?.data?.message || 'Login successful!');
         dispatch(setUser(res?.data?.data?.user));
         localStorage.setItem('accessToken', res?.data?.data?.accessToken);
         localStorage.setItem('refreshToken', res?.data?.data?.refreshToken);
