@@ -120,7 +120,7 @@ const AdminTours = () => {
         >
           Tours Management
         </motion.h1>
-        <Link to="/admin/tours/add">
+        <Link to="/tours/add">
           <motion.button
             className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md flex items-center"
             whileHover={{ scale: 1.05 }}

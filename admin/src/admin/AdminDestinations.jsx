@@ -106,7 +106,7 @@ const AdminDestinations = () => {
         >
           Destinations Management
         </motion.h1>
-        <Link to="/admin/destinations/add">
+        <Link to="/destinations/add">
           <motion.button
             className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md flex items-center"
             whileHover={{ scale: 1.05 }}
