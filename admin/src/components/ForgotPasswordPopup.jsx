@@ -111,7 +111,7 @@ const ForgotPasswordPopup = ({ isOpen, onClose }) => {
       if (res?.data?.success) {
         toast.success(res?.data?.message);
         setIsSubmitted(true);
-        navigate('/admin/otp', { state: { email } });
+        navigate('/otp', { state: { email } });
         setEmail('');
       }
       

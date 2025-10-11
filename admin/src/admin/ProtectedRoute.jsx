@@ -15,7 +15,7 @@ const ProtectedRoute = ({ children }) => {
         animate={{ opacity: 1 }}
         className="min-h-screen flex items-center justify-center bg-gray-100"
       >
-        <Navigate to="/admin/login" replace />
+        <Navigate to="/login" replace />
       </motion.div>
     );
   }

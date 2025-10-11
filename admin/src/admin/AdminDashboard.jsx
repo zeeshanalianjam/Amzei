@@ -171,7 +171,7 @@ const dec = preferredDate.filter(booking => booking.preferredTravelDate.includes
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-800">Recent Bookings</h2>
-          <button onClick={() => navigate("/admin/bookings")} className="text-orange-500 hover:text-orange-600 font-medium">
+          <button onClick={() => navigate("/bookings")} className="text-orange-500 hover:text-orange-600 font-medium">
             View All
           </button>
         </div>

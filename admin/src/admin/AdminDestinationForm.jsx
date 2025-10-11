@@ -197,7 +197,7 @@ const AdminDestinationForm = () => {
             dest._id === updatedDestination._id ? updatedDestination : dest
           );
           dispatch(setAllDestinations(updatedDestinations));
-          navigate('/admin/destinations');
+          navigate('/destinations');
         }
       } catch (error) {
         console.log("Error in updating destination", error);
@@ -219,7 +219,7 @@ const AdminDestinationForm = () => {
       if (res?.data?.success) {
         toast.success(res?.data?.message || 'Destination added successfully!');
         dispatch(setAllDestinations([...destinations, res?.data?.data]));
-        navigate('/admin/destinations');
+        navigate('/destinations');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -272,7 +272,7 @@ const AdminDestinationForm = () => {
           {isEditing ? 'Edit Destination' : 'Add New Destination'}
         </motion.h1>
         <button
-          onClick={() => navigate('/admin/destinations')}
+          onClick={() => navigate('/destinations')}
           className="text-gray-500 hover:text-gray-700"
         >
           <FaTimes className="text-xl" />
@@ -802,7 +802,7 @@ const AdminDestinationForm = () => {
           >
             <button
               type="button"
-              onClick={() => navigate('/admin/destinations')}
+              onClick={() => navigate('/destinations')}
               className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
             >
               Cancel

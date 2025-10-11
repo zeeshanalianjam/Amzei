@@ -47,7 +47,7 @@ const AdminLogin = () => {
         dispatch(setAdmin(res?.data?.data?.user));
         localStorage.setItem('accessToken', res?.data?.data?.accessToken);
         localStorage.setItem('refreshToken', res?.data?.data?.refreshToken);
-        navigate('/admin');
+        navigate('/');
         setFormData({ email: '', password: '', rememberMe: false });
       } 
 

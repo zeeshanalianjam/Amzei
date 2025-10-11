@@ -188,7 +188,7 @@ const AdminEvents = () => {
               <p className="text-gray-600 text-sm mb-4">{event.description}</p>
               
               <div className="flex justify-end space-x-2">
-                <button onClick={() => navigate(`/admin/events/edit/${event._id}`, { state: { event } })} className="text-indigo-600 hover:text-indigo-900">
+                <button onClick={() => navigate(`/events/edit/${event._id}`, { state: { event } })} className="text-indigo-600 hover:text-indigo-900">
                   <FaEdit />
                 </button>
                 <button 

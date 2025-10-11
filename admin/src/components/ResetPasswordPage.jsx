@@ -153,7 +153,7 @@ const ResetPasswordPage = () => {
       if (res?.data?.success) {
         toast.success(res?.data?.message);
         setError('');
-        navigate('/admin/login');
+        navigate('/login');
       }
 
       
@@ -167,7 +167,7 @@ const ResetPasswordPage = () => {
   // If no email or OTP is provided, redirect to login
   useEffect(() => {
     if (!email || !otp) {
-      navigate('/admin/login');
+      navigate('/login');
     }
   }, [email, otp, navigate]);
 
@@ -184,7 +184,7 @@ const ResetPasswordPage = () => {
       <div className="relative z-10 w-full max-w-md px-4">
         {/* Back Button */}
         <motion.button
-          onClick={() => navigate('/admin/login')}
+          onClick={() => navigate('/login')}
           className="flex items-center text-orange-500 hover:text-orange-600 mb-6"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}

@@ -94,7 +94,7 @@ const AdminEventForm = () => {
             event._id === updatedEvent._id ? updatedEvent : event
           );
           dispatch(setAllEvents(updatedEvents));
-          navigate('/admin/events');
+          navigate('/events');
         }
         
       } catch (error) {
@@ -118,7 +118,7 @@ const AdminEventForm = () => {
       if (res?.data?.success) {
         toast.success(res?.data?.message || 'Event added successfully!');
         dispatch(setAllEvents([...events, res?.data?.data]));
-        navigate('/admin/events');
+        navigate('/events');
       }
 
     } catch (error) {
@@ -160,7 +160,7 @@ const AdminEventForm = () => {
           {isEditing ? 'Edit Event' : 'Add New Event'}
         </motion.h1>
         <button 
-          onClick={() => navigate('/admin/events')}
+          onClick={() => navigate('/events')}
           className="text-gray-500 hover:text-gray-700"
         >
           <FaTimes className="text-xl" />
@@ -298,7 +298,7 @@ const AdminEventForm = () => {
           >
             <button
               type="button"
-              onClick={() => navigate('/admin/events')}
+              onClick={() => navigate('/events')}
               className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
             >
               Cancel

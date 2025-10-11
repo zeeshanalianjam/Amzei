@@ -25,14 +25,14 @@ const AdminLayout = () => {
   const navigate = useNavigate();
 
   const adminMenu = [
-    { name: 'Dashboard', icon: <FaTachometerAlt />, path: '/admin' },
-    { name: 'Users', icon: <FaUsers />, path: '/admin/users' },
-    { name: 'Dest Bookings', icon: <FaUsers />, path: '/admin/bookings' },
-    { name: 'Pack Bookings', icon: <FaUsers />, path: '/admin/package-bookings' },
-    { name: 'Tours', icon: <FaRoute />, path: '/admin/tours' },
-    { name: 'Destinations', icon: <FaMapMarkedAlt />, path: '/admin/destinations' },
-    { name: 'Events', icon: <FaCalendarAlt />, path: '/admin/events' },
-    { name: 'Settings', icon: <FaCog />, path: '/admin/settings' },
+    { name: 'Dashboard', icon: <FaTachometerAlt />, path: '/' },
+    { name: 'Users', icon: <FaUsers />, path: '/users' },
+    { name: 'Dest Bookings', icon: <FaUsers />, path: '/bookings' },
+    { name: 'Pack Bookings', icon: <FaUsers />, path: '/package-bookings' },
+    { name: 'Tours', icon: <FaRoute />, path: '/tours' },
+    { name: 'Destinations', icon: <FaMapMarkedAlt />, path: '/destinations' },
+    { name: 'Events', icon: <FaCalendarAlt />, path: '/events' },
+    { name: 'Settings', icon: <FaCog />, path: '/settings' },
   ];
 
   const toggleSidebar = () => {
@@ -41,7 +41,7 @@ const AdminLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('isAdminAuthenticated');
-    navigate('/admin/login');
+    navigate('/login');
   };
 
   return (

@@ -107,7 +107,7 @@ const AdminTourForm = () => {
           );
           dispatch(setAllTours(updatedTours));
 
-          navigate('/admin/tours');
+          navigate('/tours');
         }
       } catch (error) {
         console.log("Error in updating tour", error);
@@ -141,7 +141,7 @@ const AdminTourForm = () => {
           highlights: [],
           image: ''
         });
-        navigate('/admin/tours');
+        navigate('/tours');
       }
 
     } catch (error) {
@@ -186,7 +186,7 @@ const AdminTourForm = () => {
           {isEditing ? 'Edit Tour' : 'Add New Tour'}
         </motion.h1>
         <button
-          onClick={() => navigate('/admin/tours')}
+          onClick={() => navigate('/tours')}
           className="text-gray-500 hover:text-gray-700"
         >
           <FaTimes className="text-xl" />
@@ -363,7 +363,7 @@ const AdminTourForm = () => {
           >
             <button
               type="button"
-              onClick={() => navigate('/admin/tours')}
+              onClick={() => navigate('/tours')}
               className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
             >
               Cancel

@@ -247,7 +247,7 @@ const AdminTours = () => {
                     </div>
                   </td> */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button onClick={() => navigate(`/admin/tours/edit/${tour._id}`, { state: { tour } })} className="text-indigo-600 hover:text-indigo-900 mr-3">
+                    <button onClick={() => navigate(`/tours/edit/${tour._id}`, { state: { tour } })} className="text-indigo-600 hover:text-indigo-900 mr-3">
                       <FaEdit />
                     </button>
                     <button

@@ -35,12 +35,6 @@ function App() {
     document.title = 'Admin Dashboard';
   }, []);
 
-  useEffect(() => {
-    if (location.pathname === '/' || location.pathname === '/login') {
-      // Navigate to the /admin
-      window.location.href = '/admin';
-    }
-  }, []);
 
   // ✅ Fetch all data once
   useEffect(() => {
@@ -50,12 +44,12 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <Routes>
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/otp" element={<OTPPage />} />
-        <Route path="/admin/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/login" element={<AdminLogin />} />
+        <Route path="/otp" element={<OTPPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route
-          path="/admin"
+          path="/"
           element={
             <ProtectedRoute>
               <AdminLayout />
