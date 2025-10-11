@@ -40,7 +40,7 @@ function App() {
       // Navigate to the /admin
       window.location.href = '/admin';
     }
-  }, [location.pathname]);
+  }, []);
 
   // ✅ Fetch all data once
   useEffect(() => {
