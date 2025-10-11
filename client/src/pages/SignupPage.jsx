@@ -4,11 +4,13 @@ import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaPhone } from 'react-ic
 import { toast } from 'react-hot-toast';
 import { Axios } from '../common/axios';
 import { summaryApi } from '../common/summaryApi';
+import LoadingPopup from "../utils/LoadingPopup";
 
 const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -37,7 +39,7 @@ const SignupPage = () => {
     
     // Handle signup logic here
     try {
-
+setLoading(true);
         // remove spaces from phone number
   const cleanPhone = formData.phone.replace(/\s+/g, '').trim();
 
@@ -55,7 +57,6 @@ const SignupPage = () => {
       });
 
       if(res?.data?.success){
-        toast.success(res?.data?.message);
         navigate('/login');
         setFormData({
           firstName: '',
@@ -71,11 +72,14 @@ const SignupPage = () => {
       }
     } catch (error) { 
       toast.error(error?.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-100 py-12 px-4 sm:px-6 lg:px-8">
+      <LoadingPopup isOpen={loading} />
       <div className="max-w-md w-full space-y-8 animate-bounce-in">
         <div className="text-center">
           <Link to="/" className="inline-flex items-center space-x-2">
