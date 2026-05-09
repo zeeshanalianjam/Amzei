@@ -22,7 +22,7 @@ import TourConfirmationPage from "./pages/TourConfirmationPage";
 
 import ReactGA from 'react-ga4';
 import { useLocation } from 'react-router-dom';
-import { Analytics } from '@vercel/analytics/react';
+
 
   // ID yahan paste karein
 ReactGA.initialize('G-ZBMBLTXX32'); 
@@ -97,7 +97,7 @@ export default function App() {
         <Route path="/tour-confirmation" element={<TourConfirmationPage />} />
       </Routes>
       <Toaster />
-      <Analytics />
+     
     </>
   )
 }
