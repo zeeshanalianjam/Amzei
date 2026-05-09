@@ -19,8 +19,28 @@ import TourDetailPage from "./pages/TourDetailPage";
 import BookingSuccess from "./pages/BookingSuccess";
 import TourConfirmationPage from "./pages/TourConfirmationPage";
 
+import ReactGA from 'react-ga4';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom'; // Agar React Router use kar rahe ho
+
+  // ID yahan paste karein
+ReactGA.initialize('G-ZBMBLTXX32'); 
+
 export default function App() {
   const dispatch = useDispatch();
+
+
+
+
+ const location = useLocation();
+
+  useEffect(() => {
+    // Har baar jab page change ho, GA ko batao (SPA ke liye zaroori)
+    ReactGA.send({ 
+      hitType: "pageview", 
+      page: location.pathname + location.search 
+    });
+  }, [location]);
 
   const fetchAllDestinations = useCallback(async () => {
     try {
